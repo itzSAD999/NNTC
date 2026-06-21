@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* NMTC design tokens (source of truth) */
+    --color-bg: #fbfbf9;
+    --color-surface: #ffffff;
+    --color-ink: #14241b;
+    --color-primary: #1a5e3a;
+    --color-primary-deep: #0e3d26;
+    --color-accent: #9a1b2f;
+    --color-muted: #6b7a72;
+    --color-line: #e2e6e3;
+    --color-success: #1a7a4a;
+    --color-warning: #b8860b;
+    --color-danger: #9a1b2f;
+
+    /* shadcn/ui variables mapped to NMTC tokens (HSL channels) */
+    --background: 60 33% 98%;
+    --foreground: 152 29% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 152 29% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 152 29% 11%;
+    --primary: 152 57% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 140 8% 94%;
+    --secondary-foreground: 152 29% 11%;
+    --muted: 140 8% 94%;
+    --muted-foreground: 150 7% 45%;
+    --accent: 348 70% 35%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 348 70% 35%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 140 8% 89%;
+    --input: 140 8% 89%;
+    --ring: 152 57% 24%;
+    --radius: 4px;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif text-ink;
+  }
+
+  h1 {
+    @apply text-display-lg md:text-display-xl;
+  }
+
+  h2 {
+    @apply text-display-md md:text-display-lg;
+  }
+
+  h3 {
+    @apply text-display-sm;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .hairline {
+    @apply border-line border-t;
+  }
+
+  .hairline-b {
+    @apply border-line border-b;
+  }
+
+  .section-grid {
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+    min-width: 0;
+  }
+
+  .sr-only {
+    @apply absolute h-px w-px overflow-hidden whitespace-nowrap border-0 p-0;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+  }
+
+  .status-pill {
+    @apply inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-medium;
+  }
+
+  .status-pill-dot {
+    @apply h-1.5 w-1.5 shrink-0 rounded-full;
+  }
+
+  .ref-mono {
+    @apply font-mono text-sm tracking-tight;
+  }
+
+  .prose-nmtc {
+    @apply max-w-none;
+  }
+
+  .prose-nmtc p {
+    @apply mb-4;
+  }
+
+  .prose-nmtc h2 {
+    @apply mb-3 mt-8 font-serif text-display-sm;
+  }
+
+  .prose-nmtc h3 {
+    @apply mb-2 mt-6 font-serif text-lg;
+  }
+
+  .prose-nmtc ul {
+    @apply mb-4 list-disc space-y-1 pl-5;
+  }
+
+  .prose-nmtc a {
+    @apply text-primary underline-offset-2 hover:underline;
+  }
+}

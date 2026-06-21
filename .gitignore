@@ -1,0 +1,10 @@
+.cursor/
+node_modules/
+.next/
+out/
+build/
+.env*.local
+.vercel
+*.tsbuildinfo
+npm-debug.log*
+.DS_Store
