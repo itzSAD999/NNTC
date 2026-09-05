@@ -1,1 +1,3 @@
-export { default } from "./admin-audit-page";
+import AdminAuditPage from "./admin-audit-page";
+
+export default AdminAuditPage;

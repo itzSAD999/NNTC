@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import {
@@ -12,6 +12,16 @@ import {
 } from "@/lib/actions/users";
 import { ROLES, type Role } from "@/lib/constants";
 import type { StaffAccount } from "@/types/database";
+import { matchesSearch } from "@/lib/admin/list-filters";
+import { AdminModal } from "@/components/admin/admin-modal";
+import { AdminListFilterBar } from "@/components/admin/admin-list-filters";
+import { AdminListToast } from "@/components/admin/admin-list-toast";
+import {
+  AdminListResults,
+  AdminMobileCard,
+} from "@/components/admin/admin-responsive-list";
+import { FormMessage } from "@/components/admin/admin-layout";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,17 +44,51 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function ActionMessage({ state }: { state: UserActionState }) {
-  if (state.error) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {state.error}
-      </p>
-    );
-  }
-  if (state.success) {
-    return <p className="text-sm text-primary">Saved successfully.</p>;
-  }
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
+}
+
+function MemberActions({
+  member,
+  currentUserId,
+  onEdit,
+  onResetPassword,
+}: {
+  member: StaffAccount;
+  currentUserId: string;
+  onEdit: () => void;
+  onResetPassword: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button type="button" size="sm" variant="outline" onClick={onEdit}>
+        Edit
+      </Button>
+      <Button type="button" size="sm" variant="ghost" onClick={onResetPassword}>
+        Reset password
+      </Button>
+      {member.is_active && member.id !== currentUserId ? (
+        <DeleteConfirmButton
+          action={deactivateStaffForm}
+          confirmMessage={`Deactivate ${member.full_name}? They will not be able to sign in.`}
+          buttonLabel="Deactivate"
+          hiddenFields={{ id: member.id }}
+          variant="destructive"
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function MemberStatus({ member }: { member: StaffAccount }) {
+  return (
+    <span
+      className={
+        member.is_active ? "text-primary" : "text-caption line-through"
+      }
+    >
+      {member.is_active ? "Active" : "Inactive"}
+    </span>
+  );
 }
 
 export function UsersManager({
@@ -57,9 +101,33 @@ export function UsersManager({
   const [createState, createAction] = useFormState(createStaff, {});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [resetId, setResetId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const filteredStaff = useMemo(() => {
+    return staff.filter((member) => {
+      if (
+        !matchesSearch(search, [
+          member.full_name,
+          member.email,
+          ROLE_LABELS[member.role],
+        ])
+      ) {
+        return false;
+      }
+      if (roleFilter !== "all" && member.role !== roleFilter) return false;
+      if (activeFilter === "active" && !member.is_active) return false;
+      if (activeFilter === "inactive" && member.is_active) return false;
+      return true;
+    });
+  }, [staff, search, roleFilter, activeFilter]);
 
   return (
     <div className="space-y-10">
+      <Suspense fallback={null}>
+        <AdminListToast />
+      </Suspense>
       <section className="rounded border border-line bg-surface p-6">
         <h2 className="font-serif text-display-sm">Create staff account</h2>
         <form action={createAction} className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -107,76 +175,142 @@ export function UsersManager({
 
       <section>
         <h2 className="font-serif text-display-sm">Staff accounts</h2>
-        <div className="mt-4 overflow-x-auto rounded border border-line bg-surface">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-line text-xs uppercase tracking-widest text-caption">
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Email</th>
-                <th className="px-4 py-3 font-medium">Role</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staff.map((member) => (
-                <tr key={member.id} className="border-b border-line last:border-0">
-                  <td className="px-4 py-3 font-medium text-ink">
-                    {member.full_name}
-                  </td>
-                  <td className="px-4 py-3 text-caption">{member.email}</td>
-                  <td className="px-4 py-3 text-caption">
-                    {ROLE_LABELS[member.role]}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={
-                        member.is_active
-                          ? "text-primary"
-                          : "text-caption line-through"
-                      }
-                    >
-                      {member.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setEditingId(member.id);
-                          setResetId(null);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => {
-                          setResetId(member.id);
-                          setEditingId(null);
-                        }}
-                      >
-                        Reset password
-                      </Button>
-                      {member.is_active && member.id !== currentUserId ? (
-                        <form action={deactivateStaffForm}>
-                          <input type="hidden" name="id" value={member.id} />
-                          <Button type="submit" size="sm" variant="destructive">
-                            Deactivate
-                          </Button>
-                        </form>
-                      ) : null}
+        <div className="mt-4 space-y-4">
+          <AdminListFilterBar
+            search={search}
+            onSearchChange={setSearch}
+            showStatus={false}
+            searchPlaceholder="Search by name or email…"
+            total={staff.length}
+            filtered={filteredStaff.length}
+            extraFilters={
+              <>
+                <div className="space-y-1 sm:w-44">
+                  <label
+                    htmlFor="user-role-filter"
+                    className="text-xs font-medium text-caption"
+                  >
+                    Role
+                  </label>
+                  <select
+                    id="user-role-filter"
+                    value={roleFilter}
+                    onChange={(e) => setRoleFilter(e.target.value)}
+                    className="flex h-9 w-full rounded border border-line bg-surface px-3 text-sm sm:w-auto"
+                  >
+                    <option value="all">All roles</option>
+                    {ROLES.map((role) => (
+                      <option key={role} value={role}>
+                        {ROLE_LABELS[role]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1 sm:w-44">
+                  <label
+                    htmlFor="user-active-filter"
+                    className="text-xs font-medium text-caption"
+                  >
+                    Account status
+                  </label>
+                  <select
+                    id="user-active-filter"
+                    value={activeFilter}
+                    onChange={(e) => setActiveFilter(e.target.value)}
+                    className="flex h-9 w-full rounded border border-line bg-surface px-3 text-sm sm:w-auto"
+                  >
+                    <option value="all">All accounts</option>
+                    <option value="active">Active only</option>
+                    <option value="inactive">Inactive only</option>
+                  </select>
+                </div>
+              </>
+            }
+          />
+          {filteredStaff.length === 0 ? (
+            <p className="rounded border border-dashed border-line bg-surface px-4 py-8 text-center text-sm text-caption">
+              No accounts match your filters.
+            </p>
+          ) : (
+            <AdminListResults
+              table={
+                <div className="overflow-x-auto rounded border border-line bg-surface">
+                  <table className="w-full min-w-[720px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-line text-xs uppercase tracking-widest text-caption">
+                        <th className="px-4 py-3 font-medium">Name</th>
+                        <th className="px-4 py-3 font-medium">Email</th>
+                        <th className="px-4 py-3 font-medium">Role</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredStaff.map((member) => (
+                        <tr
+                          key={member.id}
+                          className="border-b border-line last:border-0"
+                        >
+                          <td className="px-4 py-3 font-medium text-ink">
+                            {member.full_name}
+                          </td>
+                          <td className="px-4 py-3 text-caption">
+                            {member.email}
+                          </td>
+                          <td className="px-4 py-3 text-caption">
+                            {ROLE_LABELS[member.role]}
+                          </td>
+                          <td className="px-4 py-3">
+                            <MemberStatus member={member} />
+                          </td>
+                          <td className="px-4 py-3">
+                            <MemberActions
+                              member={member}
+                              currentUserId={currentUserId}
+                              onEdit={() => {
+                                setEditingId(member.id);
+                                setResetId(null);
+                              }}
+                              onResetPassword={() => {
+                                setResetId(member.id);
+                                setEditingId(null);
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              }
+              cards={filteredStaff.map((member) => (
+                <AdminMobileCard key={member.id}>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="font-medium text-ink">{member.full_name}</p>
+                      <p className="text-xs text-caption">{member.email}</p>
                     </div>
-                  </td>
-                </tr>
+                    <p className="text-xs text-caption">
+                      {ROLE_LABELS[member.role]}
+                    </p>
+                    <MemberStatus member={member} />
+                    <MemberActions
+                      member={member}
+                      currentUserId={currentUserId}
+                      onEdit={() => {
+                        setEditingId(member.id);
+                        setResetId(null);
+                      }}
+                      onResetPassword={() => {
+                        setResetId(member.id);
+                        setEditingId(null);
+                      }}
+                    />
+                  </div>
+                </AdminMobileCard>
               ))}
-            </tbody>
-          </table>
+            />
+          )}
         </div>
       </section>
 
@@ -210,10 +344,8 @@ function EditStaffDialog({
   const [state, action] = useFormState(updateStaff, {});
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-      <div className="w-full max-w-lg rounded border border-line bg-surface p-6 shadow-lg">
-        <h3 className="font-serif text-display-sm">Edit {member.full_name}</h3>
-        <form action={action} className="mt-6 space-y-4">
+    <AdminModal open title={`Edit ${member.full_name}`} onClose={onClose}>
+      <form action={action} className="space-y-4">
           <input type="hidden" name="id" value={member.id} />
           <ActionMessage state={state} />
           <div className="space-y-2">
@@ -268,8 +400,7 @@ function EditStaffDialog({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </AdminModal>
   );
 }
 
@@ -283,10 +414,8 @@ function ResetPasswordDialog({
   const [state, action] = useFormState(resetStaffPassword, {});
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
-      <div className="w-full max-w-md rounded border border-line bg-surface p-6 shadow-lg">
-        <h3 className="font-serif text-display-sm">Reset password</h3>
-        <form action={action} className="mt-6 space-y-4">
+    <AdminModal open title="Reset password" onClose={onClose}>
+      <form action={action} className="space-y-4">
           <input type="hidden" name="id" value={memberId} />
           <ActionMessage state={state} />
           <div className="space-y-2">
@@ -306,7 +435,6 @@ function ResetPasswordDialog({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </AdminModal>
   );
 }

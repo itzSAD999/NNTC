@@ -1,15 +1,18 @@
 import { EventForm } from "@/components/admin/event-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 
 export default async function AdminEventNewPage() {
   await requireContentStaff();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">New event</h1>
-      </header>
+    <AdminEditShell
+      listHref="/dashboard/admin/events"
+      listLabel="Events"
+      title="New event"
+      subtitle="Add a college event for the public Events page."
+    >
       <EventForm />
-    </div>
+    </AdminEditShell>
   );
 }

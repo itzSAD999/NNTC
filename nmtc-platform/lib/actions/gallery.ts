@@ -40,6 +40,7 @@ export async function saveGalleryAlbum(
 
   revalidatePath("/gallery");
   revalidatePath("/dashboard/admin/gallery");
+  if (id) revalidatePath(`/dashboard/admin/gallery/${id}`);
   return { success: true };
 }
 

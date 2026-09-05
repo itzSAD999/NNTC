@@ -1,1 +1,3 @@
-export { default } from "./admin-event-new-page";
+import AdminEventNewPage from "./admin-event-new-page";
+
+export default AdminEventNewPage;

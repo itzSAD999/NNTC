@@ -1,1 +1,3 @@
-export { default } from "./faculty-page";
+import FacultyPage from "./faculty-page";
+
+export default FacultyPage;

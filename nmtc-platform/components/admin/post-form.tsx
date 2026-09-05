@@ -13,6 +13,20 @@ import { POST_CATEGORIES } from "@/lib/validation/post";
 import { slugify } from "@/lib/utils/slug";
 import type { Post } from "@/types/database";
 import { TiptapEditor } from "@/components/cms/tiptap-editor";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
+import {
+  FieldHint,
+  SlugField,
+} from "@/components/admin/admin-help";
+import { FormMessage } from "@/components/admin/admin-layout";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
+import { PUBLISH_HINT } from "@/lib/admin/page-guides";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,13 +42,9 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: PostActionState }) {
-  if (state.error) {
-    return <p className="text-sm text-danger">{state.error}</p>;
-  }
-  if (state.success) {
-    return <p className="text-sm text-primary">Saved successfully.</p>;
-  }
-  return null;
+  return (
+    <FormMessage error={state.error} success={state.success} />
+  );
 }
 
 type PostFormProps = {
@@ -47,6 +57,10 @@ export function PostForm({ post }: PostFormProps) {
   const [title, setTitle] = useState(post?.title ?? "");
   const [slug, setSlug] = useState(post?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(post?.slug));
+  const [coverUrl, setCoverUrl] = useState(post?.cover_image_url ?? "");
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
 
   useEffect(() => {
     if (!slugTouched && title) {
@@ -54,9 +68,17 @@ export function PostForm({ post }: PostFormProps) {
     }
   }, [title, slugTouched]);
 
+  useEffect(() => {
+    if (state.success) setDirty(false);
+  }, [state.success]);
+
   return (
     <div className="space-y-4">
-      <form action={formAction} className="space-y-6">
+      <form
+        action={formAction}
+        className="space-y-6"
+        {...createUnsavedFormProps(setDirty)}
+      >
         {post ? <input type="hidden" name="id" value={post.id} /> : null}
         <Message state={state} />
 
@@ -72,16 +94,13 @@ export function PostForm({ post }: PostFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              name="slug"
+            <SlugField
               value={slug}
-              onChange={(e) => {
+              basePath="/news"
+              onChange={(value) => {
                 setSlugTouched(true);
-                setSlug(e.target.value);
+                setSlug(value);
               }}
-              required
             />
           </div>
           <div className="space-y-2">
@@ -101,25 +120,30 @@ export function PostForm({ post }: PostFormProps) {
             </select>
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
+            <Label htmlFor="excerpt">Short summary</Label>
             <Textarea
               id="excerpt"
               name="excerpt"
               rows={2}
               defaultValue={post?.excerpt ?? ""}
             />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="cover_image_url">Cover image URL</Label>
-            <Input
-              id="cover_image_url"
-              name="cover_image_url"
-              type="url"
-              defaultValue={post?.cover_image_url ?? ""}
-              placeholder="https://…"
-            />
+            <FieldHint>
+              One or two sentences shown on the news list and homepage — not the
+              full article.
+            </FieldHint>
           </div>
         </div>
+
+        <ImageUploadField
+          name="cover_image_url"
+          label="Cover image"
+          value={coverUrl}
+          folder="news"
+          onChange={(value) => {
+            setCoverUrl(value);
+            setDirty(true);
+          }}
+        />
 
         <div className="space-y-2">
           <Label>Body</Label>
@@ -127,36 +151,48 @@ export function PostForm({ post }: PostFormProps) {
         </div>
 
         <div className="flex flex-wrap gap-6">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="published"
-              value="true"
-              defaultChecked={Boolean(post?.published_at)}
-            />
-            Published
+          <label className="flex max-w-xs flex-col gap-1 text-sm">
+            <span className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="published"
+                value="true"
+                defaultChecked={Boolean(post?.published_at)}
+              />
+              Published on public site
+            </span>
+            <FieldHint>{PUBLISH_HINT}</FieldHint>
           </label>
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="is_pinned"
-              value="true"
-              defaultChecked={post?.is_pinned ?? false}
-            />
-            Pin to top
+          <label className="flex max-w-xs flex-col gap-1 text-sm">
+            <span className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                name="is_pinned"
+                value="true"
+                defaultChecked={post?.is_pinned ?? false}
+              />
+              Pin to top of news list
+            </span>
+            <FieldHint>
+              Pinned articles stay above other news until unpinned.
+            </FieldHint>
           </label>
         </div>
 
-        <SubmitButton label={post ? "Save changes" : "Create post"} />
+        <StickyFormFooter>
+          <UnsavedChangesLabel show={dirty} />
+          <SubmitButton label={post ? "Save changes" : "Create post"} />
+        </StickyFormFooter>
       </form>
 
       {post ? (
-        <form action={deletePostForm}>
-          <input type="hidden" name="id" value={post.id} />
-          <Button type="submit" variant="destructive">
-            Delete post
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deletePostForm}
+          confirmMessage="Delete this post permanently? This cannot be undone."
+          buttonLabel="Delete post"
+          hiddenFields={{ id: post.id }}
+          variant="destructive"
+        />
       ) : null}
     </div>
   );

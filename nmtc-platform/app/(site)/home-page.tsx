@@ -1,7 +1,9 @@
 import Link from "next/link";
 
+import { ExploreStrip } from "@/components/marketing/explore-strip";
 import { HeroSection } from "@/components/marketing/hero-section";
 import { HighlightsStrip } from "@/components/marketing/highlights-strip";
+import { HomeCtaBand } from "@/components/marketing/home-cta-band";
 import { EventsHomeStrip } from "@/components/marketing/events-home-strip";
 import { NewsCard } from "@/components/marketing/news-card";
 import { Button } from "@/components/ui/button";
@@ -31,14 +33,16 @@ export default async function HomePage() {
     <>
       <HeroSection settings={settings} />
       <HighlightsStrip items={highlights} />
+      <ExploreStrip />
       <EventsHomeStrip events={events} />
 
-      <section aria-labelledby="news-heading" className="section-grid py-16 md:py-20">
+      <section aria-labelledby="news-heading" className="section-grid border-b border-line py-16 md:py-20">
         <div className="hairline-b flex flex-col gap-4 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
+            <p className="section-eyebrow">The NMTC Gazette</p>
             <h2
               id="news-heading"
-              className="font-serif text-display-md md:text-display-lg"
+              className="mt-3 font-serif text-display-md md:text-display-lg"
             >
               Latest announcements
             </h2>
@@ -63,6 +67,8 @@ export default async function HomePage() {
           </p>
         )}
       </section>
+
+      <HomeCtaBand />
     </>
   );
 }

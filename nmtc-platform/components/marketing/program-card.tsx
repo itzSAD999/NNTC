@@ -4,7 +4,7 @@ import type { ProgramWithDepartment } from "@/lib/types/expansion";
 
 export function ProgramCard({ program }: { program: ProgramWithDepartment }) {
   return (
-    <article className="flex flex-col rounded border border-line bg-surface transition-shadow hover:shadow-sm">
+    <article className="institutional-card flex flex-col">
       <div className="border-b border-line px-5 py-4 md:px-6">
         {program.department ? (
           <p className="text-xs font-medium uppercase tracking-widest text-primary">
@@ -30,7 +30,7 @@ export function ProgramCard({ program }: { program: ProgramWithDepartment }) {
       <div className="mt-auto border-t border-line px-5 py-4 md:px-6">
         <Link
           href={`/programs/${program.slug}`}
-          className="text-sm font-medium text-primary hover:text-primary-deep"
+          className="link-arrow"
         >
           View programme details →
         </Link>

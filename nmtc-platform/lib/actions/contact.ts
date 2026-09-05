@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireInboxStaff } from "@/lib/auth/permissions";
 import { getSettings } from "@/lib/data/settings";
+import { guardPublicForm } from "@/lib/security/public-forms";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { buildContactEmailHtml, sendEmail } from "@/lib/email/send";
@@ -22,6 +23,18 @@ export async function submitContactMessage(
   _prevState: ContactFormState,
   formData: FormData
 ): Promise<ContactFormState> {
+  const guard = await guardPublicForm(
+    "contact",
+    formData.get("cf-turnstile-response")?.toString()
+  );
+  if (!guard.allowed) {
+    return {
+      error:
+        guard.turnstileError ??
+        `Too many messages. Try again in ${guard.retryAfterSeconds ?? 60} seconds.`,
+    };
+  }
+
   const raw = {
     name: formData.get("name")?.toString() ?? "",
     email: formData.get("email")?.toString() ?? "",

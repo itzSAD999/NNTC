@@ -10,13 +10,14 @@ export const metadata: Metadata = {
 };
 
 interface RequestSubmittedPageProps {
-  searchParams: { ref?: string };
+  searchParams: Promise<{ ref?: string }>;
 }
 
-export default function RequestSubmittedPage({
+export default async function RequestSubmittedPage({
   searchParams,
 }: RequestSubmittedPageProps) {
-  const referenceNo = searchParams.ref?.trim();
+  const sp = await searchParams;
+  const referenceNo = sp.ref?.trim();
 
   return (
     <div className="section-grid max-w-2xl py-16 md:py-24">

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { NewsCard } from "@/components/marketing/news-card";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader, PageSection } from "@/components/layout";
 import { getPublishedPosts } from "@/lib/data/posts";
 import { getSettings } from "@/lib/data/settings";
 
@@ -25,7 +25,7 @@ export default async function NewsPage() {
         description="Official updates, press releases, and achievements from the college."
       />
 
-      <div className="section-grid py-16">
+      <PageSection bordered={false}>
         {posts.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post, i) => (
@@ -41,7 +41,7 @@ export default async function NewsPage() {
             for enquiries.
           </p>
         )}
-      </div>
+      </PageSection>
     </>
   );
 }

@@ -45,8 +45,8 @@ export const trackFormSchema = z.object({
     .transform((val) => val.trim().toUpperCase())
     .pipe(
       z.string().regex(
-        /^NMTC-[A-Z]{2}-\d{4}-\d{4}$/,
-        "Enter a valid reference (e.g. NMTC-TR-2026-0042)"
+        /^NMTC-[A-F0-9]{12}$/,
+        "Enter the reference from your confirmation email (e.g. NMTC-A1B2C3D4E5F6)"
       )
     ),
 });

@@ -1,1 +1,3 @@
-export { default } from "./admin-resource-edit-page";
+import AdminResourceEditPage from "./admin-resource-edit-page";
+
+export default AdminResourceEditPage;

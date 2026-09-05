@@ -13,5 +13,4 @@ export const eventFormSchema = z.object({
   location: z.string().min(1, "Location is required.").max(300),
   cover_image_url: z.string().optional().or(z.literal("")),
   registration_url: z.string().url("Invalid URL.").optional().or(z.literal("")),
-  is_past: z.boolean(),
 });

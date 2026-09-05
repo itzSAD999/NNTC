@@ -792,3 +792,16 @@ DROP POLICY IF EXISTS "resources_content_staff_delete" ON public.resources;
 CREATE POLICY "resources_content_staff_delete"
   ON public.resources FOR DELETE TO authenticated
   USING (public.is_content_staff());
+
+DROP POLICY IF EXISTS "events_public_read" ON public.events;
+CREATE POLICY "events_public_read"
+  ON public.events
+  FOR SELECT
+  TO anon, authenticated
+  USING (coalesce(ends_at, starts_at) >= now());
+ 
+-- is_past is now decorative — visibility no longer depends on it. Leaving the
+-- column in place avoids breaking app code/types that may still read it. Once
+-- you've removed those references, drop it (uncomment):
+--
+-- ALTER TABLE public.events DROP COLUMN IF EXISTS is_past;

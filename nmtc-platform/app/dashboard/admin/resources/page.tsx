@@ -1,1 +1,3 @@
-export { default } from "./admin-resources-page";
+import AdminResourcesPage from "./admin-resources-page";
+
+export default AdminResourcesPage;

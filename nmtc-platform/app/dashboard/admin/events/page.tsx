@@ -1,1 +1,3 @@
-export { default } from "./admin-events-page";
+import AdminEventsPage from "./admin-events-page";
+
+export default AdminEventsPage;

@@ -8,7 +8,7 @@ export function FacultyCard({ profile }: { profile: StaffProfileWithDepartment }
   const photo = getStoragePublicUrl(profile.photo_url);
 
   return (
-    <article className="flex flex-col overflow-hidden rounded border border-line bg-surface transition-shadow hover:shadow-sm">
+    <article className="institutional-card flex flex-col overflow-hidden">
       <Link href={`/faculty/${profile.slug}`} className="block">
         <div className="relative aspect-[4/5] bg-bg">
           {photo ? (

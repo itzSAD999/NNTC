@@ -1,4 +1,5 @@
 import { AdminSettingsForm } from "@/components/admin/settings-form";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireSuperAdmin } from "@/lib/auth/permissions";
 import { getAdminSettings } from "@/lib/data/admin-settings";
 
@@ -7,15 +8,8 @@ export default async function AdminSettingsPage() {
   const { settings, documentTypes } = await getAdminSettings();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Settings</h1>
-        <p className="mt-2 text-caption">
-          College branding, document fees, and student notification templates.
-        </p>
-      </header>
-
+    <AdminListShell section="settings">
       <AdminSettingsForm settings={settings} documentTypes={documentTypes} />
-    </div>
+    </AdminListShell>
   );
 }

@@ -4,13 +4,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireContentStaff } from "@/lib/auth/permissions";
+import { isEventPast } from "@/lib/events/dates";
 import { createClient } from "@/lib/supabase/server";
 import { eventFormSchema } from "@/lib/validation/events";
 
 export type EventActionState = { error?: string; success?: boolean };
 
-function formBool(value: FormDataEntryValue | null): boolean {
-  return value === "true" || value === "on" || value === "1";
+function deriveIsPast(startsAt: string, endsAt: string | null): boolean {
+  return isEventPast(startsAt, endsAt);
 }
 
 export async function createEvent(
@@ -28,7 +29,6 @@ export async function createEvent(
     location: formData.get("location")?.toString() ?? "",
     cover_image_url: formData.get("cover_image_url")?.toString() ?? "",
     registration_url: formData.get("registration_url")?.toString() ?? "",
-    is_past: formBool(formData.get("is_past")),
   });
 
   if (!parsed.success) {
@@ -36,6 +36,9 @@ export async function createEvent(
   }
 
   const d = parsed.data;
+  const startsIso = new Date(d.starts_at).toISOString();
+  const endsIso = d.ends_at ? new Date(d.ends_at).toISOString() : null;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("events")
@@ -43,12 +46,12 @@ export async function createEvent(
       title: d.title,
       slug: d.slug,
       description: d.description,
-      starts_at: new Date(d.starts_at).toISOString(),
-      ends_at: d.ends_at ? new Date(d.ends_at).toISOString() : null,
+      starts_at: startsIso,
+      ends_at: endsIso,
       location: d.location,
       cover_image_url: d.cover_image_url || null,
       registration_url: d.registration_url || null,
-      is_past: d.is_past,
+      is_past: deriveIsPast(startsIso, endsIso),
     })
     .select("id")
     .single();
@@ -79,7 +82,6 @@ export async function updateEvent(
     location: formData.get("location")?.toString() ?? "",
     cover_image_url: formData.get("cover_image_url")?.toString() ?? "",
     registration_url: formData.get("registration_url")?.toString() ?? "",
-    is_past: formBool(formData.get("is_past")),
   });
 
   if (!parsed.success) {
@@ -87,6 +89,9 @@ export async function updateEvent(
   }
 
   const d = parsed.data;
+  const startsIso = new Date(d.starts_at).toISOString();
+  const endsIso = d.ends_at ? new Date(d.ends_at).toISOString() : null;
+
   const supabase = await createClient();
   const { error } = await supabase
     .from("events")
@@ -94,12 +99,12 @@ export async function updateEvent(
       title: d.title,
       slug: d.slug,
       description: d.description,
-      starts_at: new Date(d.starts_at).toISOString(),
-      ends_at: d.ends_at ? new Date(d.ends_at).toISOString() : null,
+      starts_at: startsIso,
+      ends_at: endsIso,
       location: d.location,
       cover_image_url: d.cover_image_url || null,
       registration_url: d.registration_url || null,
-      is_past: d.is_past,
+      is_past: deriveIsPast(startsIso, endsIso),
     })
     .eq("id", id);
 
@@ -110,20 +115,6 @@ export async function updateEvent(
   revalidatePath("/");
   revalidatePath("/dashboard/admin/events");
   return { success: true };
-}
-
-export async function toggleEventPastForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
-  const id = formData.get("id")?.toString();
-  const isPast = formData.get("is_past")?.toString() === "true";
-  if (!id) return;
-
-  const supabase = await createClient();
-  await supabase.from("events").update({ is_past: !isPast }).eq("id", id);
-
-  revalidatePath("/events");
-  revalidatePath("/");
-  revalidatePath("/dashboard/admin/events");
 }
 
 export async function deleteEventForm(formData: FormData): Promise<void> {

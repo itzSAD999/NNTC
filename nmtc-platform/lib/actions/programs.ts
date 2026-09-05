@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireContentStaff } from "@/lib/auth/permissions";
+import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { programFormSchema } from "@/lib/validation/program";
 
@@ -202,6 +203,12 @@ export async function toggleProgramPublishedForm(formData: FormData): Promise<vo
 
   revalidatePath("/programs");
   revalidatePath("/dashboard/admin/programs");
+  redirectWithNotice(
+    "/dashboard/admin/programs",
+    (row as { is_published: boolean }).is_published
+      ? "unpublished"
+      : "published"
+  );
 }
 
 export async function deleteProgramForm(formData: FormData): Promise<void> {

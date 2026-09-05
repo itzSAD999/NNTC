@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import {
@@ -18,6 +18,14 @@ import type {
   DocumentRequired,
 } from "@/lib/types/expansion";
 import { Button } from "@/components/ui/button";
+import { AdminSectionCard, FormMessage } from "@/components/admin/admin-layout";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,9 +40,7 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: AdmissionsActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 export function AdmissionsEditor({
@@ -50,12 +56,25 @@ export function AdmissionsEditor({
     content.process_steps ?? []
   );
   const [contentState, contentAction] = useFormState(updateAdmissionsContent, {});
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
+
+  useEffect(() => {
+    if (contentState.success) setDirty(false);
+  }, [contentState.success]);
 
   return (
     <div className="space-y-10">
-      <section className="rounded border border-line bg-surface p-6">
-        <h2 className="font-serif text-display-sm">Main content</h2>
-        <form action={contentAction} className="mt-6 space-y-4">
+      <AdminSectionCard
+        title="Main content"
+        description="Saves directly to the public Admissions page. Each section below has its own Save button."
+      >
+        <form
+          action={contentAction}
+          className="space-y-4"
+          {...createUnsavedFormProps(setDirty)}
+        >
           <Message state={contentState} />
 
           <div className="space-y-3">
@@ -68,6 +87,7 @@ export function AdmissionsEditor({
                     const next = [...steps];
                     next[i] = { ...next[i], title: e.target.value };
                     setSteps(next);
+                    setDirty(true);
                   }}
                   placeholder="Step title"
                 />
@@ -77,6 +97,7 @@ export function AdmissionsEditor({
                     const next = [...steps];
                     next[i] = { ...next[i], body: e.target.value };
                     setSteps(next);
+                    setDirty(true);
                   }}
                   rows={2}
                   placeholder="Step description"
@@ -87,7 +108,10 @@ export function AdmissionsEditor({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => setSteps((s) => [...s, { title: "", body: "" }])}
+              onClick={() => {
+                setSteps((s) => [...s, { title: "", body: "" }]);
+                setDirty(true);
+              }}
             >
               Add step
             </Button>
@@ -149,29 +173,30 @@ export function AdmissionsEditor({
             />
           </div>
 
-          <SubmitButton label="Save content" />
+          <StickyFormFooter>
+            <UnsavedChangesLabel show={dirty} />
+            <SubmitButton label="Save content" />
+          </StickyFormFooter>
         </form>
-      </section>
+      </AdminSectionCard>
 
-      <section className="rounded border border-line bg-surface p-6">
-        <h2 className="font-serif text-display-sm">Required documents</h2>
-        <div className="mt-4 space-y-3">
+      <AdminSectionCard title="Required documents">
+        <div className="space-y-3">
           {documents.map((doc) => (
             <DocumentRow key={doc.id} doc={doc} />
           ))}
           <DocumentRow />
         </div>
-      </section>
+      </AdminSectionCard>
 
-      <section className="rounded border border-line bg-surface p-6">
-        <h2 className="font-serif text-display-sm">FAQs</h2>
-        <div className="mt-4 space-y-3">
+      <AdminSectionCard title="FAQs">
+        <div className="space-y-3">
           {faqs.map((faq) => (
             <FaqRow key={faq.id} faq={faq} />
           ))}
           <FaqRow />
         </div>
-      </section>
+      </AdminSectionCard>
     </div>
   );
 }
@@ -200,12 +225,13 @@ function DocumentRow({ doc }: { doc?: DocumentRequired }) {
         <Message state={state} />
       </form>
       {doc ? (
-        <form action={deleteDocumentForm} className="mt-2">
-          <input type="hidden" name="id" value={doc.id} />
-          <Button type="submit" variant="ghost" size="sm">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteDocumentForm}
+          confirmMessage="Remove this required document from the admissions page?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: doc.id }}
+          variant="ghost"
+        />
       ) : null}
     </div>
   );
@@ -232,12 +258,13 @@ function FaqRow({ faq }: { faq?: AdmissionsFaq }) {
         <Message state={state} />
       </form>
       {faq ? (
-        <form action={deleteFaqForm} className="mt-2">
-          <input type="hidden" name="id" value={faq.id} />
-          <Button type="submit" variant="ghost" size="sm">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteFaqForm}
+          confirmMessage="Delete this FAQ?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: faq.id }}
+          variant="ghost"
+        />
       ) : null}
     </div>
   );

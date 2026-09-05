@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 
+import { PageSection } from "@/components/layout/page-section";
+
 import { EventCard } from "@/components/marketing/event-card";
 import type { CollegeEvent } from "@/lib/types/expansion";
 import { formatShortDate } from "@/lib/utils/format";
@@ -41,12 +43,15 @@ export function EventsListing({
   }
 
   return (
-    <div className="section-grid space-y-16 py-12 md:py-16">
+    <PageSection bordered={false} className="space-y-16">
       <section aria-labelledby="upcoming-events-heading">
         <div className="hairline-b flex flex-wrap items-end justify-between gap-4 pb-4">
-          <h2 id="upcoming-events-heading" className="font-serif text-display-md">
-            Upcoming events
-          </h2>
+          <div>
+            <p className="section-eyebrow">Campus &amp; community</p>
+            <h2 id="upcoming-events-heading" className="mt-2 font-serif text-display-md">
+              Upcoming events
+            </h2>
+          </div>
           <div className="flex gap-2">
             <button
               type="button"
@@ -131,7 +136,7 @@ export function EventsListing({
             id="past-events-heading"
             className="hairline-b pb-4 font-serif text-display-md"
           >
-            Past events
+            Past events archive
           </h2>
           <ul className="mt-8 divide-y divide-line rounded border border-line bg-surface">
             {past.map((e) => (
@@ -149,6 +154,6 @@ export function EventsListing({
           </ul>
         </section>
       ) : null}
-    </div>
+    </PageSection>
   );
 }

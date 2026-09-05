@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireWorkflowMfa } from "@/lib/auth/mfa";
 import { requireStaffSession, hasStaffRole } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -57,8 +58,13 @@ async function applyTransition(
 
   if (!transition) {
     return {
-      error: `This action is not allowed from status "${request.status}".`,
+      error: `This action is not available for the current request status.`,
     };
+  }
+
+  const mfa = await requireWorkflowMfa(session.staff.role as Role);
+  if (!mfa.ok) {
+    return { error: mfa.error };
   }
 
   if (transition.requiresNote && (!note || note.trim().length < 5)) {

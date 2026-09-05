@@ -10,7 +10,7 @@ export function EventCard({ event }: { event: CollegeEvent }) {
   const date = formatShortDate(event.starts_at);
 
   return (
-    <article className="flex flex-col overflow-hidden rounded border border-line bg-surface transition-shadow hover:shadow-sm">
+    <article className="institutional-card flex flex-col overflow-hidden">
       <Link href={`/events/${event.slug}`} className="relative block aspect-[16/9] bg-bg">
         {cover ? (
           <Image src={cover} alt="" fill className="object-cover" sizes="33vw" />

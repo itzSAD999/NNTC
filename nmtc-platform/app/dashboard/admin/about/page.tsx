@@ -1,1 +1,3 @@
-export { default } from "./admin-about-page";
+import AdminAboutPage from "./admin-about-page";
+
+export default AdminAboutPage;

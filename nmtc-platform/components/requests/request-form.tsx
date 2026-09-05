@@ -11,6 +11,7 @@ import {
   validateReceiptFile,
   type RequestFormValues,
 } from "@/lib/validation/request";
+import { TurnstileWidget } from "@/components/security/turnstile-widget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,7 @@ export function RequestForm({
   const [serverError, setServerError] = useState<string | null>(null);
   const [receiptError, setReceiptError] = useState<string | null>(null);
   const [receiptName, setReceiptName] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   const {
     register,
@@ -60,6 +62,9 @@ export function RequestForm({
     });
     if (file) {
       formData.append("receipt", file);
+    }
+    if (turnstileToken) {
+      formData.append("cf-turnstile-response", turnstileToken);
     }
 
     startTransition(async () => {
@@ -282,6 +287,11 @@ export function RequestForm({
           <p className="text-xs text-danger">{receiptError}</p>
         ) : null}
       </div>
+
+      <TurnstileWidget
+        onToken={setTurnstileToken}
+        onExpire={() => setTurnstileToken("")}
+      />
 
       <Button type="submit" disabled={pending || !supabaseReady} className="w-full sm:w-auto">
         {pending ? "Submitting…" : "Submit request"}

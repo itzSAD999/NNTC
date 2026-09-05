@@ -18,7 +18,7 @@ export function NewsCard({ post, featured = false }: NewsCardProps) {
 
   return (
     <article
-      className={`group flex flex-col overflow-hidden rounded border border-line bg-surface transition-shadow hover:shadow-sm ${
+      className={`institutional-card group flex flex-col overflow-hidden ${
         featured ? "md:col-span-2 md:grid md:grid-cols-2" : ""
       }`}
     >

@@ -1,5 +1,6 @@
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SiteUtilityBar } from "@/components/layout/site-utility-bar";
 import type { Settings } from "@/types/database";
 
 interface SiteShellProps {
@@ -17,6 +18,7 @@ export function SiteShell({ settings, children }: SiteShellProps) {
       >
         Skip to main content
       </a>
+      <SiteUtilityBar />
       <SiteHeader settings={settings} />
       <main id="main-content" className="flex-1" tabIndex={-1}>
         {children}

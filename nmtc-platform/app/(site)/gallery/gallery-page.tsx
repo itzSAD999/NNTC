@@ -6,7 +6,7 @@ import { getGalleryAlbums } from "@/lib/data/gallery";
 import { getSettings } from "@/lib/data/settings";
 
 interface GalleryPageProps {
-  searchParams: { album?: string };
+  searchParams: Promise<{ album?: string }>;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+  const sp = await searchParams;
   const [albums, settings] = await Promise.all([
     getGalleryAlbums(),
     getSettings(),
@@ -30,7 +31,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
         title="Gallery"
         description={`Campus life, events, and activities at ${settings.college_name}.`}
       />
-      <GalleryGrid albums={albums} initialAlbumSlug={searchParams.album} />
+      <GalleryGrid albums={albums} initialAlbumSlug={sp.album} />
     </>
   );
 }

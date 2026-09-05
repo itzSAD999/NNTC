@@ -136,7 +136,7 @@ export default function StyleGuidePage() {
               <p className="mb-2 text-xs uppercase tracking-widest text-muted-foreground">
                 Mono · reference numbers
               </p>
-              <p className="ref-mono text-ink">NMTC-TR-2026-0042</p>
+              <p className="ref-mono text-ink">NMTC-A1B2C3D4E5F6</p>
               <p className="ref-mono mt-1 text-sm text-muted-foreground">
                 21 Jun 2026 · 14:32 GMT
               </p>
@@ -191,7 +191,7 @@ export default function StyleGuidePage() {
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Reference</span>
-                  <span className="ref-mono">NMTC-TR-2026-0042</span>
+                  <span className="ref-mono">NMTC-A1B2C3D4E5F6</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Status</span>

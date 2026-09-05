@@ -26,3 +26,6 @@ export const STORAGE_BUCKETS = {
   publicAssets: "public-assets",
   documents: "documents",
 } as const;
+
+/** Short-lived signed URL for private receipt viewing (seconds). */
+export const RECEIPT_SIGNED_URL_TTL_SECONDS = 60;

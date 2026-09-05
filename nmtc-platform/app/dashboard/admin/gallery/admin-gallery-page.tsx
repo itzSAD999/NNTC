@@ -1,20 +1,29 @@
-import { GalleryEditor } from "@/components/admin/gallery-editor";
+import Link from "next/link";
+
+import { NewAlbumForm } from "@/components/admin/gallery-album-editor";
+import { GalleryList } from "@/components/admin/gallery-list";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { listGalleryAlbums } from "@/lib/data/admin-gallery";
+import { Button } from "@/components/ui/button";
 
 export default async function AdminGalleryPage() {
   await requireContentStaff();
   const albums = await listGalleryAlbums();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Gallery CMS</h1>
-        <p className="mt-2 text-caption">
-          Manage albums and upload images or video links.
-        </p>
-      </header>
-      <GalleryEditor albums={albums} />
-    </div>
+    <AdminListShell
+      section="gallery"
+      action={
+        <Button asChild variant="outline">
+          <Link href="#new-album">New album</Link>
+        </Button>
+      }
+    >
+      <GalleryList albums={albums} />
+      <div id="new-album">
+        <NewAlbumForm />
+      </div>
+    </AdminListShell>
   );
 }

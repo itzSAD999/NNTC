@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { STORAGE_BUCKETS } from "@/lib/constants";
+import { RECEIPT_SIGNED_URL_TTL_SECONDS, STORAGE_BUCKETS } from "@/lib/constants";
+import { receiptObjectPath } from "@/lib/storage/receipts";
 import type { RequestStatus } from "@/lib/constants";
 import type { Request, RequestEvent } from "@/types/database";
 
@@ -58,16 +59,13 @@ export async function getRequestById(id: string): Promise<RequestDetail | null> 
 export async function getReceiptSignedUrl(
   receiptUrl: string | null
 ): Promise<string | null> {
-  if (!receiptUrl) return null;
-
-  const path = receiptUrl.startsWith(`${STORAGE_BUCKETS.receipts}/`)
-    ? receiptUrl.slice(`${STORAGE_BUCKETS.receipts}/`.length)
-    : receiptUrl;
+  const path = receiptObjectPath(receiptUrl);
+  if (!path) return null;
 
   const supabase = await createClient();
   const { data, error } = await supabase.storage
     .from(STORAGE_BUCKETS.receipts)
-    .createSignedUrl(path, 3600);
+    .createSignedUrl(path, RECEIPT_SIGNED_URL_TTL_SECONDS);
 
   if (error || !data?.signedUrl) return null;
   return data.signedUrl;

@@ -6,13 +6,14 @@ import { getProgramBySlug } from "@/lib/data/programs";
 import { getSettings } from "@/lib/data/settings";
 
 interface ProgramDetailPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: ProgramDetailPageProps): Promise<Metadata> {
-  const program = await getProgramBySlug(params.slug);
+  const { slug } = await params;
+  const program = await getProgramBySlug(slug);
   const settings = await getSettings();
 
   if (!program) {
@@ -26,7 +27,8 @@ export async function generateMetadata({
 }
 
 export default async function ProgramDetailPage({ params }: ProgramDetailPageProps) {
-  const program = await getProgramBySlug(params.slug);
+  const { slug } = await params;
+  const program = await getProgramBySlug(slug);
 
   if (!program) {
     notFound();

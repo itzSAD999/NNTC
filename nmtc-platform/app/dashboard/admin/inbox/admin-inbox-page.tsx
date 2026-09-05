@@ -1,4 +1,5 @@
 import { InboxView } from "@/components/admin/inbox-view";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireInboxStaff } from "@/lib/auth/permissions";
 import { listContactMessages } from "@/lib/data/admin-inbox";
 
@@ -7,15 +8,8 @@ export default async function AdminInboxPage() {
   const messages = await listContactMessages();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Contact inbox</h1>
-        <p className="mt-2 text-caption">
-          Messages submitted through the public contact form.
-        </p>
-      </header>
-
+    <AdminListShell section="inbox">
       <InboxView messages={messages} />
-    </div>
+    </AdminListShell>
   );
 }

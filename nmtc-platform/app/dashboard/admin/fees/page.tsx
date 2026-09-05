@@ -1,1 +1,3 @@
-export { default } from "./admin-fees-page";
+import AdminFeesPage from "./admin-fees-page";
+
+export default AdminFeesPage;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import {
@@ -19,6 +20,14 @@ import type {
   Scholarship,
 } from "@/lib/types/expansion";
 import { Button } from "@/components/ui/button";
+import { AdminSectionCard, FormMessage } from "@/components/admin/admin-layout";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,9 +42,7 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: FeesActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 export function FeesEditor({
@@ -52,12 +59,23 @@ export function FeesEditor({
   programs: { id: string; name: string }[];
 }) {
   const [contentState, contentAction] = useFormState(updateFinancialAidContent, {});
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
+
+  useEffect(() => {
+    if (contentState.success) setDirty(false);
+  }, [contentState.success]);
 
   return (
     <div className="space-y-10">
       <section className="rounded border border-line bg-surface p-6">
         <h2 className="font-serif text-display-sm">Policies & schedules</h2>
-        <form action={contentAction} className="mt-6 space-y-4">
+        <form
+          action={contentAction}
+          className="mt-6 space-y-4"
+          {...createUnsavedFormProps(setDirty)}
+        >
           <Message state={contentState} />
           <div className="space-y-2">
             <Label htmlFor="payment_schedule">Payment schedule</Label>
@@ -86,7 +104,10 @@ export function FeesEditor({
               defaultValue={content?.hardship_policy ?? ""}
             />
           </div>
-          <SubmitButton label="Save policies" />
+          <StickyFormFooter>
+            <UnsavedChangesLabel show={dirty} />
+            <SubmitButton label="Save policies" />
+          </StickyFormFooter>
         </form>
       </section>
 
@@ -174,12 +195,13 @@ function FeeRow({
         </div>
       </form>
       {fee ? (
-        <form action={deleteFeeForm} className="mt-2">
-          <input type="hidden" name="id" value={fee.id} />
-          <Button type="submit" variant="ghost" size="sm">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteFeeForm}
+          confirmMessage="Delete this fee row?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: fee.id }}
+          variant="ghost"
+        />
       ) : null}
     </div>
   );
@@ -206,12 +228,13 @@ function PaymentMethodRow({ method }: { method?: PaymentMethod }) {
         </div>
       </form>
       {method ? (
-        <form action={deletePaymentMethodForm} className="mt-2">
-          <input type="hidden" name="id" value={method.id} />
-          <Button type="submit" variant="ghost" size="sm">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deletePaymentMethodForm}
+          confirmMessage="Delete this payment method?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: method.id }}
+          variant="ghost"
+        />
       ) : null}
     </div>
   );
@@ -255,12 +278,13 @@ function ScholarshipRow({ scholarship }: { scholarship?: Scholarship }) {
         </div>
       </form>
       {scholarship ? (
-        <form action={deleteScholarshipForm} className="mt-2">
-          <input type="hidden" name="id" value={scholarship.id} />
-          <Button type="submit" variant="ghost" size="sm">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteScholarshipForm}
+          confirmMessage="Delete this scholarship entry?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: scholarship.id }}
+          variant="ghost"
+        />
       ) : null}
     </div>
   );

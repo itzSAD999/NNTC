@@ -33,37 +33,37 @@ export function SiteFooter({ settings }: SiteFooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-line bg-surface">
+    <footer className="mt-auto border-t border-line bg-primary-deep text-white">
       <div className="section-grid py-12">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <p className="font-serif text-display-sm text-ink">
+            <p className="font-serif text-display-sm text-white">
               {settings.college_name}
             </p>
             {settings.motto ? (
-              <p className="mt-3 max-w-md text-sm text-caption">
+              <p className="mt-3 max-w-md text-sm text-white/75">
                 {settings.motto}
               </p>
             ) : null}
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+            <p className="text-xs font-medium uppercase tracking-widest text-white/60">
               Contact
             </p>
-            <ul className="mt-4 space-y-2 text-sm text-caption">
+            <ul className="mt-4 space-y-2 text-sm text-white/75">
               {settings.address ? (
                 <li className="flex gap-2">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/50" aria-hidden />
                   <span>{settings.address}</span>
                 </li>
               ) : null}
               {settings.phone_main ? (
                 <li className="flex gap-2">
-                  <Phone className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <Phone className="h-4 w-4 shrink-0 text-white/50" aria-hidden />
                   <a
                     href={`tel:${settings.phone_main}`}
-                    className="hover:text-ink"
+                    className="hover:text-white"
                   >
                     {settings.phone_main}
                   </a>
@@ -71,10 +71,10 @@ export function SiteFooter({ settings }: SiteFooterProps) {
               ) : null}
               {settings.email_main ? (
                 <li className="flex gap-2">
-                  <Mail className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  <Mail className="h-4 w-4 shrink-0 text-white/50" aria-hidden />
                   <a
                     href={`mailto:${settings.email_main}`}
-                    className="hover:text-ink"
+                    className="hover:text-white"
                   >
                     {settings.email_main}
                   </a>
@@ -87,7 +87,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
           </div>
 
           <nav aria-label="Footer navigation">
-            <p className="text-xs font-medium uppercase tracking-widest text-primary">
+            <p className="text-xs font-medium uppercase tracking-widest text-white/60">
               Quick links
             </p>
             <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2">
@@ -95,7 +95,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
                 <li key={href}>
                   <Link
                     href={href}
-                    className="text-sm text-caption transition-colors hover:text-ink"
+                    className="text-sm text-white/75 transition-colors hover:text-white"
                   >
                     {label}
                   </Link>
@@ -115,7 +115,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="text-caption hover:text-primary"
+                className="text-white/75 hover:text-white"
               >
                 <Facebook className="h-5 w-5" />
               </a>
@@ -126,7 +126,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="text-caption hover:text-primary"
+                className="text-white/75 hover:text-white"
               >
                 <Instagram className="h-5 w-5" />
               </a>
@@ -137,7 +137,7 @@ export function SiteFooter({ settings }: SiteFooterProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="X (Twitter)"
-                className="text-caption hover:text-primary"
+                className="text-white/75 hover:text-white"
               >
                 <span className="text-sm font-semibold">𝕏</span>
               </a>
@@ -145,8 +145,8 @@ export function SiteFooter({ settings }: SiteFooterProps) {
           </div>
         )}
 
-        <div className="hairline mt-10 pt-6">
-          <p className="text-xs text-caption">
+        <div className="mt-10 border-t border-white/15 pt-6">
+          <p className="text-xs text-white/60">
             © {year} {settings.college_name}. All rights reserved.
           </p>
         </div>

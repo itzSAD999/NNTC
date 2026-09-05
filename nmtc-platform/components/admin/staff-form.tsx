@@ -12,6 +12,20 @@ import {
 import { slugify } from "@/lib/utils/slug";
 import type { Department, StaffProfile } from "@/lib/types/expansion";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import {
+  FieldHint,
+  SlugField,
+  SortOrderLabel,
+} from "@/components/admin/admin-help";
+import { FormMessage } from "@/components/admin/admin-layout";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
+import { PUBLISH_HINT } from "@/lib/admin/page-guides";
 import { TiptapEditor } from "@/components/cms/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,9 +41,7 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: StaffActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 export function StaffForm({
@@ -45,14 +57,25 @@ export function StaffForm({
   const [slug, setSlug] = useState(profile?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(profile?.slug));
   const [photoUrl, setPhotoUrl] = useState(profile?.photo_url ?? "");
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
 
   useEffect(() => {
     if (!slugTouched && name) setSlug(slugify(name));
   }, [name, slugTouched]);
 
+  useEffect(() => {
+    if (state.success) setDirty(false);
+  }, [state.success]);
+
   return (
     <div className="space-y-6">
-      <form action={formAction} className="max-w-2xl space-y-6">
+      <form
+        action={formAction}
+        className="max-w-2xl space-y-6"
+        {...createUnsavedFormProps(setDirty)}
+      >
         {profile ? <input type="hidden" name="id" value={profile.id} /> : null}
         <Message state={state} />
 
@@ -67,17 +90,14 @@ export function StaffForm({
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              name="slug"
+          <div className="space-y-2 sm:col-span-2">
+            <SlugField
               value={slug}
-              onChange={(e) => {
+              basePath="/faculty"
+              onChange={(value) => {
                 setSlugTouched(true);
-                setSlug(e.target.value);
+                setSlug(value);
               }}
-              required
             />
           </div>
           <div className="space-y-2">
@@ -123,7 +143,7 @@ export function StaffForm({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="sort_order">Sort order</Label>
+            <SortOrderLabel htmlFor="sort_order" />
             <Input
               id="sort_order"
               name="sort_order"
@@ -132,16 +152,19 @@ export function StaffForm({
               defaultValue={profile?.sort_order ?? 0}
             />
           </div>
-          <div className="flex items-center gap-2 sm:col-span-2">
-            <input
-              type="checkbox"
-              id="is_published"
-              name="is_published"
-              value="true"
-              defaultChecked={profile?.is_published ?? false}
-              className="h-4 w-4"
-            />
-            <Label htmlFor="is_published">Published</Label>
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <label className="flex items-center gap-2 text-sm" htmlFor="is_published">
+              <input
+                type="checkbox"
+                id="is_published"
+                name="is_published"
+                value="true"
+                defaultChecked={profile?.is_published ?? false}
+                className="h-4 w-4"
+              />
+              Published on public site
+            </label>
+            <FieldHint>{PUBLISH_HINT}</FieldHint>
           </div>
         </div>
 
@@ -150,7 +173,10 @@ export function StaffForm({
           label="Photo"
           value={photoUrl}
           folder="staff"
-          onChange={setPhotoUrl}
+          onChange={(value) => {
+            setPhotoUrl(value);
+            setDirty(true);
+          }}
         />
 
         <div className="space-y-2">
@@ -158,16 +184,19 @@ export function StaffForm({
           <TiptapEditor name="bio" defaultValue={profile?.bio ?? ""} />
         </div>
 
-        <SubmitButton label={profile ? "Save changes" : "Create profile"} />
+        <StickyFormFooter>
+          <UnsavedChangesLabel show={dirty} />
+          <SubmitButton label={profile ? "Save changes" : "Create profile"} />
+        </StickyFormFooter>
       </form>
 
       {profile ? (
-        <form action={deleteStaffForm} className="max-w-2xl pt-4">
-          <input type="hidden" name="id" value={profile.id} />
-          <Button type="submit" variant="outline" className="text-danger">
-            Delete profile
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteStaffForm}
+          confirmMessage="Delete this staff profile permanently? This cannot be undone."
+          buttonLabel="Delete profile"
+          hiddenFields={{ id: profile.id }}
+        />
       ) : null}
     </div>
   );

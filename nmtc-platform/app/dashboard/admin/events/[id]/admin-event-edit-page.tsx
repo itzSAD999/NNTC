@@ -1,26 +1,29 @@
 import { notFound } from "next/navigation";
 
 import { EventForm } from "@/components/admin/event-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { getEventForEdit } from "@/lib/data/admin-events";
 
 export default async function AdminEventEditPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   await requireContentStaff();
-  const event = await getEventForEdit(params.id);
+  const { id } = await params;
+  const event = await getEventForEdit(id);
 
   if (!event) notFound();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Edit event</h1>
-        <p className="mt-2 text-caption">{event.title}</p>
-      </header>
+    <AdminEditShell
+      listHref="/dashboard/admin/events"
+      listLabel="Events"
+      title="Edit event"
+      subtitle={event.title}
+    >
       <EventForm event={event} />
-    </div>
+    </AdminEditShell>
   );
 }

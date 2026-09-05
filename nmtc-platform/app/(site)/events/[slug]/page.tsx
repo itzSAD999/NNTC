@@ -1,1 +1,3 @@
-export { default } from "./event-detail-page";
+import EventDetailPage from "./event-detail-page";
+
+export default EventDetailPage;

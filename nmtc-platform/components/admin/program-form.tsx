@@ -12,6 +12,20 @@ import {
 import { slugify } from "@/lib/utils/slug";
 import type { Department, ProgramDetail } from "@/lib/types/expansion";
 import { TiptapEditor } from "@/components/cms/tiptap-editor";
+import {
+  FieldHint,
+  SlugField,
+  SortOrderLabel,
+} from "@/components/admin/admin-help";
+import { FormMessage } from "@/components/admin/admin-layout";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
+import { PUBLISH_HINT } from "@/lib/admin/page-guides";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,9 +40,7 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: ProgramActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 type ModuleRow = { year_label: string; modules: string; sort_order: number };
@@ -51,14 +63,25 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
       sort_order: m.sort_order,
     })) ?? [{ year_label: "Year 1", modules: "", sort_order: 1 }]
   );
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
 
   useEffect(() => {
     if (!slugTouched && name) setSlug(slugify(name));
   }, [name, slugTouched]);
 
+  useEffect(() => {
+    if (state.success) setDirty(false);
+  }, [state.success]);
+
   return (
     <div className="space-y-6">
-      <form action={formAction} className="space-y-6">
+      <form
+        action={formAction}
+        className="space-y-6"
+        {...createUnsavedFormProps(setDirty)}
+      >
         {program ? <input type="hidden" name="id" value={program.id} /> : null}
         <Message state={state} />
 
@@ -73,17 +96,14 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              name="slug"
+          <div className="space-y-2 sm:col-span-2">
+            <SlugField
               value={slug}
-              onChange={(e) => {
+              basePath="/programs"
+              onChange={(value) => {
                 setSlugTouched(true);
-                setSlug(e.target.value);
+                setSlug(value);
               }}
-              required
             />
           </div>
           <div className="space-y-2">
@@ -121,7 +141,7 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="sort_order">Sort order</Label>
+            <SortOrderLabel htmlFor="sort_order" />
             <Input
               id="sort_order"
               name="sort_order"
@@ -131,12 +151,16 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="cutoff_points">Cut-off points</Label>
+            <Label htmlFor="cutoff_points">Cut-off points (WASSCE)</Label>
             <Input
               id="cutoff_points"
               name="cutoff_points"
               defaultValue={program?.cutoff_points ?? ""}
             />
+            <FieldHint>
+              Optional. Shown on the programme page if filled in — e.g. aggregate
+              score required for admission.
+            </FieldHint>
           </div>
         </div>
 
@@ -160,7 +184,13 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
         </div>
 
         <div className="space-y-3">
-          <Label>Curriculum by year</Label>
+          <div>
+            <Label>Curriculum by year</Label>
+            <FieldHint>
+              List modules for each year, separated by commas. Use Add year for
+              each additional year of study.
+            </FieldHint>
+          </div>
           {modules.map((row, index) => (
             <div
               key={index}
@@ -172,6 +202,7 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
                   const next = [...modules];
                   next[index] = { ...next[index], year_label: e.target.value };
                   setModules(next);
+                  setDirty(true);
                 }}
                 placeholder="Year 1"
               />
@@ -181,6 +212,7 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
                   const next = [...modules];
                   next[index] = { ...next[index], modules: e.target.value };
                   setModules(next);
+                  setDirty(true);
                 }}
                 placeholder="Module A, Module B"
               />
@@ -195,6 +227,7 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
                     sort_order: Number(e.target.value),
                   };
                   setModules(next);
+                  setDirty(true);
                 }}
               />
             </div>
@@ -203,7 +236,7 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() =>
+            onClick={() => {
               setModules((m) => [
                 ...m,
                 {
@@ -211,8 +244,9 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
                   modules: "",
                   sort_order: m.length + 1,
                 },
-              ])
-            }
+              ]);
+              setDirty(true);
+            }}
           >
             Add year
           </Button>
@@ -229,26 +263,33 @@ export function ProgramForm({ departments, program }: ProgramFormProps) {
           />
         </div>
 
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            name="is_published"
-            value="true"
-            defaultChecked={program?.is_published ?? false}
-          />
-          Published on public site
+        <label className="flex max-w-md flex-col gap-1 text-sm">
+          <span className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="is_published"
+              value="true"
+              defaultChecked={program?.is_published ?? false}
+            />
+            Published on public site
+          </span>
+          <FieldHint>{PUBLISH_HINT}</FieldHint>
         </label>
 
-        <SubmitButton label={program ? "Save changes" : "Create programme"} />
+        <StickyFormFooter>
+          <UnsavedChangesLabel show={dirty} />
+          <SubmitButton label={program ? "Save changes" : "Create programme"} />
+        </StickyFormFooter>
       </form>
 
       {program ? (
-        <form action={deleteProgramForm}>
-          <input type="hidden" name="id" value={program.id} />
-          <Button type="submit" variant="destructive">
-            Delete programme
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteProgramForm}
+          confirmMessage="Delete this programme permanently? This cannot be undone."
+          buttonLabel="Delete programme"
+          hiddenFields={{ id: program.id }}
+          variant="destructive"
+        />
       ) : null}
     </div>
   );

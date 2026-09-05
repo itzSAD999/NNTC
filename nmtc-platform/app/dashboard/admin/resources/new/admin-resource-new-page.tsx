@@ -1,15 +1,18 @@
 import { ResourceForm } from "@/components/admin/resource-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 
 export default async function AdminResourceNewPage() {
   await requireContentStaff();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">New resource</h1>
-      </header>
+    <AdminEditShell
+      listHref="/dashboard/admin/resources"
+      listLabel="Resources"
+      title="New resource"
+      subtitle="Upload a document for the public Resources page."
+    >
       <ResourceForm />
-    </div>
+    </AdminEditShell>
   );
 }

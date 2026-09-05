@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import { AuditLogTable } from "@/components/admin/audit-log";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { LoadingState } from "@/components/ui/loading-state";
 import { requireSuperAdmin } from "@/lib/auth/permissions";
 import {
@@ -11,16 +12,16 @@ import {
 import type { RequestStatus } from "@/lib/constants";
 
 type PageProps = {
-  searchParams: {
+  searchParams: Promise<{
     month?: string;
     status?: string;
     actor?: string;
-  };
+  }>;
 };
 
 export default async function AdminAuditPage({ searchParams }: PageProps) {
   await requireSuperAdmin();
-  const params = searchParams;
+  const params = await searchParams;
 
   const filters: AuditFilters = {
     month: params.month,
@@ -34,15 +35,7 @@ export default async function AdminAuditPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Audit log</h1>
-        <p className="mt-2 text-caption">
-          Full request workflow history — read-only. Filter by month, status, or
-          actor.
-        </p>
-      </header>
-
+    <AdminListShell section="audit">
       <Suspense fallback={<LoadingState label="Loading audit events…" />}>
         <AuditLogTable
           events={events}
@@ -54,6 +47,6 @@ export default async function AdminAuditPage({ searchParams }: PageProps) {
           }}
         />
       </Suspense>
-    </div>
+    </AdminListShell>
   );
 }

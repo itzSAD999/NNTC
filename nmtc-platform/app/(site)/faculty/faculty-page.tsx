@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { FacultyDirectory } from "@/components/marketing/faculty-directory";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader, PageSection } from "@/components/layout";
 import { getDepartmentsForFilter, getPublishedStaff } from "@/lib/data/staff";
 import { getSettings } from "@/lib/data/settings";
 
@@ -27,9 +27,9 @@ export default async function FacultyPage() {
         title="Staff & Lecturers"
         description={`Faculty and professional staff at ${settings.college_name}.`}
       />
-      <div className="section-grid py-12 md:py-16">
+      <PageSection bordered={false}>
         <FacultyDirectory staff={staff} departments={departments} />
-      </div>
+      </PageSection>
     </>
   );
 }

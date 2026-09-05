@@ -57,7 +57,7 @@ Repeat for `academic`, `accounts`, `principal`, and `content_editor` roles as ne
 
 ### Storage buckets
 
-Migrations create `receipts`, `media`, `staff`, `documents` buckets. Confirm in Supabase → Storage.
+Migrations create **`receipts`** (private), **`public-assets`** (public), and **`documents`** (public). Confirm in Supabase → Storage. See `docs/SECURITY.md` for what belongs in each bucket.
 
 ### Auth redirect URLs
 
@@ -67,6 +67,10 @@ Supabase → Authentication → URL Configuration:
 |---------|-------|
 | Site URL | `https://nmtc.edu.gh` (or your domain) |
 | Redirect URLs | `https://nmtc.edu.gh/**`, `https://*.vercel.app/**` |
+
+### MFA (production)
+
+Enable TOTP in Supabase → Authentication → MFA for staff, especially `super_admin`, `principal`, and `accounts`. Details in `docs/SECURITY.md`.
 
 ---
 
@@ -89,39 +93,46 @@ Supabase → Authentication → URL Configuration:
 
 ## 3. Vercel deployment
 
+Your repo: [github.com/itzSAD999/NNTC](https://github.com/itzSAD999/NNTC) — the Next.js app lives in **`nmtc-platform/`**, not the repo root.
+
 ### Option A — Git integration (recommended)
 
-1. Push `nmtc-platform` to GitHub.
-2. Vercel → **Add New Project** → Import repository.
-3. Set **Root Directory** to `nmtc-platform` if the repo root is the parent folder.
-4. Framework preset: **Next.js** (auto-detected).
+1. Push `main` to GitHub.
+2. [Vercel](https://vercel.com) → **Add New Project** → Import **itzSAD999/NNTC**.
+3. **Root Directory:** click **Edit** → set to `nmtc-platform` (required).
+4. Framework: **Next.js** (auto-detected). Build command: `npm run build`.
+5. Deploy. Add environment variables (below), then **Redeploy**.
 
 ### Option B — Vercel CLI
 
 ```bash
 npm i -g vercel
 cd nmtc-platform
-vercel
+vercel link
 vercel --prod
 ```
 
-### Environment variables (Vercel → Settings → Environment Variables)
+### Environment variables (Vercel → Project → Settings → Environment Variables)
 
-Set for **Production** (and Preview if desired):
+Set for **Production** (and **Preview** if you want staging):
 
-| Variable | Required | Example |
-|----------|----------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Yes | `https://xxxx.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | `eyJ...` |
-| `SUPABASE_SERVICE_ROLE_KEY` | Yes | `eyJ...` (server only — never expose) |
-| `NEXT_PUBLIC_SITE_URL` | Yes | `https://nmtc.edu.gh` |
-| `RESEND_API_KEY` | Yes | `re_...` |
-| `EMAIL_FROM` | Yes | `NMTC <no-reply@nmtc.edu.gh>` |
-| `CONTACT_INBOX_EMAIL` | Yes | `info@nmtc.edu.gh` |
+| Variable | Required | Notes |
+|----------|----------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Public anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Server only — request submit + receipt upload |
+| `NEXT_PUBLIC_SITE_URL` | Yes | `https://your-domain.gh` or `https://your-project.vercel.app` until custom domain is live |
+| `RESEND_API_KEY` | Yes | Resend API key |
+| `EMAIL_FROM` | Yes | e.g. `NMTC <no-reply@nmtc.edu.gh>` (verified domain) |
+| `CONTACT_INBOX_EMAIL` | Yes | College inbox for contact form |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Yes (prod) | Cloudflare Turnstile site key |
+| `TURNSTILE_SECRET_KEY` | Yes (prod) | Turnstile secret — server only |
 
-Optional fallback: `EMAIL_MAIN` if `CONTACT_INBOX_EMAIL` is unset (settings `email_main` is also used).
+Optional: `EMAIL_MAIN` if `CONTACT_INBOX_EMAIL` is unset.
 
-Redeploy after adding variables.
+**Important:** `SUPABASE_SERVICE_ROLE_KEY` and `TURNSTILE_SECRET_KEY` must not be prefixed with `NEXT_PUBLIC_`.
+
+After changing env vars, trigger **Redeploy** from the Deployments tab.
 
 ---
 
@@ -155,25 +166,28 @@ Use `docs/HAPPY_PATH_CHECKLIST.md` for a step-by-step verification:
 
 ## 6. Post-deploy checks
 
-- [ ] `/login` — staff can sign in
-- [ ] `/request` — submit works; email received
-- [ ] `/request/track?ref=...` — status updates after workflow steps
+- [ ] `/login` — staff can sign in (active `staff_accounts` row)
+- [ ] `/request` — submit works; Turnstile passes; confirmation email received
+- [ ] `/request/track?ref=...` — status lookup works
+- [ ] `/contact` — message saved + inbox email
 - [ ] `/dashboard/admin/settings` — branding saves
-- [ ] `/news` — published posts visible
-- [ ] Receipt signed URLs load for staff on request detail
-- [ ] Audit log shows workflow events
+- [ ] Receipt on request detail loads (signed URL; refresh if link expires)
+- [ ] Workflow actions work for academic → accounts → principal
+- [ ] Audit log shows events
 
----
+See also `docs/HAPPY_PATH_CHECKLIST.md` and `docs/SECURITY.md`.
 
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
-| Emails not sending | Check `RESEND_API_KEY`, verified domain, Vercel env vars |
-| Request submit fails | `SUPABASE_SERVICE_ROLE_KEY` must be set on Vercel |
-| Staff login fails | User exists in Auth + matching `staff_accounts` row with `is_active = true` |
-| Images broken | Add Supabase storage hostname in `next.config.mjs` `remotePatterns` |
-| OneDrive build errors | Delete `.next` locally before build |
+| Build fails on Vercel | Root Directory must be `nmtc-platform` |
+| Emails not sending | `RESEND_API_KEY`, verified domain, env on Production |
+| Request submit fails | `SUPABASE_SERVICE_ROLE_KEY` on Vercel; run `supabase db push` |
+| Contact/request blocked | Set Turnstile keys in production env |
+| Staff login fails | Auth user + `staff_accounts` with `is_active = true` |
+| MFA blocks workflow | Enroll MFA in Supabase; sign in with second factor |
+| Images broken | Supabase host in `next.config.mjs` `remotePatterns` |
 
 ---
 

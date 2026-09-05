@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireContentStaff } from "@/lib/auth/permissions";
+import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { postFormSchema } from "@/lib/validation/post";
 
@@ -137,14 +138,42 @@ export async function togglePostPublishedForm(
   formData: FormData
 ): Promise<void> {
   const id = formData.get("id")?.toString() ?? "";
+  await requireContentStaff();
+  const supabase = await createClient();
+  const { data: post } = await supabase
+    .from("posts")
+    .select("published_at")
+    .eq("id", id)
+    .single();
+  const wasPublished = Boolean(
+    (post as { published_at: string | null } | null)?.published_at
+  );
   await togglePostPublished(id);
+  redirectWithNotice(
+    "/dashboard/admin/news",
+    wasPublished ? "unpublished" : "published"
+  );
 }
 
 export async function togglePostPinnedForm(
   formData: FormData
 ): Promise<void> {
   const id = formData.get("id")?.toString() ?? "";
+  await requireContentStaff();
+  const supabase = await createClient();
+  const { data: post } = await supabase
+    .from("posts")
+    .select("is_pinned")
+    .eq("id", id)
+    .single();
+  const wasPinned = Boolean(
+    (post as { is_pinned: boolean } | null)?.is_pinned
+  );
   await togglePostPinned(id);
+  redirectWithNotice(
+    "/dashboard/admin/news",
+    wasPinned ? "unpinned" : "pinned"
+  );
 }
 
 export async function deletePostForm(formData: FormData): Promise<void> {

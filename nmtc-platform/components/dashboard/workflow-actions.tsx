@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 import {
   academicApprove,
@@ -12,6 +12,7 @@ import {
   rejectReceipt,
   type WorkflowActionState,
 } from "@/lib/actions/request-workflow";
+import { getWorkflowUiActions } from "@/lib/requests/transitions";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,15 +25,6 @@ interface WorkflowActionsProps {
   role: Role;
 }
 
-type ActionKind =
-  | "academic_approve"
-  | "academic_send_back"
-  | "confirm_payment"
-  | "reject_receipt"
-  | "principal_approve"
-  | "principal_send_back"
-  | "mark_collected";
-
 export function WorkflowActions({
   requestId,
   status,
@@ -40,38 +32,36 @@ export function WorkflowActions({
 }: WorkflowActionsProps) {
   const [pending, startTransition] = useTransition();
   const [note, setNote] = useState("");
-  const [showNoteFor, setShowNoteFor] = useState<ActionKind | null>(null);
+  const [noteActionId, setNoteActionId] = useState<string | null>(null);
   const [message, setMessage] = useState<WorkflowActionState | null>(null);
 
-  const isSuper = role === "super_admin";
+  const actions = useMemo(
+    () => getWorkflowUiActions(status, role),
+    [status, role]
+  );
 
-  const canAcademic = role === "academic" || isSuper;
-  const canAccounts = role === "accounts" || isSuper;
-  const canPrincipal = role === "principal" || isSuper;
-  const canCollect =
-    role === "academic" ||
-    role === "accounts" ||
-    role === "principal" ||
-    isSuper;
+  const handlers: Record<string, () => Promise<WorkflowActionState>> = {
+    academic_approve: () => academicApprove(requestId),
+    send_back: () =>
+      status === "payment_confirmed"
+        ? principalSendBack(requestId, note)
+        : academicSendBack(requestId, note),
+    confirm_payment: () => confirmPayment(requestId),
+    reject_receipt: () => rejectReceipt(requestId, note),
+    principal_approve: () => principalApprove(requestId),
+    mark_collected: () => markCollected(requestId),
+  };
 
-  async function run(action: ActionKind) {
+  function run(actionId: string) {
     setMessage(null);
-
-    const handlers: Record<ActionKind, () => Promise<WorkflowActionState>> = {
-      academic_approve: () => academicApprove(requestId),
-      academic_send_back: () => academicSendBack(requestId, note),
-      confirm_payment: () => confirmPayment(requestId),
-      reject_receipt: () => rejectReceipt(requestId, note),
-      principal_approve: () => principalApprove(requestId),
-      principal_send_back: () => principalSendBack(requestId, note),
-      mark_collected: () => markCollected(requestId),
-    };
+    const handler = handlers[actionId];
+    if (!handler) return;
 
     startTransition(async () => {
-      const result = await handlers[action]();
+      const result = await handler();
       setMessage(result);
       if (result.success) {
-        setShowNoteFor(null);
+        setNoteActionId(null);
         setNote("");
       }
     });
@@ -92,76 +82,29 @@ export function WorkflowActions({
         </p>
       ) : null}
 
-      {status === "submitted" && canAcademic ? (
+      {actions.length > 0 ? (
         <div className="flex flex-wrap gap-2">
-          <Button
-            disabled={pending}
-            onClick={() => run("academic_approve")}
-          >
-            Approve &amp; forward
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={pending}
-            onClick={() =>
-              setShowNoteFor(
-                showNoteFor === "academic_send_back" ? null : "academic_send_back"
-              )
-            }
-          >
-            Send back
-          </Button>
+          {actions.map((action) => (
+            <Button
+              key={action.id}
+              type="button"
+              variant={action.variant}
+              disabled={pending}
+              onClick={() => {
+                if (action.requiresNote) {
+                  setNoteActionId(noteActionId === action.id ? null : action.id);
+                } else {
+                  run(action.id);
+                }
+              }}
+            >
+              {action.label}
+            </Button>
+          ))}
         </div>
       ) : null}
 
-      {status === "academic_approved" && canAccounts ? (
-        <div className="flex flex-wrap gap-2">
-          <Button disabled={pending} onClick={() => run("confirm_payment")}>
-            Confirm payment
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            disabled={pending}
-            onClick={() =>
-              setShowNoteFor(
-                showNoteFor === "reject_receipt" ? null : "reject_receipt"
-              )
-            }
-          >
-            Reject receipt
-          </Button>
-        </div>
-      ) : null}
-
-      {status === "payment_confirmed" && canPrincipal ? (
-        <div className="flex flex-wrap gap-2">
-          <Button disabled={pending} onClick={() => run("principal_approve")}>
-            Approve
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={pending}
-            onClick={() =>
-              setShowNoteFor(
-                showNoteFor === "principal_send_back" ? null : "principal_send_back"
-              )
-            }
-          >
-            Send back to Academic
-          </Button>
-        </div>
-      ) : null}
-
-      {status === "approved" && canCollect ? (
-        <Button disabled={pending} onClick={() => run("mark_collected")}>
-          Mark collected
-        </Button>
-      ) : null}
-
-      {showNoteFor ? (
+      {noteActionId ? (
         <div className="space-y-3 border-t border-line pt-4">
           <Label htmlFor="workflow-note">Note to student *</Label>
           <Textarea
@@ -173,7 +116,7 @@ export function WorkflowActions({
           />
           <Button
             disabled={pending || note.trim().length < 5}
-            onClick={() => run(showNoteFor)}
+            onClick={() => run(noteActionId)}
           >
             {pending ? "Submitting…" : "Submit with note"}
           </Button>

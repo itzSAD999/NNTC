@@ -1,5 +1,6 @@
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
-import { navItemsForRole } from "@/lib/auth/navigation";
+import { DevRoleSwitcher } from "@/components/dashboard/dev-role-switcher";
+import { getDevPreviewState } from "@/lib/auth/dev-preview-actions";
 import { requireStaffSession } from "@/lib/auth/session";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -16,10 +17,21 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }>) {
   const session = await requireStaffSession();
-  const navItems = navItemsForRole(session.staff.role);
+  const devPreview = await getDevPreviewState();
 
   return (
     <div className="flex min-h-screen flex-col bg-bg lg:flex-row">
+      {devPreview.enabled ? (
+        <div className="w-full lg:fixed lg:left-0 lg:right-0 lg:top-0 lg:z-[60]">
+          <DevRoleSwitcher
+            currentRole={devPreview.currentRole}
+            options={devPreview.options}
+          />
+        </div>
+      ) : null}
+      <div
+        className={`flex min-h-screen w-full flex-col lg:flex-row${devPreview.enabled ? " lg:pt-[7.5rem]" : ""}`}
+      >
       <a
         href="#dashboard-main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink focus:shadow-md focus:outline-none focus:ring-2 focus:ring-ring"
@@ -27,7 +39,7 @@ export default async function DashboardLayout({
         Skip to dashboard content
       </a>
       <DashboardSidebar
-        items={navItems}
+        role={session.staff.role}
         staffName={session.staff.full_name}
         roleLabel={ROLE_LABELS[session.staff.role] ?? session.staff.role}
       />
@@ -37,6 +49,7 @@ export default async function DashboardLayout({
         tabIndex={-1}
       >
         {children}
+      </div>
       </div>
     </div>
   );

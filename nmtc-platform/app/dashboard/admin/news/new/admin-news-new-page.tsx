@@ -1,17 +1,18 @@
 import { PostForm } from "@/components/admin/post-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 
 export default async function AdminNewsNewPage() {
   await requireContentStaff();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">New post</h1>
-        <p className="mt-2 text-caption">Create a news article for the site.</p>
-      </header>
-
+    <AdminEditShell
+      listHref="/dashboard/admin/news"
+      listLabel="News"
+      title="New post"
+      subtitle="Create a news article for the public site."
+    >
       <PostForm />
-    </div>
+    </AdminEditShell>
   );
 }

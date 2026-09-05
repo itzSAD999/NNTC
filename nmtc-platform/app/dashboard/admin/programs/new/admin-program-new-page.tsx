@@ -1,4 +1,5 @@
 import { ProgramForm } from "@/components/admin/program-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { listDepartments } from "@/lib/data/admin-programs";
 
@@ -7,11 +8,13 @@ export default async function AdminProgramNewPage() {
   const departments = await listDepartments();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">New programme</h1>
-      </header>
+    <AdminEditShell
+      listHref="/dashboard/admin/programs"
+      listLabel="Programmes"
+      title="New programme"
+      subtitle="Create a nursing or midwifery programme for the public site."
+    >
       <ProgramForm departments={departments} />
-    </div>
+    </AdminEditShell>
   );
 }

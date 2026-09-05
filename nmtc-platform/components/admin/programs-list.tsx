@@ -1,70 +1,195 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense, useMemo, useState } from "react";
 
 import { toggleProgramPublishedForm } from "@/lib/actions/programs";
 import type { ProgramWithDepartment } from "@/lib/types/expansion";
-import { Button } from "@/components/ui/button";
+import {
+  matchesPublishFilter,
+  matchesSearch,
+  uniqueSorted,
+} from "@/lib/admin/list-filters";
+import { CmsStatusBadge } from "@/components/admin/cms-status-badge";
+import {
+  AdminListFilterBar,
+  useAdminListFilters,
+} from "@/components/admin/admin-list-filters";
+import { AdminListToast } from "@/components/admin/admin-list-toast";
+import {
+  AdminListResults,
+  AdminMobileCard,
+} from "@/components/admin/admin-responsive-list";
+import {
+  AdminTable,
+  AdminTableHead,
+  AdminTableTh,
+} from "@/components/admin/admin-layout";
+import { PublicLinkPreview } from "@/components/admin/admin-help";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
 
-export function ProgramsList({ programs }: { programs: ProgramWithDepartment[] }) {
+function ProgramActions({ program }: { program: ProgramWithDepartment }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <form action={toggleProgramPublishedForm}>
+        <input type="hidden" name="id" value={program.id} />
+        <Button type="submit" size="sm" variant="outline">
+          {program.is_published ? "Unpublish" : "Publish"}
+        </Button>
+      </form>
+      <Button asChild size="sm" variant="ghost">
+        <Link href={`/dashboard/admin/programs/${program.id}`}>Edit</Link>
+      </Button>
+    </div>
+  );
+}
+
+function ProgramsListContent({ programs }: { programs: ProgramWithDepartment[] }) {
+  const filters = useAdminListFilters();
+  const departments = useMemo(
+    () =>
+      uniqueSorted(
+        programs.map((p) => p.department?.name).filter(Boolean) as string[]
+      ),
+    [programs]
+  );
+
+  const filtered = useMemo(() => {
+    return programs.filter((program) => {
+      if (
+        !matchesSearch(filters.search, [
+          program.name,
+          program.slug,
+          program.department?.name,
+        ])
+      ) {
+        return false;
+      }
+      if (!matchesPublishFilter(filters.status, program.is_published)) {
+        return false;
+      }
+      if (
+        filters.category !== "all" &&
+        program.department?.name !== filters.category
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [programs, filters.search, filters.status, filters.category]);
+
+  if (programs.length === 0) {
+    return (
+      <EmptyState message="No programmes yet. Create your first programme." />
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button asChild>
-          <Link href="/dashboard/admin/programs/new">New programme</Link>
-        </Button>
-      </div>
+      <AdminListFilterBar
+        search={filters.search}
+        onSearchChange={filters.setSearch}
+        status={filters.status}
+        onStatusChange={filters.setStatus}
+        category={filters.category}
+        onCategoryChange={filters.setCategory}
+        categoryLabel="Department"
+        categoryOptions={departments.map((d) => ({ value: d, label: d }))}
+        searchPlaceholder="Search programmes…"
+        total={programs.length}
+        filtered={filtered.length}
+      />
 
-      {programs.length === 0 ? (
-        <EmptyState message="No programmes yet. Create your first programme." />
+      {filtered.length === 0 ? (
+        <EmptyState message="No programmes match your filters." />
       ) : (
-        <div className="overflow-x-auto rounded border border-line bg-surface">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-line text-xs uppercase tracking-widest text-caption">
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Department</th>
-                <th className="px-4 py-3 font-medium">Order</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {programs.map((program) => (
-                <tr key={program.id} className="border-b border-line last:border-0">
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/dashboard/admin/programs/${program.id}`}
-                      className="font-medium text-primary hover:underline"
-                    >
-                      {program.name}
-                    </Link>
-                    <p className="text-xs text-caption">/{program.slug}</p>
-                  </td>
-                  <td className="px-4 py-3 text-caption">
-                    {program.department?.name ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 ref-mono text-caption">
-                    {program.sort_order}
-                  </td>
-                  <td className="px-4 py-3 text-caption">
-                    {program.is_published ? "Published" : "Draft"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <form action={toggleProgramPublishedForm}>
-                      <input type="hidden" name="id" value={program.id} />
-                      <Button type="submit" size="sm" variant="outline">
-                        {program.is_published ? "Unpublish" : "Publish"}
-                      </Button>
-                    </form>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AdminListResults
+          table={
+            <AdminTable minWidth="720px">
+              <AdminTableHead>
+                <AdminTableTh>Name</AdminTableTh>
+                <AdminTableTh>Department</AdminTableTh>
+                <AdminTableTh>Order</AdminTableTh>
+                <AdminTableTh>Status</AdminTableTh>
+                <AdminTableTh>Actions</AdminTableTh>
+              </AdminTableHead>
+              <tbody>
+                {filtered.map((program) => (
+                  <tr
+                    key={program.id}
+                    className="border-b border-line last:border-0"
+                  >
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/dashboard/admin/programs/${program.id}`}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        {program.name}
+                      </Link>
+                      <PublicLinkPreview
+                        basePath="/programs"
+                        slug={program.slug}
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-caption">
+                      {program.department?.name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 ref-mono text-caption">
+                      {program.sort_order}
+                    </td>
+                    <td className="px-4 py-3">
+                      <CmsStatusBadge published={program.is_published} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <ProgramActions program={program} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </AdminTable>
+          }
+          cards={filtered.map((program) => (
+            <AdminMobileCard key={program.id}>
+              <div className="space-y-3">
+                <div>
+                  <Link
+                    href={`/dashboard/admin/programs/${program.id}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {program.name}
+                  </Link>
+                  <PublicLinkPreview
+                    basePath="/programs"
+                    slug={program.slug}
+                  />
+                </div>
+                <p className="text-xs text-caption">
+                  {program.department?.name ?? "No department"} · Order{" "}
+                  {program.sort_order}
+                </p>
+                <CmsStatusBadge published={program.is_published} />
+                <ProgramActions program={program} />
+              </div>
+            </AdminMobileCard>
+          ))}
+        />
       )}
     </div>
+  );
+}
+
+export function ProgramsList({
+  programs,
+}: {
+  programs: ProgramWithDepartment[];
+}) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <AdminListToast />
+      </Suspense>
+      <ProgramsListContent programs={programs} />
+    </>
   );
 }

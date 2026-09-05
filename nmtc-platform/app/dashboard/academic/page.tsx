@@ -1,1 +1,3 @@
-export { default } from "./academic-dashboard-page";
+import AcademicDashboardPage from "./academic-dashboard-page";
+
+export default AcademicDashboardPage;

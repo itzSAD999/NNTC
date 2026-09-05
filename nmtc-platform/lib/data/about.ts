@@ -79,8 +79,8 @@ export async function getAccreditations(): Promise<Accreditation[]> {
       .select("id, body_name, accreditation_no, logo_url, sort_order")
       .order("sort_order", { ascending: true });
 
-    if (error || !data) {
-      return [];
+    if (error || !data || data.length === 0) {
+      return DEFAULT_ACCREDITATIONS;
     }
 
     return data as Accreditation[];

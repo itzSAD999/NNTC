@@ -1,1 +1,3 @@
-export { default } from "./principal-dashboard-page";
+import PrincipalDashboardPage from "./principal-dashboard-page";
+
+export default PrincipalDashboardPage;

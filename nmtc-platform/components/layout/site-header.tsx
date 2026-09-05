@@ -1,23 +1,22 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  flattenSiteNav,
+  isGroupActive,
+  isNavActive,
+  isNavGroup,
+  SITE_NAV,
+} from "@/components/layout/site-nav";
 import { cn } from "@/lib/utils";
 import { getStoragePublicUrl } from "@/lib/utils/format";
 import type { Settings } from "@/types/database";
-
-const NAV_LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/programs", label: "Programmes" },
-  { href: "/admissions", label: "Admissions" },
-  { href: "/news", label: "News" },
-  { href: "/events", label: "Events" },
-  { href: "/contact", label: "Contact" },
-] as const;
 
 interface SiteHeaderProps {
   settings: Settings;
@@ -25,12 +24,16 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ settings }: SiteHeaderProps) {
   const [open, setOpen] = useState(false);
+  const [campusOpen, setCampusOpen] = useState(false);
+  const pathname = usePathname();
   const logoUrl = getStoragePublicUrl(settings.logo_url);
   const shortName = settings.college_name
     .split(" ")
     .map((w) => w[0])
     .join("")
     .slice(0, 4);
+
+  const mobileLinks = flattenSiteNav();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -39,48 +42,115 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
     };
   }, [open]);
 
+  useEffect(() => {
+    setCampusOpen(false);
+    setOpen(false);
+  }, [pathname]);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-surface/95 backdrop-blur-sm">
-      <div className="section-grid flex h-16 items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-line bg-surface/98 backdrop-blur-md">
+      <div className="section-grid flex h-[4.25rem] items-center justify-between gap-4">
         <Link
           href="/"
-          className="flex items-center gap-3 font-serif text-lg font-medium text-ink transition-colors hover:text-primary"
+          className="flex min-w-0 items-center gap-3 text-ink transition-colors hover:text-primary"
         >
           {logoUrl ? (
             <Image
               src={logoUrl}
               alt=""
-              width={36}
-              height={36}
-              className="h-9 w-9 object-contain"
+              width={40}
+              height={40}
+              className="h-10 w-10 shrink-0 object-contain"
             />
           ) : (
             <span
               aria-hidden="true"
-              className="flex h-9 w-9 items-center justify-center rounded border border-line bg-bg text-xs font-semibold text-primary"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-line bg-bg text-xs font-semibold text-primary"
             >
               {shortName}
             </span>
           )}
-          <span className="hidden sm:inline">NMTC</span>
+          <span className="min-w-0 leading-tight">
+            <span className="block font-serif text-base font-medium md:text-lg">
+              NMTC
+            </span>
+            <span className="hidden text-[0.65rem] uppercase tracking-[0.14em] text-caption lg:block">
+              Nursing &amp; Midwifery Training College
+            </span>
+          </span>
         </Link>
 
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-6 lg:flex"
+          className="hidden items-center gap-0.5 lg:flex"
         >
-          {NAV_LINKS.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="rounded text-sm text-caption transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              {label}
-            </Link>
-          ))}
+          {SITE_NAV.map((item) => {
+            if (isNavGroup(item)) {
+              const active = isGroupActive(pathname, item.items);
+              return (
+                <div
+                  key={item.label}
+                  className="relative"
+                  onMouseEnter={() => setCampusOpen(true)}
+                  onMouseLeave={() => setCampusOpen(false)}
+                >
+                  <button
+                    type="button"
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      active
+                        ? "bg-bg text-ink"
+                        : "text-caption hover:bg-bg hover:text-ink"
+                    )}
+                    aria-expanded={campusOpen}
+                    aria-haspopup="true"
+                    onClick={() => setCampusOpen((v) => !v)}
+                  >
+                    {item.label}
+                    <ChevronDown className="h-4 w-4" aria-hidden />
+                  </button>
+                  {campusOpen ? (
+                    <div className="absolute left-0 top-full z-50 min-w-[15rem] border border-line bg-surface py-2 shadow-md">
+                      {item.items.map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className={cn(
+                            "block px-4 py-2.5 text-sm transition-colors hover:bg-bg",
+                            isNavActive(pathname, link.href)
+                              ? "font-medium text-ink"
+                              : "text-caption"
+                          )}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              );
+            }
+
+            const active = isNavActive(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "rounded px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  active
+                    ? "bg-bg text-ink"
+                    : "text-caption hover:bg-bg hover:text-ink"
+                )}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button asChild size="sm" className="hidden sm:inline-flex">
             <Link href="/request">Request a Document</Link>
           </Button>
@@ -107,17 +177,26 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
       >
         <nav aria-label="Mobile navigation" className="section-grid py-4">
           <ul className="flex flex-col gap-1">
-            {NAV_LINKS.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="block min-h-11 rounded px-3 py-2.5 text-sm text-ink hover:bg-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  onClick={() => setOpen(false)}
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
+            {mobileLinks.map(({ href, label }) => {
+              const active = isNavActive(pathname, href);
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={cn(
+                      "block min-h-11 rounded px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      active
+                        ? "bg-bg font-medium text-ink"
+                        : "text-caption hover:bg-bg hover:text-ink"
+                    )}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
             <li className="mt-2 border-t border-line pt-3">
               <Button asChild className="w-full">
                 <Link href="/request" onClick={() => setOpen(false)}>

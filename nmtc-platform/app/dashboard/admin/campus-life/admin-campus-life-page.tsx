@@ -1,4 +1,5 @@
 import { CampusEditor } from "@/components/admin/campus-editor";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { listCampusSections } from "@/lib/data/admin-campus";
 
@@ -7,14 +8,8 @@ export default async function AdminCampusLifePage() {
   const sections = await listCampusSections();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Campus life CMS</h1>
-        <p className="mt-2 text-caption">
-          Edit campus life sections — overview, accommodation, dining, and more.
-        </p>
-      </header>
+    <AdminListShell section="campus-life">
       <CampusEditor sections={sections} />
-    </div>
+    </AdminListShell>
   );
 }

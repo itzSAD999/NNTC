@@ -1,1 +1,3 @@
-export { default } from "./accounts-dashboard-page";
+import AccountsDashboardPage from "./accounts-dashboard-page";
+
+export default AccountsDashboardPage;

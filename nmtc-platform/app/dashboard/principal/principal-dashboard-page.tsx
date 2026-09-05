@@ -5,6 +5,7 @@ import {
 } from "@/lib/data/dashboard-requests";
 import { PrincipalSummaryStrip } from "@/components/dashboard/principal-summary-strip";
 import { RequestQueue } from "@/components/dashboard/request-queue";
+import { RequestWorkflowGuide } from "@/components/dashboard/request-workflow-guide";
 
 export default async function PrincipalDashboardPage() {
   await requireStaffRole(["principal"]);
@@ -23,6 +24,8 @@ export default async function PrincipalDashboardPage() {
       </header>
 
       <PrincipalSummaryStrip stats={stats} />
+
+      <RequestWorkflowGuide highlight="principal" />
 
       <RequestQueue
         requests={requests}

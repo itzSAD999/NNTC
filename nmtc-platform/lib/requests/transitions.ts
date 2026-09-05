@@ -70,3 +70,84 @@ export function findTransition(
     ) ?? null
   );
 }
+
+export type WorkflowUiAction = {
+  id: string;
+  label: string;
+  variant: "default" | "outline" | "destructive";
+  requiresNote: boolean;
+  toStatus: RequestStatus;
+};
+
+const UI_BY_ACTION: Record<
+  string,
+  Omit<WorkflowUiAction, "toStatus"> & { toStatus: RequestStatus }
+> = {
+  academic_approved: {
+    id: "academic_approve",
+    label: "Approve & forward",
+    variant: "default",
+    requiresNote: false,
+    toStatus: "academic_approved",
+  },
+    sent_back: {
+    id: "send_back",
+    label: "Send back",
+    variant: "outline",
+    requiresNote: true,
+    toStatus: "returned",
+  },
+  payment_confirmed: {
+    id: "confirm_payment",
+    label: "Confirm payment",
+    variant: "default",
+    requiresNote: false,
+    toStatus: "payment_confirmed",
+  },
+  rejected_receipt: {
+    id: "reject_receipt",
+    label: "Reject receipt",
+    variant: "destructive",
+    requiresNote: true,
+    toStatus: "returned",
+  },
+  principal_approved: {
+    id: "principal_approve",
+    label: "Approve",
+    variant: "default",
+    requiresNote: false,
+    toStatus: "approved",
+  },
+  collected: {
+    id: "mark_collected",
+    label: "Mark collected",
+    variant: "default",
+    requiresNote: false,
+    toStatus: "collected",
+  },
+};
+
+/** Legal next actions for the staff UI — mirrors enforce_request_transition() in the DB. */
+export function getWorkflowUiActions(
+  currentStatus: RequestStatus,
+  role: Role
+): WorkflowUiAction[] {
+  const seen = new Set<string>();
+  const actions: WorkflowUiAction[] = [];
+
+  for (const t of WORKFLOW_TRANSITIONS) {
+    if (!t.from.includes(currentStatus)) continue;
+    if (role !== "super_admin" && !t.roles.includes(role)) continue;
+
+    const ui = UI_BY_ACTION[t.action];
+    if (!ui || seen.has(ui.id)) continue;
+    seen.add(ui.id);
+    const label =
+      t.action === "sent_back" && currentStatus === "payment_confirmed"
+        ? "Send back to Academic"
+        : ui.label;
+    actions.push({ ...ui, label });
+  }
+
+  return actions;
+}

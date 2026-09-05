@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProgramCard } from "@/components/marketing/program-card";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader, PageSection } from "@/components/layout";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getPublishedPrograms } from "@/lib/data/programs";
 import { getSettings } from "@/lib/data/settings";
@@ -26,7 +26,7 @@ export default async function ProgramsPage() {
         description="Explore our accredited nursing and midwifery programmes — duration, qualifications, and curriculum."
       />
 
-      <div className="section-grid py-12 md:py-16">
+      <PageSection bordered={false}>
         {programs.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2">
             {programs.map((program) => (
@@ -47,7 +47,7 @@ export default async function ProgramsPage() {
             }
           />
         )}
-      </div>
+      </PageSection>
     </>
   );
 }

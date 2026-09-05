@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import { submitContactMessage } from "@/lib/actions/contact";
 import { CONTACT_SUBJECTS } from "@/lib/validation/contact";
+import { TurnstileWidget } from "@/components/security/turnstile-widget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +22,7 @@ function SubmitButton() {
 
 export function ContactForm() {
   const [state, formAction] = useFormState(submitContactMessage, {});
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   if (state.success) {
     return (
@@ -133,6 +136,12 @@ export function ContactForm() {
           <p className="text-xs text-danger">{state.fieldErrors.message}</p>
         ) : null}
       </div>
+
+      <TurnstileWidget
+        onToken={setTurnstileToken}
+        onExpire={() => setTurnstileToken("")}
+      />
+      <input type="hidden" name="cf-turnstile-response" value={turnstileToken} />
 
       <SubmitButton />
     </form>

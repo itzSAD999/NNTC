@@ -18,6 +18,7 @@ export const EVENT_LABELS: Record<string, string> = {
   payment_confirmed: "Payment confirmed",
   rejected_receipt: "Receipt needs attention",
   principal_approved: "Final approval granted",
+  resubmitted: "Corrections submitted",
   notified: "You were notified by email",
   collected: "Document collected",
 };
@@ -32,6 +33,7 @@ export const STAFF_EVENT_LABELS: Record<string, string> = {
 /** Actions visible on the student track timeline (no internal notes). */
 export const PUBLIC_EVENT_ACTIONS = new Set([
   "submitted",
+  "resubmitted",
   "academic_approved",
   "sent_back",
   "payment_confirmed",

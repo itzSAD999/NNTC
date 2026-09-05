@@ -123,6 +123,9 @@ export function RequestDetailView({
               >
                 Open full size
               </a>
+              <p className="mt-2 text-xs text-caption">
+                Link expires in about one minute. Refresh the page if it stops loading.
+              </p>
             </div>
           ) : (
             <p className="mt-4 text-sm text-caption">Receipt unavailable.</p>

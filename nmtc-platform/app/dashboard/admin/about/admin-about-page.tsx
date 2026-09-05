@@ -1,4 +1,5 @@
 import { AboutEditor } from "@/components/admin/about-editor";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { getAboutForEdit } from "@/lib/data/admin-about";
 
@@ -7,14 +8,8 @@ export default async function AdminAboutPage() {
   const data = await getAboutForEdit();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">About CMS</h1>
-        <p className="mt-2 text-caption">
-          Edit about content, accreditations, and organisation structure.
-        </p>
-      </header>
+    <AdminListShell section="about">
       <AboutEditor data={data} />
-    </div>
+    </AdminListShell>
   );
 }

@@ -6,13 +6,14 @@ import { getEventBySlug } from "@/lib/data/events";
 import { getSettings } from "@/lib/data/settings";
 
 interface EventDetailPageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: EventDetailPageProps): Promise<Metadata> {
-  const event = await getEventBySlug(params.slug);
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
   const settings = await getSettings();
 
   if (!event) {
@@ -26,7 +27,8 @@ export async function generateMetadata({
 }
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
-  const event = await getEventBySlug(params.slug);
+  const { slug } = await params;
+  const event = await getEventBySlug(slug);
 
   if (!event) {
     notFound();

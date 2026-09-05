@@ -1,20 +1,25 @@
+import Link from "next/link";
+
 import { ProgramsList } from "@/components/admin/programs-list";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { listAllPrograms } from "@/lib/data/admin-programs";
+import { Button } from "@/components/ui/button";
 
 export default async function AdminProgramsPage() {
   await requireContentStaff();
   const programs = await listAllPrograms();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Programmes CMS</h1>
-        <p className="mt-2 text-caption">
-          Create and publish nursing and midwifery programmes.
-        </p>
-      </header>
+    <AdminListShell
+      section="programs"
+      action={
+        <Button asChild>
+          <Link href="/dashboard/admin/programs/new">New programme</Link>
+        </Button>
+      }
+    >
       <ProgramsList programs={programs} />
-    </div>
+    </AdminListShell>
   );
 }

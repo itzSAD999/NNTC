@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import {
@@ -11,18 +11,20 @@ import {
 } from "@/lib/actions/resources";
 import type { Resource } from "@/lib/types/expansion";
 import { DocumentUploadField } from "@/components/admin/document-upload-field";
+import { FormMessage } from "@/components/admin/admin-layout";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const CATEGORIES = [
-  "Handbook",
-  "Timetable",
-  "Health Guidelines",
-  "Forms",
-  "Academic Calendar",
-] as const;
+import { RESOURCE_CATEGORIES } from "@/lib/validation/resource";
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -34,19 +36,28 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: ResourceActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 export function ResourceForm({ resource }: { resource?: Resource }) {
   const action = resource ? updateResource : createResource;
   const [state, formAction] = useFormState(action, {});
   const [fileUrl, setFileUrl] = useState(resource?.file_url ?? "");
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
+
+  useEffect(() => {
+    if (state.success) setDirty(false);
+  }, [state.success]);
 
   return (
     <div className="space-y-6">
-      <form action={formAction} className="max-w-2xl space-y-6">
+      <form
+        action={formAction}
+        className="max-w-2xl space-y-6"
+        {...createUnsavedFormProps(setDirty)}
+      >
         {resource ? <input type="hidden" name="id" value={resource.id} /> : null}
         <Message state={state} />
 
@@ -60,11 +71,11 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
             <select
               id="category"
               name="category"
-              defaultValue={resource?.category ?? CATEGORIES[0]}
+              defaultValue={resource?.category ?? RESOURCE_CATEGORIES[0]}
               className="flex h-10 w-full rounded border border-line bg-bg px-3 text-sm"
               required
             >
-              {CATEGORIES.map((c) => (
+              {RESOURCE_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>
@@ -98,7 +109,10 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
           name="file_url"
           label="Document file"
           value={fileUrl}
-          onChange={setFileUrl}
+          onChange={(value) => {
+            setFileUrl(value);
+            setDirty(true);
+          }}
         />
 
         <div className="space-y-2">
@@ -111,16 +125,19 @@ export function ResourceForm({ resource }: { resource?: Resource }) {
           />
         </div>
 
-        <SubmitButton label={resource ? "Save changes" : "Create resource"} />
+        <StickyFormFooter>
+          <UnsavedChangesLabel show={dirty} />
+          <SubmitButton label={resource ? "Save changes" : "Create resource"} />
+        </StickyFormFooter>
       </form>
 
       {resource ? (
-        <form action={deleteResourceForm} className="max-w-2xl pt-4">
-          <input type="hidden" name="id" value={resource.id} />
-          <Button type="submit" variant="outline" className="text-danger">
-            Delete resource
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteResourceForm}
+          confirmMessage="Delete this resource permanently? This cannot be undone."
+          buttonLabel="Delete resource"
+          hiddenFields={{ id: resource.id }}
+        />
       ) : null}
     </div>
   );

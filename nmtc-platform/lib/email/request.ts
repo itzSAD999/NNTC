@@ -69,6 +69,7 @@ export async function sendRequestReturnedEmail(data: {
 }) {
   const branding = await getEmailBranding();
   const trackUrl = `${branding.siteUrl}/request/track?ref=${encodeURIComponent(data.referenceNo)}`;
+  const resubmitUrl = `${branding.siteUrl}/request/resubmit?ref=${encodeURIComponent(data.referenceNo)}`;
   const title =
     data.context === "receipt_rejected"
       ? "Receipt needs attention"
@@ -83,9 +84,12 @@ export async function sendRequestReturnedEmail(data: {
     emailParagraph(intro),
     reasonBox(data.reason, branding.accentColor),
     emailParagraph(
-      "Please review the message above and contact the college or resubmit as instructed."
+      "Please review the message above, then resubmit with corrections using the button below."
     ),
-    emailButton(trackUrl, "Track your request", branding.primaryColor),
+    emailButton(resubmitUrl, "Resubmit corrections", branding.primaryColor),
+    emailParagraph(
+      `Or ${emailLink(trackUrl, "track your request", branding.primaryColor)} to check status.`
+    ),
   ].join("");
 
   return sendEmail({

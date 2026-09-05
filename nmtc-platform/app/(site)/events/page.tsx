@@ -1,1 +1,3 @@
-export { default } from "./events-page";
+import EventsPage from "./events-page";
+
+export default EventsPage;

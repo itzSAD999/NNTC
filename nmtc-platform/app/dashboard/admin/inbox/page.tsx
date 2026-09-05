@@ -1,1 +1,3 @@
-export { default } from "./admin-inbox-page";
+import AdminInboxPage from "./admin-inbox-page";
+
+export default AdminInboxPage;

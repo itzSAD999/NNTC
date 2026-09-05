@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
 
+import {
+  getDevBypassRole,
+  getDevBypassSession,
+  isAuthBypassEnabled,
+} from "@/lib/auth/dev-bypass";
 import { createClient } from "@/lib/supabase/server";
 import type { Role } from "@/lib/constants";
 import type { StaffAccount } from "@/types/database";
@@ -11,6 +16,10 @@ export type StaffSession = {
 };
 
 export async function getStaffSession(): Promise<StaffSession | null> {
+  if (isAuthBypassEnabled()) {
+    return getDevBypassSession(await getDevBypassRole());
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

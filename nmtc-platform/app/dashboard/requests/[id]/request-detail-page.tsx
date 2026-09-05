@@ -8,10 +8,11 @@ import type { Role } from "@/lib/constants";
 export default async function RequestDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await requireStaffSession();
-  const request = await getRequestById(params.id);
+  const request = await getRequestById(id);
 
   if (!request) {
     notFound();

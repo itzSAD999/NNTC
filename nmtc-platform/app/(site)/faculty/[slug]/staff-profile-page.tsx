@@ -6,13 +6,14 @@ import { getStaffBySlug } from "@/lib/data/staff";
 import { getSettings } from "@/lib/data/settings";
 
 interface StaffProfilePageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: StaffProfilePageProps): Promise<Metadata> {
-  const profile = await getStaffBySlug(params.slug);
+  const { slug } = await params;
+  const profile = await getStaffBySlug(slug);
   const settings = await getSettings();
 
   if (!profile) {
@@ -26,7 +27,8 @@ export async function generateMetadata({
 }
 
 export default async function StaffProfilePage({ params }: StaffProfilePageProps) {
-  const profile = await getStaffBySlug(params.slug);
+  const { slug } = await params;
+  const profile = await getStaffBySlug(slug);
 
   if (!profile) {
     notFound();

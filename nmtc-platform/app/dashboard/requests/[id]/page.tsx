@@ -1,1 +1,3 @@
-export { default } from "./request-detail-page";
+import RequestDetailPage from "./request-detail-page";
+
+export default RequestDetailPage;

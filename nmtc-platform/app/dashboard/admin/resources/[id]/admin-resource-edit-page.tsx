@@ -1,26 +1,29 @@
 import { notFound } from "next/navigation";
 
 import { ResourceForm } from "@/components/admin/resource-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { getResourceForEdit } from "@/lib/data/admin-resources";
 
 export default async function AdminResourceEditPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   await requireContentStaff();
-  const resource = await getResourceForEdit(params.id);
+  const { id } = await params;
+  const resource = await getResourceForEdit(id);
 
   if (!resource) notFound();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Edit resource</h1>
-        <p className="mt-2 text-caption">{resource.title}</p>
-      </header>
+    <AdminEditShell
+      listHref="/dashboard/admin/resources"
+      listLabel="Resources"
+      title="Edit resource"
+      subtitle={resource.title}
+    >
       <ResourceForm resource={resource} />
-    </div>
+    </AdminEditShell>
   );
 }

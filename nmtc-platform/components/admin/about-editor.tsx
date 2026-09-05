@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import {
@@ -13,6 +13,14 @@ import {
 } from "@/lib/actions/about";
 import type { AboutAdminData } from "@/lib/data/admin-about";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { AdminSectionCard, FormMessage } from "@/components/admin/admin-layout";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
 import { TiptapEditor } from "@/components/cms/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,9 +37,7 @@ function SubmitButton({ label, size = "default" }: { label: string; size?: "defa
 }
 
 function Message({ state }: { state: AboutActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 export function AboutEditor({ data }: { data: AboutAdminData }) {
@@ -40,12 +46,23 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
     data.about.principal_photo_url ?? ""
   );
   const coreValuesText = data.about.core_values.join("\n");
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
+
+  useEffect(() => {
+    if (contentState.success) setDirty(false);
+  }, [contentState.success]);
 
   return (
     <div className="space-y-12">
       <section className="rounded border border-line bg-surface p-6">
         <h2 className="font-serif text-display-sm">About content</h2>
-        <form action={contentAction} className="mt-6 space-y-4">
+        <form
+          action={contentAction}
+          className="mt-6 space-y-4"
+          {...createUnsavedFormProps(setDirty)}
+        >
           <Message state={contentState} />
           <div className="space-y-2">
             <Label>History</Label>
@@ -100,9 +117,15 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
             label="Principal photo"
             value={principalPhoto}
             folder="about"
-            onChange={setPrincipalPhoto}
+            onChange={(value) => {
+              setPrincipalPhoto(value);
+              setDirty(true);
+            }}
           />
-          <SubmitButton label="Save about content" />
+          <StickyFormFooter>
+            <UnsavedChangesLabel show={dirty} />
+            <SubmitButton label="Save about content" />
+          </StickyFormFooter>
         </form>
       </section>
 
@@ -162,12 +185,12 @@ function AccreditationRow({
         <SubmitButton label={acc ? "Save" : "Add accreditation"} size="sm" />
       </form>
       {acc ? (
-        <form action={deleteAccreditationForm} className="mt-2">
-          <input type="hidden" name="id" value={acc.id} />
-          <Button type="submit" size="sm" variant="outline" className="text-danger">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteAccreditationForm}
+          confirmMessage="Delete this accreditation?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: acc.id }}
+        />
       ) : null}
     </div>
   );
@@ -220,12 +243,12 @@ function OrgUnitRow({
         <SubmitButton label={unit ? "Save" : "Add unit"} size="sm" />
       </form>
       {unit ? (
-        <form action={deleteOrgUnitForm} className="mt-2">
-          <input type="hidden" name="id" value={unit.id} />
-          <Button type="submit" size="sm" variant="outline" className="text-danger">
-            Delete
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteOrgUnitForm}
+          confirmMessage="Delete this organisation unit?"
+          buttonLabel="Delete"
+          hiddenFields={{ id: unit.id }}
+        />
       ) : null}
     </div>
   );

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireContentStaff } from "@/lib/auth/permissions";
+import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { staffFormSchema } from "@/lib/validation/staff";
 
@@ -128,6 +129,10 @@ export async function toggleStaffPublishedForm(formData: FormData): Promise<void
 
   revalidatePath("/faculty");
   revalidatePath("/dashboard/admin/staff");
+  redirectWithNotice(
+    "/dashboard/admin/staff",
+    isPublished ? "unpublished" : "published"
+  );
 }
 
 export async function deleteStaffForm(formData: FormData): Promise<void> {

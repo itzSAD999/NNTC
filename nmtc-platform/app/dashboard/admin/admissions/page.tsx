@@ -1,1 +1,3 @@
-export { default } from "./admin-admissions-page";
+import AdminAdmissionsPage from "./admin-admissions-page";
+
+export default AdminAdmissionsPage;

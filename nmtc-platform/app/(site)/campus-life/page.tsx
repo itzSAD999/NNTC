@@ -1,1 +1,3 @@
-export { default } from "./campus-life-page";
+import CampusLifePage from "./campus-life-page";
+
+export default CampusLifePage;

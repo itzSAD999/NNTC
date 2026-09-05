@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { isEventPast } from "@/lib/events/dates";
 import {
   previewEventBySlug,
   previewUpcomingEvents,
@@ -7,22 +8,38 @@ import {
 } from "@/lib/data/preview-expansion";
 import type { CollegeEvent } from "@/lib/types/expansion";
 
+function sortUpcoming(events: CollegeEvent[]): CollegeEvent[] {
+  return [...events]
+    .filter((e) => !isEventPast(e.starts_at, e.ends_at))
+    .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+}
+
+function sortPast(events: CollegeEvent[]): CollegeEvent[] {
+  return [...events]
+    .filter((e) => isEventPast(e.starts_at, e.ends_at))
+    .sort((a, b) => b.starts_at.localeCompare(a.starts_at));
+}
+
 export async function getUpcomingEvents(limit?: number): Promise<CollegeEvent[]> {
-  if (!isSupabaseConfigured()) return previewUpcomingEvents(limit ?? 10);
+  if (!isSupabaseConfigured()) {
+    const items = sortUpcoming(PREVIEW_EVENTS);
+    return limit ? items.slice(0, limit) : items;
+  }
 
   try {
     const supabase = await createClient();
-    let query = supabase
+    const now = new Date().toISOString();
+    const { data, error } = await supabase
       .from("events")
       .select("*")
-      .eq("is_past", false)
+      .or(
+        `and(ends_at.not.is.null,ends_at.gte.${now}),and(ends_at.is.null,starts_at.gte.${now})`
+      )
       .order("starts_at", { ascending: true });
 
-    if (limit) query = query.limit(limit);
-
-    const { data, error } = await query;
     if (error || !data) return previewUpcomingEvents(limit ?? 10);
-    return data as CollegeEvent[];
+    const items = data as CollegeEvent[];
+    return limit ? items.slice(0, limit) : items;
   } catch {
     return previewUpcomingEvents(limit ?? 10);
   }
@@ -30,17 +47,18 @@ export async function getUpcomingEvents(limit?: number): Promise<CollegeEvent[]>
 
 export async function getPastEvents(): Promise<CollegeEvent[]> {
   if (!isSupabaseConfigured()) {
-    return PREVIEW_EVENTS.filter((e) => e.is_past).sort((a, b) =>
-      b.starts_at.localeCompare(a.starts_at)
-    );
+    return sortPast(PREVIEW_EVENTS);
   }
 
   try {
     const supabase = await createClient();
+    const now = new Date().toISOString();
     const { data, error } = await supabase
       .from("events")
       .select("*")
-      .eq("is_past", true)
+      .or(
+        `and(ends_at.not.is.null,ends_at.lt.${now}),and(ends_at.is.null,starts_at.lt.${now})`
+      )
       .order("starts_at", { ascending: false });
 
     if (error || !data) return [];

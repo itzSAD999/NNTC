@@ -36,7 +36,7 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
         aria-labelledby="vision-mission-heading"
         className="grid gap-10 md:grid-cols-2"
       >
-        <div className="rounded border border-line bg-surface p-6 md:p-8">
+        <div className="institutional-card p-6 md:p-8">
           <h2
             id="vision-mission-heading"
             className="font-serif text-display-sm text-primary"
@@ -45,7 +45,7 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
           </h2>
           <p className="mt-4 text-caption">{about.vision}</p>
         </div>
-        <div className="rounded border border-line bg-surface p-6 md:p-8">
+        <div className="institutional-card p-6 md:p-8">
           <h2 className="font-serif text-display-sm text-primary">Mission</h2>
           <p className="mt-4 text-caption">{about.mission}</p>
         </div>

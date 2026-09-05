@@ -45,9 +45,14 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background font-sans text-foreground antialiased;
     background-color: var(--color-bg);
     color: var(--color-ink);
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  a {
+    @apply transition-colors;
   }
 
   h1,
@@ -97,6 +102,22 @@
   .section-grid {
     @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
     min-width: 0;
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.2em] text-primary;
+  }
+
+  .editorial-rule {
+    @apply border-line border-t;
+  }
+
+  .institutional-card {
+    @apply rounded border border-line bg-surface transition-shadow hover:shadow-md;
+  }
+
+  .link-arrow {
+    @apply text-sm font-medium text-primary hover:text-primary-deep;
   }
 
   .sr-only {

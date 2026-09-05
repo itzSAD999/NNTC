@@ -12,6 +12,15 @@ import {
 import { slugify } from "@/lib/utils/slug";
 import type { CollegeEvent } from "@/lib/types/expansion";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { FieldHint, SlugField } from "@/components/admin/admin-help";
+import { FormMessage } from "@/components/admin/admin-layout";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,9 +36,7 @@ function SubmitButton({ label }: { label: string }) {
 }
 
 function Message({ state }: { state: EventActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
+  return <FormMessage error={state.error} success={state.success} />;
 }
 
 function toDatetimeLocal(iso: string | null | undefined): string {
@@ -46,14 +53,25 @@ export function EventForm({ event }: { event?: CollegeEvent }) {
   const [slug, setSlug] = useState(event?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(event?.slug));
   const [coverUrl, setCoverUrl] = useState(event?.cover_image_url ?? "");
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
 
   useEffect(() => {
     if (!slugTouched && title) setSlug(slugify(title));
   }, [title, slugTouched]);
 
+  useEffect(() => {
+    if (state.success) setDirty(false);
+  }, [state.success]);
+
   return (
     <div className="space-y-6">
-      <form action={formAction} className="max-w-2xl space-y-6">
+      <form
+        action={formAction}
+        className="max-w-2xl space-y-6"
+        {...createUnsavedFormProps(setDirty)}
+      >
         {event ? <input type="hidden" name="id" value={event.id} /> : null}
         <Message state={state} />
 
@@ -68,17 +86,14 @@ export function EventForm({ event }: { event?: CollegeEvent }) {
               required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              name="slug"
+          <div className="space-y-2 sm:col-span-2">
+            <SlugField
               value={slug}
-              onChange={(e) => {
+              basePath="/events"
+              onChange={(value) => {
                 setSlugTouched(true);
-                setSlug(e.target.value);
+                setSlug(value);
               }}
-              required
             />
           </div>
           <div className="space-y-2">
@@ -118,17 +133,11 @@ export function EventForm({ event }: { event?: CollegeEvent }) {
               defaultValue={event?.registration_url ?? ""}
             />
           </div>
-          <div className="flex items-center gap-2 sm:col-span-2">
-            <input
-              type="checkbox"
-              id="is_past"
-              name="is_past"
-              value="true"
-              defaultChecked={event?.is_past ?? false}
-              className="h-4 w-4"
-            />
-            <Label htmlFor="is_past">Mark as past event</Label>
-          </div>
+          <p className="text-sm text-caption sm:col-span-2">
+            <strong className="font-medium text-ink">Upcoming vs past:</strong>{" "}
+            the Events page sorts automatically from the start and end dates —
+            you do not move events between lists yourself.
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -147,19 +156,25 @@ export function EventForm({ event }: { event?: CollegeEvent }) {
           label="Cover image"
           value={coverUrl}
           folder="events"
-          onChange={setCoverUrl}
+          onChange={(value) => {
+            setCoverUrl(value);
+            setDirty(true);
+          }}
         />
 
-        <SubmitButton label={event ? "Save changes" : "Create event"} />
+        <StickyFormFooter>
+          <UnsavedChangesLabel show={dirty} />
+          <SubmitButton label={event ? "Save changes" : "Create event"} />
+        </StickyFormFooter>
       </form>
 
       {event ? (
-        <form action={deleteEventForm} className="max-w-2xl pt-4">
-          <input type="hidden" name="id" value={event.id} />
-          <Button type="submit" variant="outline" className="text-danger">
-            Delete event
-          </Button>
-        </form>
+        <DeleteConfirmButton
+          action={deleteEventForm}
+          confirmMessage="Delete this event permanently? This cannot be undone."
+          buttonLabel="Delete event"
+          hiddenFields={{ id: event.id }}
+        />
       ) : null}
     </div>
   );

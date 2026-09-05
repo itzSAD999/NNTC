@@ -1,1 +1,3 @@
-export { default } from "./financial-aid-page";
+import FinancialAidPage from "./financial-aid-page";
+
+export default FinancialAidPage;

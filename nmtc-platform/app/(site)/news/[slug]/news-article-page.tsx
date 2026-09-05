@@ -10,13 +10,13 @@ import { getSettings } from "@/lib/data/settings";
 import { formatDate, getStoragePublicUrl } from "@/lib/utils/format";
 
 interface NewsArticlePageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: NewsArticlePageProps): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const post = await getPostBySlug(slug);
   const settings = await getSettings();
 
@@ -31,7 +31,7 @@ export async function generateMetadata({
 }
 
 export default async function NewsArticlePage({ params }: NewsArticlePageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const post = await getPostBySlug(slug);
 
   if (!post) {

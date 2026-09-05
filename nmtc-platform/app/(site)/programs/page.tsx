@@ -1,1 +1,3 @@
-export { default } from "./programs-page";
+import ProgramsPage from "./programs-page";
+
+export default ProgramsPage;

@@ -1,6 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 
 import { requireSuperAdmin } from "@/lib/auth/permissions";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -141,7 +144,11 @@ export async function deactivateStaffForm(
   formData: FormData
 ): Promise<void> {
   const id = formData.get("id")?.toString() ?? "";
-  await deactivateStaff(id);
+  const result = await deactivateStaff(id);
+  if (!result.error) {
+    redirectWithNotice("/dashboard/admin/users", "deactivated");
+  }
+  redirect("/dashboard/admin/users");
 }
 
 export async function deactivateStaff(

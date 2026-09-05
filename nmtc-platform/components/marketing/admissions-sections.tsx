@@ -29,12 +29,13 @@ export function AdmissionsSections({
     <div className="section-grid max-w-3xl space-y-12 py-12 md:space-y-16 md:py-16">
       {content.process_steps.length > 0 ? (
         <section>
-          <h2 className="font-serif text-display-sm">How to apply</h2>
+          <p className="section-eyebrow">How to apply</p>
+          <h2 className="mt-2 font-serif text-display-sm">Application process</h2>
           <ol className="mt-6 space-y-4">
             {content.process_steps.map((step, i) => (
               <li
                 key={step.title}
-                className="flex gap-4 rounded border border-line bg-surface p-5"
+                className="institutional-card flex gap-4 p-5"
               >
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
                   {i + 1}
@@ -52,8 +53,9 @@ export function AdmissionsSections({
       <ProseBlock title="Selection criteria" content={content.selection_criteria} />
       <ProseBlock title="Academic calendar" content={content.academic_calendar} />
 
-      <section className="rounded border border-line bg-surface p-6">
-        <h2 className="font-serif text-display-sm">Application fee</h2>
+      <section className="institutional-card p-6 md:p-8">
+        <p className="section-eyebrow">Fees</p>
+        <h2 className="mt-2 font-serif text-display-sm">Application fee</h2>
         {content.application_fee != null ? (
           <p className="mt-3 ref-mono text-2xl font-medium text-ink">
             GHS {content.application_fee.toFixed(2)}

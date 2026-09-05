@@ -1,1 +1,3 @@
-export { default } from "./admin-news-new-page";
+import AdminNewsNewPage from "./admin-news-new-page";
+
+export default AdminNewsNewPage;

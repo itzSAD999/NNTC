@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { ContactDetails } from "@/components/contact/contact-details";
 import { ContactForm } from "@/components/contact/contact-form";
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader, PageSection } from "@/components/layout";
 import { getSettings } from "@/lib/data/settings";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -26,7 +26,7 @@ export default async function ContactPage() {
         description="Reach the right office for admissions, fees, academic matters, or general enquiries."
       />
 
-      <div className="section-grid py-16">
+      <PageSection bordered={false}>
         {!supabaseReady ? (
           <p
             role="status"
@@ -58,7 +58,7 @@ export default async function ContactPage() {
             <ContactDetails settings={settings} />
           </aside>
         </div>
-      </div>
+      </PageSection>
     </>
   );
 }

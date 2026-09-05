@@ -1,6 +1,7 @@
 import { requireStaffRole } from "@/lib/auth/session";
 import { getRequestsByStatus } from "@/lib/data/dashboard-requests";
 import { RequestQueue } from "@/components/dashboard/request-queue";
+import { RequestWorkflowGuide } from "@/components/dashboard/request-workflow-guide";
 
 export default async function AcademicDashboardPage() {
   await requireStaffRole(["academic"]);
@@ -15,6 +16,8 @@ export default async function AcademicDashboardPage() {
           Accounts.
         </p>
       </header>
+
+      <RequestWorkflowGuide highlight="academic" />
 
       <RequestQueue
         requests={requests}

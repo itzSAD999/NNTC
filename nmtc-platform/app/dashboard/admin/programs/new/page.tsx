@@ -1,1 +1,3 @@
-export { default } from "./admin-program-new-page";
+import AdminProgramNewPage from "./admin-program-new-page";
+
+export default AdminProgramNewPage;

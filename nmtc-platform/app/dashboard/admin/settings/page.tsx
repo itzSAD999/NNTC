@@ -1,1 +1,3 @@
-export { default } from "./admin-settings-page";
+import AdminSettingsPage from "./admin-settings-page";
+
+export default AdminSettingsPage;

@@ -1,4 +1,5 @@
 import { AdmissionsEditor } from "@/components/admin/admissions-editor";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { getAdmissionsForEdit } from "@/lib/data/admin-admissions";
 
@@ -7,18 +8,12 @@ export default async function AdminAdmissionsPage() {
   const data = await getAdmissionsForEdit();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Admissions CMS</h1>
-        <p className="mt-2 text-caption">
-          Application process, documents, fees, and FAQs for the public admissions page.
-        </p>
-      </header>
+    <AdminListShell section="admissions">
       <AdmissionsEditor
         content={data.content}
         documents={data.documents}
         faqs={data.faqs}
       />
-    </div>
+    </AdminListShell>
   );
 }

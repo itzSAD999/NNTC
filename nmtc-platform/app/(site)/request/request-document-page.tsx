@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { PageHeader } from "@/components/layout/page-header";
+import { PageHeader, PageSection } from "@/components/layout";
 import { RequestForm } from "@/components/requests/request-form";
 import { getActiveDocumentTypes } from "@/lib/data/document-types";
 import { isAdminConfigured } from "@/lib/requests/reference";
@@ -22,7 +22,7 @@ export default async function RequestDocumentPage() {
         title="Request a document"
         description="Submit your transcript or attestation request online. Upload your payment receipt and receive a reference number to track progress."
       />
-      <div className="section-grid max-w-3xl py-12 md:py-16">
+      <PageSection size="narrow" bordered={false}>
         <RequestForm
           documentTypes={documentTypes}
           supabaseReady={isAdminConfigured()}
@@ -33,7 +33,7 @@ export default async function RequestDocumentPage() {
             Track your request
           </Link>
         </p>
-      </div>
+      </PageSection>
     </>
   );
 }

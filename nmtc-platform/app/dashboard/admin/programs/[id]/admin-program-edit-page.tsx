@@ -1,27 +1,30 @@
 import { notFound } from "next/navigation";
 
 import { ProgramForm } from "@/components/admin/program-form";
+import { AdminEditShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { getProgramForEdit, listDepartments } from "@/lib/data/admin-programs";
 
-type PageProps = { params: { id: string } };
+type PageProps = { params: Promise<{ id: string }> };
 
 export default async function AdminProgramEditPage({ params }: PageProps) {
   await requireContentStaff();
+  const { id } = await params;
   const [program, departments] = await Promise.all([
-    getProgramForEdit(params.id),
+    getProgramForEdit(id),
     listDepartments(),
   ]);
 
   if (!program) notFound();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Edit programme</h1>
-        <p className="mt-2 text-caption">{program.name}</p>
-      </header>
+    <AdminEditShell
+      listHref="/dashboard/admin/programs"
+      listLabel="Programmes"
+      title="Edit programme"
+      subtitle={program.name}
+    >
       <ProgramForm departments={departments} program={program} />
-    </div>
+    </AdminEditShell>
   );
 }

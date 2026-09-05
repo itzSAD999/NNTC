@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireContentStaff } from "@/lib/auth/permissions";
+import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { resourceFormSchema } from "@/lib/validation/resources";
 
@@ -111,6 +112,10 @@ export async function toggleResourcePublishedForm(formData: FormData): Promise<v
 
   revalidatePath("/resources");
   revalidatePath("/dashboard/admin/resources");
+  redirectWithNotice(
+    "/dashboard/admin/resources",
+    isPublished ? "unpublished" : "published"
+  );
 }
 
 export async function deleteResourceForm(formData: FormData): Promise<void> {

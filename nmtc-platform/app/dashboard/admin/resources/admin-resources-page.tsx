@@ -1,20 +1,25 @@
+import Link from "next/link";
+
 import { ResourcesList } from "@/components/admin/resources-list";
+import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
 import { listAllResources } from "@/lib/data/admin-resources";
+import { Button } from "@/components/ui/button";
 
 export default async function AdminResourcesPage() {
   await requireContentStaff();
   const resources = await listAllResources();
 
   return (
-    <div className="space-y-8">
-      <header>
-        <h1 className="font-serif text-display-lg">Student resources CMS</h1>
-        <p className="mt-2 text-caption">
-          Upload handbooks, timetables, forms, and academic calendars.
-        </p>
-      </header>
+    <AdminListShell
+      section="resources"
+      action={
+        <Button asChild>
+          <Link href="/dashboard/admin/resources/new">New resource</Link>
+        </Button>
+      }
+    >
       <ResourcesList resources={resources} />
-    </div>
+    </AdminListShell>
   );
 }

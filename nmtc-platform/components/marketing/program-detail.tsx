@@ -31,9 +31,7 @@ export function ProgramDetailView({ program }: { program: ProgramDetail }) {
 
       <header className="mt-6 border-b border-line pb-8">
         {program.department ? (
-          <p className="text-sm font-medium uppercase tracking-widest text-primary">
-            {program.department.name}
-          </p>
+          <p className="section-eyebrow">{program.department.name}</p>
         ) : null}
         <h1 className="mt-2 font-serif text-display-lg md:text-display-xl">
           {program.name}
@@ -61,7 +59,7 @@ export function ProgramDetailView({ program }: { program: ProgramDetail }) {
               {program.modules.map((year) => (
                 <div
                   key={year.id}
-                  className="rounded border border-line bg-surface p-5"
+                  className="institutional-card p-5"
                 >
                   <h3 className="font-medium text-ink">{year.year_label}</h3>
                   <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-caption">

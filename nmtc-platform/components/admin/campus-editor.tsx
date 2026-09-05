@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 
 import {
@@ -10,10 +10,23 @@ import {
 } from "@/lib/actions/campus";
 import type { CampusSection } from "@/lib/types/expansion";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
+import { FieldHint, SortOrderLabel } from "@/components/admin/admin-help";
+import {
+  AdminSectionCard,
+  FormMessage,
+} from "@/components/admin/admin-layout";
+import { DeleteConfirmButton } from "@/components/admin/delete-confirm-form";
+import { StickyFormFooter } from "@/components/admin/sticky-form-footer";
+import {
+  UnsavedChangesLabel,
+  createUnsavedFormProps,
+} from "@/components/admin/unsaved-changes";
+import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -24,68 +37,75 @@ function SubmitButton() {
   );
 }
 
-function Message({ state }: { state: CampusActionState }) {
-  if (state.error) return <p className="text-sm text-danger">{state.error}</p>;
-  if (state.success) return <p className="text-sm text-primary">Saved.</p>;
-  return null;
-}
-
 function SectionEditor({ section }: { section: CampusSection }) {
   const [state, action] = useFormState(saveCampusSection, {});
   const [imageUrl, setImageUrl] = useState(section.image_url ?? "");
+  const [dirty, setDirty] = useState(false);
+
+  useUnsavedChanges(dirty);
+
+  useEffect(() => {
+    if (state.success) setDirty(false);
+  }, [state.success]);
 
   return (
-    <section className="rounded border border-line bg-surface p-6">
-      <h3 className="font-serif text-lg">{section.title}</h3>
-      <p className="mt-1 text-xs text-caption">Key: {section.section_key}</p>
-      <form action={action} className="mt-6 space-y-4">
-        <input type="hidden" name="id" value={section.id} />
-        <input type="hidden" name="section_key" value={section.section_key} />
-        <Message state={state} />
-        <div className="space-y-2">
-          <Label htmlFor={`title-${section.id}`}>Title</Label>
-          <Input
-            id={`title-${section.id}`}
-            name="title"
-            defaultValue={section.title}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`body-${section.id}`}>Body</Label>
-          <Textarea
-            id={`body-${section.id}`}
-            name="body"
-            rows={5}
-            defaultValue={section.body}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={`sort-${section.id}`}>Sort order</Label>
-          <Input
-            id={`sort-${section.id}`}
-            name="sort_order"
-            type="number"
-            min={0}
-            defaultValue={section.sort_order}
-          />
-        </div>
-        <ImageUploadField
-          name="image_url"
-          label="Section image"
-          value={imageUrl}
-          folder="campus"
-          onChange={setImageUrl}
+    <form
+      action={action}
+      className="space-y-4"
+      {...createUnsavedFormProps(setDirty)}
+    >
+      <input type="hidden" name="id" value={section.id} />
+      <input type="hidden" name="section_key" value={section.section_key} />
+      <FormMessage error={state.error} success={state.success} />
+      <div className="space-y-2">
+        <Label htmlFor={`title-${section.id}`}>Title</Label>
+        <Input
+          id={`title-${section.id}`}
+          name="title"
+          defaultValue={section.title}
+          required
         />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor={`body-${section.id}`}>Body</Label>
+        <Textarea
+          id={`body-${section.id}`}
+          name="body"
+          rows={5}
+          defaultValue={section.body}
+        />
+      </div>
+      <div className="space-y-2">
+        <SortOrderLabel htmlFor={`sort-${section.id}`} />
+        <Input
+          id={`sort-${section.id}`}
+          name="sort_order"
+          type="number"
+          min={0}
+          defaultValue={section.sort_order}
+        />
+      </div>
+      <ImageUploadField
+        name="image_url"
+        label="Section image"
+        value={imageUrl}
+        folder="campus"
+        onChange={(value) => {
+          setImageUrl(value);
+          setDirty(true);
+        }}
+      />
+      <StickyFormFooter>
+        <UnsavedChangesLabel show={dirty} />
         <SubmitButton />
-      </form>
-      <form action={deleteCampusSectionForm} className="mt-4">
-        <input type="hidden" name="id" value={section.id} />
-        <Button type="submit" size="sm" variant="outline" className="text-danger">
-          Delete section
-        </Button>
-      </form>
-    </section>
+        <DeleteConfirmButton
+          action={deleteCampusSectionForm}
+          confirmMessage={`Delete the "${section.title}" section? This cannot be undone.`}
+          buttonLabel="Delete section"
+          hiddenFields={{ id: section.id }}
+        />
+      </StickyFormFooter>
+    </form>
   );
 }
 
@@ -93,19 +113,24 @@ function NewSectionForm() {
   const [state, action] = useFormState(saveCampusSection, {});
 
   return (
-    <section className="rounded border border-dashed border-line p-6">
-      <h3 className="font-serif text-lg">Add section</h3>
-      <form action={action} className="mt-6 space-y-4">
-        <Message state={state} />
+    <AdminSectionCard
+      title="Add section"
+      description="Create a new block on the Campus Life page. The section ID is set once and cannot be changed later."
+    >
+      <form action={action} className="space-y-4">
+        <FormMessage error={state.error} success={state.success} />
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="new_key">Section key</Label>
+            <Label htmlFor="new_key">Section ID (internal)</Label>
             <Input
               id="new_key"
               name="section_key"
-              placeholder="e.g. sports"
+              placeholder="e.g. sports-clubs"
               required
             />
+            <FieldHint>
+              Short lowercase ID with hyphens. Visitors only see the Title.
+            </FieldHint>
           </div>
           <div className="space-y-2">
             <Label htmlFor="new_title">Title</Label>
@@ -120,16 +145,65 @@ function NewSectionForm() {
         <input type="hidden" name="sort_order" value="99" />
         <SubmitButton />
       </form>
-    </section>
+    </AdminSectionCard>
   );
 }
 
 export function CampusEditor({ sections }: { sections: CampusSection[] }) {
+  const [openId, setOpenId] = useState<string | null>(sections[0]?.id ?? null);
+
   return (
     <div className="space-y-6">
-      {sections.map((s) => (
-        <SectionEditor key={s.id} section={s} />
-      ))}
+      {sections.length > 0 ? (
+        <>
+          <nav aria-label="Campus sections" className="flex flex-wrap gap-2">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                type="button"
+                onClick={() => setOpenId(section.id)}
+                className={cn(
+                  "rounded border px-3 py-1.5 text-sm transition-colors",
+                  openId === section.id
+                    ? "border-primary bg-primary/10 font-medium text-primary"
+                    : "border-line bg-surface text-caption hover:text-ink"
+                )}
+              >
+                {section.title}
+              </button>
+            ))}
+          </nav>
+
+          {openId ? (
+            <AdminSectionCard
+              title={
+                sections.find((s) => s.id === openId)?.title ?? "Section"
+              }
+              description={
+                <>
+                  Section ID:{" "}
+                  <span className="ref-mono">
+                    {sections.find((s) => s.id === openId)?.section_key}
+                  </span>
+                </>
+              }
+            >
+              <SectionEditor
+                section={sections.find((s) => s.id === openId)!}
+              />
+            </AdminSectionCard>
+          ) : (
+            <p className="text-sm text-caption">
+              Select a section above to edit it.
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-sm text-caption">
+          No sections yet. Add your first section below.
+        </p>
+      )}
+
       <NewSectionForm />
     </div>
   );
