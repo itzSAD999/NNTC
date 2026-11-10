@@ -9,7 +9,10 @@ import { getSupabaseEnv } from "@/lib/supabase/config";
 export function createAdminClient() {
   const { url } = getSupabaseEnv();
   const serviceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
+    (
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_SECRET_KEY
+    )?.trim() ||
     "placeholder-service-role-key";
 
   return createClient(url, serviceKey, {
