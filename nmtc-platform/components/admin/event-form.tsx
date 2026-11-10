@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   createEvent,
@@ -48,7 +48,7 @@ function toDatetimeLocal(iso: string | null | undefined): string {
 
 export function EventForm({ event }: { event?: CollegeEvent }) {
   const action = event ? updateEvent : createEvent;
-  const [state, formAction] = useFormState(action, {});
+  const [state, formAction] = useActionState(action, {});
   const [title, setTitle] = useState(event?.title ?? "");
   const [slug, setSlug] = useState(event?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(event?.slug));

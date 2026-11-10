@@ -19,7 +19,14 @@ export const REQUEST_STATUSES = [
 
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
-export const DOCUMENT_TYPE_CODES = ["TR", "AT"] as const;
+export const DOCUMENT_TYPE_CODES = [
+  "TR", // Official Transcript
+  "AT", // Attestation Letter
+  "EP", // English Proficiency Letter
+  "RL", // Recommendation / Introduction Letter
+  "SR", // Statement of Results
+  "CT", // Certified True Copy / Verification
+] as const;
 
 export const STORAGE_BUCKETS = {
   receipts: "receipts",

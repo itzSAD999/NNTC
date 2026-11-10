@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const UTILITY_LINKS = [
   { href: "/request/track", label: "Track request" },
+  { href: "/verify", label: "Verify document" },
   { href: "/resources", label: "Student resources" },
   { href: "/contact", label: "Contact" },
   { href: "/login", label: "Staff login" },

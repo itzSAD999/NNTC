@@ -9,6 +9,10 @@ import {
   sendRequestApprovedEmail,
   sendRequestReturnedEmail,
 } from "@/lib/email/request";
+import {
+  sendRequestApprovedSms,
+  sendRequestReturnedSms,
+} from "@/lib/sms/arkesel";
 import { findTransition } from "@/lib/requests/transitions";
 import type { RequestStatus, Role } from "@/lib/constants";
 
@@ -109,6 +113,15 @@ async function applyTransition(
       reason: note.trim(),
       context,
     });
+
+    if (request.student_phone) {
+      await sendRequestReturnedSms({
+        phone: request.student_phone,
+        studentName: request.student_name,
+        referenceNo: request.reference_no,
+        reason: note.trim(),
+      }).catch(() => {});
+    }
   }
 
   if (newStatus === "approved") {
@@ -119,6 +132,15 @@ async function applyTransition(
       documentTypeName: docTypeName,
       deliveryMethod: request.delivery_method,
     });
+
+    if (request.student_phone) {
+      await sendRequestApprovedSms({
+        phone: request.student_phone,
+        studentName: request.student_name,
+        referenceNo: request.reference_no,
+        docType: docTypeName,
+      }).catch(() => {});
+    }
 
     await supabase.from("request_events").insert({
       request_id: requestId,

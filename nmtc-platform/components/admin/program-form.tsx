@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   createProgram,
@@ -52,7 +52,7 @@ type ProgramFormProps = {
 
 export function ProgramForm({ departments, program }: ProgramFormProps) {
   const action = program ? updateProgram : createProgram;
-  const [state, formAction] = useFormState(action, {});
+  const [state, formAction] = useActionState(action, {});
   const [name, setName] = useState(program?.name ?? "");
   const [slug, setSlug] = useState(program?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(program?.slug));

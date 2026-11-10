@@ -2,6 +2,7 @@
   "name": "ntc-website-workspace",
   "private": true,
   "scripts": {
+    "postinstall": "npm install --prefix nmtc-platform",
     "dev": "npm run dev --prefix nmtc-platform",
     "dev:clean": "npm run dev:clean --prefix nmtc-platform",
     "build": "npm run build --prefix nmtc-platform",

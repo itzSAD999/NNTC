@@ -1,11 +1,49 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ExternalLink, HelpCircle, X } from "lucide-react";
 
 import type { AdminSectionKey } from "@/lib/admin/page-guides";
-import { ADMIN_SECTION_GUIDES, CMS_SCOPE_NOTE } from "@/lib/admin/page-guides";
+import { ADMIN_SECTION_GUIDES } from "@/lib/admin/page-guides";
 import { cn } from "@/lib/utils";
 
-/** List page shell: title + action on one row, collapsed guide, content. */
+/** Compact Guide Tip: Unobtrusive help trigger taking zero extra vertical space by default */
+export function CollapsibleGuide({ section }: { section: AdminSectionKey }) {
+  const guide = ADMIN_SECTION_GUIDES[section];
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-2xs"
+        title="Page tips"
+      >
+        <HelpCircle className="h-3.5 w-3.5 text-primary" />
+        <span>{open ? "Hide tips" : "Page tips"}</span>
+      </button>
+
+      {open && (
+        <div className="mt-3 flex items-start justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-ink shadow-sm">
+          <p className="leading-relaxed">{guide.howItWorks}</p>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="text-caption hover:text-ink shrink-0 p-0.5"
+            aria-label="Close tips"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** List page shell: Clean header + action button, zero visual clutter */
 export function AdminListShell({
   section,
   action,
@@ -19,21 +57,30 @@ export function AdminListShell({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="font-serif text-display-lg">{guide.title}</h1>
-          <p className="mt-2 text-caption">{guide.description}</p>
-          {guide.publicPath ? (
-            <p className="mt-1 text-xs text-caption">
-              Public page:{" "}
-              <span className="ref-mono text-ink">{guide.publicPath}</span>
-            </p>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="font-serif text-display-md text-ink">{guide.title}</h1>
+            {guide.publicPath ? (
+              <Link
+                href={guide.publicPath}
+                target="_blank"
+                className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[0.7rem] font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-2xs"
+              >
+                <ExternalLink className="h-3 w-3" />
+                <span>Live page</span>
+              </Link>
+            ) : null}
+          </div>
+          <p className="mt-1 text-xs text-caption max-w-2xl">{guide.description}</p>
         </div>
-        {action ? <div className="shrink-0">{action}</div> : null}
+
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+          <CollapsibleGuide section={section} />
+          {action ? <div className="shrink-0">{action}</div> : null}
+        </div>
       </div>
 
-      <CollapsibleGuide section={section} />
       {children}
     </div>
   );
@@ -57,55 +104,31 @@ export function AdminEditShell({
 }) {
   return (
     <div className="space-y-6">
-      <nav aria-label="Breadcrumb" className="text-sm text-caption">
+      <nav aria-label="Breadcrumb" className="text-xs text-caption">
         <Link href={listHref} className="text-primary hover:underline">
           {listLabel}
         </Link>
         <span className="mx-2 text-line" aria-hidden="true">
           /
         </span>
-        <span className="text-ink">{title}</span>
+        <span className="text-ink font-medium">{title}</span>
       </nav>
 
-      <Link
-        href={listHref}
-        className="inline-block text-sm font-medium text-primary hover:underline"
-      >
-        ← Back to {listLabel}
-      </Link>
-
-      <header>
-        <h1 className="font-serif text-display-lg">{title}</h1>
-        {subtitle ? <p className="mt-2 text-caption">{subtitle}</p> : null}
-      </header>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <Link
+            href={listHref}
+            className="inline-block text-xs font-medium text-primary hover:underline mb-1"
+          >
+            ← Back to {listLabel}
+          </Link>
+          <h1 className="font-serif text-display-md text-ink">{title}</h1>
+          {subtitle ? <p className="mt-1 text-xs text-caption">{subtitle}</p> : null}
+        </div>
+      </div>
 
       <div className={cn(maxWidth === "full" ? "" : maxWidth)}>{children}</div>
     </div>
-  );
-}
-
-export function CollapsibleGuide({ section }: { section: AdminSectionKey }) {
-  const guide = ADMIN_SECTION_GUIDES[section];
-
-  return (
-    <details className="group rounded border border-line bg-bg">
-      <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-ink marker:content-none [&::-webkit-details-marker]:hidden">
-        <span className="text-primary group-open:text-ink">Page guide</span>
-        <span className="ml-2 font-normal text-caption">
-          — what you edit & how it works
-        </span>
-      </summary>
-      <div className="space-y-4 border-t border-line px-4 py-4 text-sm leading-relaxed text-caption">
-        <div>
-          <p className="font-medium text-ink">What you edit here</p>
-          <p className="mt-1">{CMS_SCOPE_NOTE}</p>
-        </div>
-        <div>
-          <p className="font-medium text-ink">How this works</p>
-          <p className="mt-1">{guide.howItWorks}</p>
-        </div>
-      </div>
-    </details>
   );
 }
 
@@ -123,14 +146,14 @@ export function AdminSectionCard({
   return (
     <section
       className={cn(
-        "institutional-card space-y-6 p-6",
+        "rounded-xl border border-line bg-surface p-5 sm:p-6 shadow-2xs space-y-5",
         className
       )}
     >
       <div>
-        <h2 className="font-serif text-display-sm">{title}</h2>
+        <h2 className="font-serif text-lg font-semibold text-ink">{title}</h2>
         {description ? (
-          <div className="mt-2 text-sm text-caption">{description}</div>
+          <div className="mt-1 text-xs text-caption">{description}</div>
         ) : null}
       </div>
       {children}
@@ -149,14 +172,14 @@ export function FormMessage({
 }) {
   if (error) {
     return (
-      <p role="alert" className="text-sm text-danger">
+      <p role="alert" className="text-xs font-medium text-red-600">
         {error}
       </p>
     );
   }
   if (success) {
     return (
-      <p role="status" className="text-sm text-success">
+      <p role="status" className="text-xs font-medium text-emerald-600">
         {successLabel}
       </p>
     );
@@ -172,7 +195,7 @@ export function AdminTable({
   minWidth?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded border border-line bg-surface">
+    <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-2xs">
       <table className="w-full text-left text-sm" style={{ minWidth }}>
         {children}
       </table>
@@ -183,7 +206,7 @@ export function AdminTable({
 export function AdminTableHead({ children }: { children: ReactNode }) {
   return (
     <thead>
-      <tr className="border-b border-line text-xs uppercase tracking-widest text-caption">
+      <tr className="border-b border-line bg-bg/50 text-[0.7rem] uppercase tracking-wider text-caption font-semibold">
         {children}
       </tr>
     </thead>
@@ -198,6 +221,6 @@ export function AdminTableTh({
   className?: string;
 }) {
   return (
-    <th className={cn("px-4 py-3 font-medium", className)}>{children}</th>
+    <th className={cn("px-4 py-3 font-semibold", className)}>{children}</th>
   );
 }

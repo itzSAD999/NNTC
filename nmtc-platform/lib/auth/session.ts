@@ -74,7 +74,7 @@ export function getRoleDashboardPath(role: Role): string {
     case "principal":
       return "/dashboard/principal";
     case "super_admin":
-      return "/dashboard/admin/settings";
+      return "/dashboard/admin";
     case "content_editor":
       return "/dashboard/admin/news";
     default:

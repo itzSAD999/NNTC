@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   deleteCampusSectionForm,
@@ -38,7 +38,7 @@ function SubmitButton() {
 }
 
 function SectionEditor({ section }: { section: CampusSection }) {
-  const [state, action] = useFormState(saveCampusSection, {});
+  const [state, action] = useActionState(saveCampusSection, {});
   const [imageUrl, setImageUrl] = useState(section.image_url ?? "");
   const [dirty, setDirty] = useState(false);
 
@@ -110,7 +110,7 @@ function SectionEditor({ section }: { section: CampusSection }) {
 }
 
 function NewSectionForm() {
-  const [state, action] = useFormState(saveCampusSection, {});
+  const [state, action] = useActionState(saveCampusSection, {});
 
   return (
     <AdminSectionCard

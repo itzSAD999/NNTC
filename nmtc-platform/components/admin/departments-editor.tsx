@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useMemo, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   createDepartment,
@@ -42,7 +42,7 @@ function Message({ state }: { state: DepartmentActionState }) {
 
 function DepartmentRow({ department }: { department: Department }) {
   const [editing, setEditing] = useState(false);
-  const [state, formAction] = useFormState(updateDepartment, {});
+  const [state, formAction] = useActionState(updateDepartment, {});
   const [name, setName] = useState(department.name);
   const [slug, setSlug] = useState(department.slug);
   const [slugTouched, setSlugTouched] = useState(false);
@@ -135,7 +135,7 @@ function DepartmentRow({ department }: { department: Department }) {
 }
 
 function AddDepartmentForm() {
-  const [state, formAction] = useFormState(createDepartment, {});
+  const [state, formAction] = useActionState(createDepartment, {});
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);

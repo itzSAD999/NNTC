@@ -21,6 +21,42 @@ export const DEFAULT_DOCUMENT_TYPES: DocumentType[] = [
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
+  {
+    id: "00000000-0000-4000-8000-000000000003",
+    name: "English Proficiency Letter",
+    code: "EP",
+    fee_amount: 40,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000004",
+    name: "Recommendation / Introduction Letter",
+    code: "RL",
+    fee_amount: 35,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000005",
+    name: "Statement of Results",
+    code: "SR",
+    fee_amount: 25,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000006",
+    name: "Certified True Copy / Verification",
+    code: "CT",
+    fee_amount: 30,
+    is_active: true,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
 ];
 
 export async function getActiveDocumentTypes(): Promise<DocumentType[]> {

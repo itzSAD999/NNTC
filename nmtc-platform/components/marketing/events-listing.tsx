@@ -1,14 +1,25 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  Calendar,
+  CalendarDays,
+  Clock,
+  Download,
+  GraduationCap,
+  List,
+  Sparkles,
+} from "lucide-react";
 
 import { PageSection } from "@/components/layout/page-section";
-
 import { EventCard } from "@/components/marketing/event-card";
+import { ACADEMIC_CALENDAR_MILESTONES } from "@/lib/data/academic-calendar";
 import type { CollegeEvent } from "@/lib/types/expansion";
 import { formatShortDate } from "@/lib/utils/format";
+import { Button } from "@/components/ui/button";
 
-type ViewMode = "list" | "calendar";
+type ViewMode = "list" | "academic" | "calendar";
 
 export function EventsListing({
   upcoming,
@@ -44,116 +55,219 @@ export function EventsListing({
 
   return (
     <PageSection bordered={false} className="space-y-16">
-      <section aria-labelledby="upcoming-events-heading">
+      <section aria-labelledby="events-heading">
         <div className="hairline-b flex flex-wrap items-end justify-between gap-4 pb-4">
           <div>
             <p className="section-eyebrow">Campus &amp; community</p>
-            <h2 id="upcoming-events-heading" className="mt-2 font-serif text-display-md">
-              Upcoming events
+            <h2 id="events-heading" className="mt-2 font-serif text-display-md">
+              {view === "academic"
+                ? "Academic Calendar 2025/2026"
+                : view === "calendar"
+                ? "Monthly Activity Schedule"
+                : "Upcoming Events"}
             </h2>
           </div>
-          <div className="flex gap-2">
+
+          {/* VIEW SWITCHER PILLS */}
+          <div className="flex flex-wrap gap-1.5 rounded-lg border border-line bg-surface p-1 shadow-2xs">
             <button
               type="button"
               onClick={() => setView("list")}
-              className={`rounded px-3 py-1.5 text-sm ${
+              className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "list"
-                  ? "bg-primary text-white"
-                  : "border border-line text-caption"
+                  ? "bg-primary text-white shadow-xs font-semibold"
+                  : "text-caption hover:text-ink"
               }`}
             >
-              List
+              Upcoming Events ({upcoming.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("academic")}
+              className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+                view === "academic"
+                  ? "bg-primary text-white shadow-xs font-semibold"
+                  : "text-caption hover:text-ink"
+              }`}
+            >
+              Academic Calendar ({ACADEMIC_CALENDAR_MILESTONES.length})
             </button>
             <button
               type="button"
               onClick={() => setView("calendar")}
-              className={`rounded px-3 py-1.5 text-sm ${
+              className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "calendar"
-                  ? "bg-primary text-white"
-                  : "border border-line text-caption"
+                  ? "bg-primary text-white shadow-xs font-semibold"
+                  : "text-caption hover:text-ink"
               }`}
             >
-              Calendar
+              Monthly Grid
             </button>
           </div>
         </div>
 
-        {view === "list" ? (
-          upcoming.length > 0 ? (
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {upcoming.map((e) => (
-                <EventCard key={e.id} event={e} />
+        {/* VIEW 1: UPCOMING EVENTS CARDS */}
+        {view === "list" && (
+          <div className="mt-8 space-y-12 animate-in fade-in duration-200">
+            {upcoming.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {upcoming.map((e) => (
+                  <EventCard key={e.id} event={e} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-line bg-surface p-8 text-center text-caption">
+                <CalendarDays className="mx-auto h-8 w-8 text-caption/50" />
+                <p className="mt-2 font-medium text-ink">
+                  No upcoming public events scheduled currently.
+                </p>
+                <p className="mt-1 text-xs">
+                  Review the Academic Calendar tab above for semester dates.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* VIEW 2: ACADEMIC CALENDAR KEY DATES */}
+        {view === "academic" && (
+          <div className="mt-8 space-y-8 animate-in fade-in duration-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-primary/20 bg-primary/5 p-5">
+              <div>
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5 text-primary" />
+                  <h3 className="font-serif text-lg font-bold text-ink">
+                    Official Nursing &amp; Midwifery Academic Timeline
+                  </h3>
+                </div>
+                <p className="mt-1 text-xs text-caption">
+                  Approved by the Academic Board and affiliated health training regulatory councils.
+                </p>
+              </div>
+              <Button asChild size="sm" variant="outline" className="shrink-0 bg-white shadow-xs">
+                <Link href="/resources" className="flex items-center gap-1.5 text-xs">
+                  <Download className="h-3.5 w-3.5" />
+                  <span>Download PDF Schedule</span>
+                </Link>
+              </Button>
+            </div>
+
+            {/* Milestones Timeline */}
+            <div className="rounded-xl border border-line bg-surface divide-y divide-line shadow-sm">
+              {ACADEMIC_CALENDAR_MILESTONES.map((milestone) => (
+                <div
+                  key={milestone.id}
+                  className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 hover:bg-bg/40 transition-colors"
+                >
+                  {/* Date Badge */}
+                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-line bg-bg text-center shadow-2xs">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary leading-none">
+                      {milestone.month}
+                    </span>
+                    <span className="font-serif text-lg font-bold text-ink leading-tight mt-0.5">
+                      {milestone.day}
+                    </span>
+                    <span className="text-[9px] text-caption font-mono leading-none">
+                      {milestone.year}
+                    </span>
+                  </div>
+
+                  {/* Milestone Details */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                        {milestone.cohort}
+                      </span>
+                      <span className="rounded-full border border-line bg-bg px-2 py-0.5 text-[11px] font-medium text-caption">
+                        {milestone.semester}
+                      </span>
+                    </div>
+                    <h4 className="mt-1.5 font-serif text-base font-bold text-ink">
+                      {milestone.title}
+                    </h4>
+                    <p className="mt-1 text-xs text-caption leading-relaxed">
+                      {milestone.details}
+                    </p>
+                  </div>
+                </div>
               ))}
             </div>
-          ) : (
-            <p className="mt-8 text-caption">No upcoming events scheduled.</p>
-          )
-        ) : (
-          <div className="mt-8 rounded border border-line bg-surface p-6">
-            <div className="flex items-center justify-between">
+          </div>
+        )}
+
+        {/* VIEW 3: MONTHLY ACTIVITY GRID */}
+        {view === "calendar" && (
+          <div className="mt-8 rounded-xl border border-line bg-surface p-6 shadow-sm animate-in fade-in duration-200">
+            <div className="flex items-center justify-between border-b border-line pb-4">
               <button
                 type="button"
                 onClick={() => shiftMonth(-1)}
-                className="text-sm text-primary hover:underline"
+                className="text-xs font-semibold text-primary hover:underline px-2 py-1"
               >
-                ← Previous
+                &larr; Previous Month
               </button>
-              <p className="font-medium text-ink">{monthLabel}</p>
+              <h3 className="font-serif text-base font-bold text-ink">
+                {monthLabel}
+              </h3>
               <button
                 type="button"
                 onClick={() => shiftMonth(1)}
-                className="text-sm text-primary hover:underline"
+                className="text-xs font-semibold text-primary hover:underline px-2 py-1"
               >
-                Next →
+                Next Month &rarr;
               </button>
             </div>
-            {calendarEvents.length > 0 ? (
-              <ul className="mt-6 space-y-3">
-                {calendarEvents.map((e) => (
-                  <li
-                    key={e.id}
-                    className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line pb-3 last:border-0"
-                  >
-                    <span className="font-medium text-ink">{e.title}</span>
-                    <span className="text-sm text-caption">
-                      {formatShortDate(e.starts_at)} · {e.location}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-6 text-sm text-caption">
-                No events in {monthLabel}.
-              </p>
-            )}
+
+            <div className="mt-6">
+              {calendarEvents.length === 0 ? (
+                <p className="text-center text-xs text-caption py-8">
+                  No public events scheduled for {monthLabel}.
+                </p>
+              ) : (
+                <ul className="divide-y divide-line">
+                  {calendarEvents.map((e) => (
+                    <li key={e.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <Link
+                          href={`/events/${e.slug}`}
+                          className="font-serif font-bold text-ink hover:text-primary transition-colors text-sm"
+                        >
+                          {e.title}
+                        </Link>
+                        {e.location && (
+                          <p className="text-xs text-caption mt-0.5">{e.location}</p>
+                        )}
+                      </div>
+                      <time
+                        dateTime={e.starts_at}
+                        className="font-mono text-xs text-caption shrink-0"
+                      >
+                        {formatShortDate(e.starts_at)}
+                      </time>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         )}
       </section>
 
-      {past.length > 0 ? (
+      {/* PAST EVENTS SECTION */}
+      {past.length > 0 && view === "list" && (
         <section aria-labelledby="past-events-heading">
-          <h2
-            id="past-events-heading"
-            className="hairline-b pb-4 font-serif text-display-md"
-          >
-            Past events archive
-          </h2>
-          <ul className="mt-8 divide-y divide-line rounded border border-line bg-surface">
-            {past.map((e) => (
-              <li key={e.id} className="px-5 py-4">
-                <a href={`/events/${e.slug}`} className="group flex flex-wrap justify-between gap-2">
-                  <span className="font-medium text-ink group-hover:text-primary">
-                    {e.title}
-                  </span>
-                  <span className="text-sm text-caption">
-                    {formatShortDate(e.starts_at)}
-                  </span>
-                </a>
-              </li>
+          <div className="hairline-b pb-4">
+            <h2 id="past-events-heading" className="font-serif text-display-sm text-caption">
+              Past events &amp; ceremonies
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3 opacity-80">
+            {past.slice(0, 3).map((e) => (
+              <EventCard key={e.id} event={e} />
             ))}
-          </ul>
+          </div>
         </section>
-      ) : null}
+      )}
     </PageSection>
   );
 }

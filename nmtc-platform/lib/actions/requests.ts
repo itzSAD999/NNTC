@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { getDocumentTypeById } from "@/lib/data/document-types";
 import { sendRequestConfirmationEmail } from "@/lib/email/request";
+import { sendRequestSubmittedSms } from "@/lib/sms/arkesel";
 import {
   EVENT_LABELS,
   PUBLIC_EVENT_ACTIONS,
@@ -178,6 +179,15 @@ export async function submitRequest(
     deliveryMethod: data.delivery_method,
   });
 
+  if (data.student_phone) {
+    await sendRequestSubmittedSms({
+      phone: data.student_phone,
+      studentName: data.student_name,
+      referenceNo: inserted.reference_no,
+      docType: docType.name,
+    }).catch(() => {});
+  }
+
   redirect(`/request/success?ref=${encodeURIComponent(inserted.reference_no)}`);
 }
 
@@ -337,6 +347,15 @@ export async function resubmitRequest(
     deliveryMethod: data.delivery_method,
   });
 
+  if (data.student_phone) {
+    await sendRequestSubmittedSms({
+      phone: data.student_phone,
+      studentName: data.student_name,
+      referenceNo: existing.reference_no,
+      docType: docType.name,
+    }).catch(() => {});
+  }
+
   redirect(`/request/success?ref=${encodeURIComponent(existing.reference_no)}`);
 }
 
@@ -423,3 +442,4 @@ export async function trackByReference(
     };
   }
 }
+

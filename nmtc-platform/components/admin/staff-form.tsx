@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   createStaff,
@@ -52,7 +52,7 @@ export function StaffForm({
   profile?: StaffProfile;
 }) {
   const action = profile ? updateStaff : createStaff;
-  const [state, formAction] = useFormState(action, {});
+  const [state, formAction] = useActionState(action, {});
   const [name, setName] = useState(profile?.full_name ?? "");
   const [slug, setSlug] = useState(profile?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(Boolean(profile?.slug));

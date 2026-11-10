@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import { submitContactMessage } from "@/lib/actions/contact";
 import { CONTACT_SUBJECTS } from "@/lib/validation/contact";
@@ -21,7 +21,7 @@ function SubmitButton() {
 }
 
 export function ContactForm() {
-  const [state, formAction] = useFormState(submitContactMessage, {});
+  const [state, formAction] = useActionState(submitContactMessage, {});
   const [turnstileToken, setTurnstileToken] = useState("");
 
   if (state.success) {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
 import { signInStaff, type AuthFormState } from "@/lib/auth/actions";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ function SubmitButton() {
 }
 
 export function LoginForm() {
-  const [state, formAction] = useFormState(signInStaff, {} as AuthFormState);
+  const [state, formAction] = useActionState(signInStaff, {} as AuthFormState);
 
   return (
     <div className="rounded border border-line bg-surface p-6 md:p-8">

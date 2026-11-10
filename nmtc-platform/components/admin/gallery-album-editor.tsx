@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   deleteGalleryAlbumForm,
@@ -44,7 +44,7 @@ function MediaRow({
   albumId: string;
   media: GalleryAlbumWithMedia["media"][0];
 }) {
-  const [state, action] = useFormState(saveGalleryMedia, {});
+  const [state, action] = useActionState(saveGalleryMedia, {});
   const [url, setUrl] = useState(media.url);
 
   return (
@@ -117,7 +117,7 @@ function NewMediaRow({
   albumId: string;
   nextOrder: number;
 }) {
-  const [state, action] = useFormState(saveGalleryMedia, {});
+  const [state, action] = useActionState(saveGalleryMedia, {});
   const [url, setUrl] = useState("");
   const [type, setType] = useState<"image" | "video">("image");
 
@@ -162,7 +162,7 @@ function NewMediaRow({
 }
 
 export function GalleryAlbumEditor({ album }: { album: GalleryAlbumWithMedia }) {
-  const [albumState, albumAction] = useFormState(saveGalleryAlbum, {});
+  const [albumState, albumAction] = useActionState(saveGalleryAlbum, {});
   const [dirty, setDirty] = useState(false);
 
   useUnsavedChanges(dirty);
@@ -238,7 +238,7 @@ export function GalleryAlbumEditor({ album }: { album: GalleryAlbumWithMedia }) 
 }
 
 export function NewAlbumForm() {
-  const [state, action] = useFormState(saveGalleryAlbum, {});
+  const [state, action] = useActionState(saveGalleryAlbum, {});
 
   return (
     <AdminSectionCard

@@ -22,6 +22,7 @@ const FOOTER_LINKS = [
   { href: "/news", label: "News" },
   { href: "/contact", label: "Contact" },
   { href: "/request/track", label: "Track Request" },
+  { href: "/verify", label: "Verify Document" },
   { href: "/login", label: "Staff Login" },
 ] as const;
 

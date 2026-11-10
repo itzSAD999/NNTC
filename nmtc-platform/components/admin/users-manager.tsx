@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useMemo, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { Suspense, useActionState, useMemo, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   createStaff,
@@ -98,7 +98,7 @@ export function UsersManager({
   staff: StaffAccount[];
   currentUserId: string;
 }) {
-  const [createState, createAction] = useFormState(createStaff, {});
+  const [createState, createAction] = useActionState(createStaff, {});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [resetId, setResetId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -341,7 +341,7 @@ function EditStaffDialog({
   currentUserId: string;
   onClose: () => void;
 }) {
-  const [state, action] = useFormState(updateStaff, {});
+  const [state, action] = useActionState(updateStaff, {});
 
   return (
     <AdminModal open title={`Edit ${member.full_name}`} onClose={onClose}>
@@ -411,7 +411,7 @@ function ResetPasswordDialog({
   memberId: string;
   onClose: () => void;
 }) {
-  const [state, action] = useFormState(resetStaffPassword, {});
+  const [state, action] = useActionState(resetStaffPassword, {});
 
   return (
     <AdminModal open title="Reset password" onClose={onClose}>

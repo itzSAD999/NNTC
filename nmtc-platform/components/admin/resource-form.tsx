@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 import {
   createResource,
@@ -41,7 +41,7 @@ function Message({ state }: { state: ResourceActionState }) {
 
 export function ResourceForm({ resource }: { resource?: Resource }) {
   const action = resource ? updateResource : createResource;
-  const [state, formAction] = useFormState(action, {});
+  const [state, formAction] = useActionState(action, {});
   const [fileUrl, setFileUrl] = useState(resource?.file_url ?? "");
   const [dirty, setDirty] = useState(false);
 
