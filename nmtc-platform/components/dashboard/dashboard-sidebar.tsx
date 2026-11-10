@@ -151,7 +151,7 @@ export function DashboardSidebar({
           <span className="font-serif font-bold text-sm text-ink">
             Nandom NMTC
           </span>
-          <span className="rounded bg-primary/10 px-1.5 py-0.2 text-[0.65rem] font-semibold text-primary">
+          <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[0.65rem] font-semibold text-primary">
             {roleLabel}
           </span>
         </Link>
@@ -169,7 +169,7 @@ export function DashboardSidebar({
       {/* Mobile Drawer Backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity lg:hidden"
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity lg:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -290,7 +290,7 @@ export function DashboardSidebar({
                       <span className="font-serif font-bold text-sm tracking-tight text-ink truncate">
                         Nandom NMTC
                       </span>
-                      <span className="rounded bg-primary/10 px-1.5 py-0.2 text-[0.65rem] font-semibold text-primary">
+                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[0.65rem] font-semibold text-primary">
                         EMS
                       </span>
                     </div>
@@ -415,7 +415,7 @@ export function DashboardSidebar({
                                     ? "justify-center p-2.5"
                                     : "gap-3 px-3 py-2",
                                   active
-                                    ? "bg-primary/10 text-primary font-semibold shadow-xs"
+                                    ? "bg-primary/10 text-primary font-semibold shadow-sm"
                                     : "text-ink/80 hover:bg-bg hover:text-ink"
                                 )}
                               >
@@ -500,7 +500,7 @@ export function DashboardSidebar({
                 <Link
                   href="/"
                   target="_blank"
-                  className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-[0.7rem] font-medium text-ink transition-colors hover:bg-bg hover:text-primary shadow-2xs"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-[0.7rem] font-medium text-ink transition-colors hover:bg-bg hover:text-primary shadow-sm"
                 >
                   <ExternalLink className="h-3 w-3" />
                   <span>Public Site</span>
@@ -509,7 +509,7 @@ export function DashboardSidebar({
                 <form action={signOutStaff} className="w-full">
                   <button
                     type="submit"
-                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-[0.7rem] font-medium text-caption transition-colors hover:bg-red-50 hover:text-red-700 hover:border-red-200 shadow-2xs"
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-[0.7rem] font-medium text-caption transition-colors hover:bg-red-50 hover:text-red-700 hover:border-red-200 shadow-sm"
                   >
                     <LogOut className="h-3 w-3" />
                     <span>Sign out</span>

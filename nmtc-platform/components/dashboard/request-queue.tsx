@@ -95,7 +95,7 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
   return (
     <div className="space-y-4">
       {/* Search and Filters Bar */}
-      <div className="rounded-xl border border-line bg-surface p-3.5 shadow-2xs space-y-3">
+      <div className="rounded-xl border border-line bg-surface p-3.5 shadow-sm space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {/* Real-time search input */}
           <div className="relative min-w-0 flex-1">
@@ -198,7 +198,7 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-2xs">
+        <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-sm">
           <table className="w-full min-w-[700px] text-left text-sm">
             <thead>
               <tr className="border-b border-line bg-bg/50 text-[0.7rem] uppercase tracking-wider text-caption font-semibold">

@@ -46,7 +46,7 @@ export function InboxView({ messages }: { messages: ContactMessage[] }) {
   return (
     <div className="space-y-4">
       {/* Search and Filters Bar */}
-      <div className="rounded-xl border border-line bg-surface p-3.5 shadow-2xs space-y-3">
+      <div className="rounded-xl border border-line bg-surface p-3.5 shadow-sm space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative min-w-0 flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-caption" />
@@ -120,7 +120,7 @@ export function InboxView({ messages }: { messages: ContactMessage[] }) {
         <div className="grid gap-4 lg:grid-cols-[340px_1fr]">
           <ul
             className={cn(
-              "max-h-[70vh] overflow-y-auto rounded-xl border border-line bg-surface shadow-2xs divide-y divide-line",
+              "max-h-[70vh] overflow-y-auto rounded-xl border border-line bg-surface shadow-sm divide-y divide-line",
               selected && "hidden lg:block"
             )}
           >
@@ -158,7 +158,7 @@ export function InboxView({ messages }: { messages: ContactMessage[] }) {
           </ul>
 
           {selected ? (
-            <article className="rounded-xl border border-line bg-surface p-6 shadow-2xs">
+            <article className="rounded-xl border border-line bg-surface p-6 shadow-sm">
               <button
                 type="button"
                 className="mb-4 text-xs font-semibold text-primary hover:underline lg:hidden"

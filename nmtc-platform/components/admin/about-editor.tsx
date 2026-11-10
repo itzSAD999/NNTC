@@ -81,14 +81,14 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
   return (
     <div className="space-y-6">
       {/* Sub-navigation Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto rounded-xl border border-line bg-surface p-1.5 shadow-2xs">
+      <div className="flex items-center gap-1.5 overflow-x-auto rounded-xl border border-line bg-surface p-1.5 shadow-sm">
         <button
           type="button"
           onClick={() => setActiveTab("mission")}
           className={cn(
             "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all shrink-0",
             activeTab === "mission"
-              ? "bg-primary text-white shadow-xs"
+              ? "bg-primary text-white shadow-sm"
               : "text-caption hover:bg-bg hover:text-ink"
           )}
         >
@@ -102,7 +102,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
           className={cn(
             "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all shrink-0",
             activeTab === "principal"
-              ? "bg-primary text-white shadow-xs"
+              ? "bg-primary text-white shadow-sm"
               : "text-caption hover:bg-bg hover:text-ink"
           )}
         >
@@ -116,7 +116,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
           className={cn(
             "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all shrink-0",
             activeTab === "accreditations"
-              ? "bg-primary text-white shadow-xs"
+              ? "bg-primary text-white shadow-sm"
               : "text-caption hover:bg-bg hover:text-ink"
           )}
         >
@@ -130,7 +130,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
           className={cn(
             "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all shrink-0",
             activeTab === "org"
-              ? "bg-primary text-white shadow-xs"
+              ? "bg-primary text-white shadow-sm"
               : "text-caption hover:bg-bg hover:text-ink"
           )}
         >
@@ -172,7 +172,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
 
           {/* Vision & Mission Side-by-Side Cards */}
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-3">
+            <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-3">
               <div className="flex items-center gap-2 text-primary font-semibold text-sm">
                 <Eye className="h-4 w-4" />
                 <span>Institutional Vision</span>
@@ -190,7 +190,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
               />
             </div>
 
-            <div className="rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-3">
+            <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-3">
               <div className="flex items-center gap-2 text-primary font-semibold text-sm">
                 <Compass className="h-4 w-4" />
                 <span>Institutional Mission</span>
@@ -210,7 +210,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
           </div>
 
           {/* Core Values Card with Live Tag Preview */}
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-4">
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-serif text-base font-semibold text-ink">
@@ -244,7 +244,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
           </div>
 
           {/* Institutional History Card */}
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-4">
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-4">
             <div>
               <h3 className="font-serif text-base font-semibold text-ink">
                 College History & Background
@@ -280,7 +280,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
 
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Left: Principal Info & Photo Card */}
-            <div className="rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-4">
+            <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-4">
               <h3 className="font-serif text-base font-semibold text-ink">
                 Executive Profile
               </h3>
@@ -326,7 +326,7 @@ export function AboutEditor({ data }: { data: AboutAdminData }) {
             </div>
 
             {/* Right: Welcome Address / Message */}
-            <div className="lg:col-span-2 rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-4">
+            <div className="lg:col-span-2 rounded-xl border border-line bg-surface p-5 shadow-sm space-y-4">
               <div>
                 <h3 className="font-serif text-base font-semibold text-ink">
                   Welcome Address to Students & Public
@@ -423,7 +423,7 @@ function AccreditationRow({
   const [logoUrl, setLogoUrl] = useState(acc?.logo_url ?? "");
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-2xs space-y-3">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm space-y-3">
       <form action={action} className="space-y-3">
         {acc ? <input type="hidden" name="id" value={acc.id} /> : null}
         <div className="grid gap-3 sm:grid-cols-3">
@@ -494,7 +494,7 @@ function OrgUnitRow({
   const parents = allUnits.filter((u) => !unit || u.id !== unit.id);
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-2xs space-y-3">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm space-y-3">
       <form action={action} className="space-y-3">
         {unit ? <input type="hidden" name="id" value={unit.id} /> : null}
         <div className="grid gap-3 sm:grid-cols-2">

@@ -44,7 +44,7 @@ export function RequestWorkflowGuide({
   const [showTips, setShowTips] = useState(false);
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-3 shadow-2xs">
+    <div className="rounded-xl border border-line bg-surface p-3 shadow-sm">
       <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
         {/* Compact Stepper */}
         <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-0.5 text-xs">
@@ -70,7 +70,7 @@ export function RequestWorkflowGuide({
                   />
                   <span>{step.label}</span>
                   {isCurrent && (
-                    <span className="rounded bg-primary text-white text-[0.6rem] px-1.5 py-0.2 uppercase tracking-wider font-bold">
+                    <span className="rounded bg-primary text-white text-[0.6rem] px-1.5 py-0.5 uppercase tracking-wider font-bold">
                       Your Desk
                     </span>
                   )}

@@ -95,7 +95,7 @@ export function TiptapEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-primary underline font-medium hover:text-primary-hover",
+          class: "text-primary underline font-medium hover:text-primary-deep",
         },
       }),
     ],
@@ -140,7 +140,7 @@ export function TiptapEditor({
   };
 
   return (
-    <div className={cn("rounded-xl border border-line bg-surface shadow-2xs overflow-hidden", className)}>
+    <div className={cn("rounded-xl border border-line bg-surface shadow-sm overflow-hidden", className)}>
       {/* TOOLBAR */}
       <div className="flex flex-wrap items-center justify-between gap-1 border-b border-line bg-bg/50 px-2 py-1.5">
         <div className="flex flex-wrap items-center gap-1">

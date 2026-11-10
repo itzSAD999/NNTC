@@ -69,13 +69,13 @@ export function EventsListing({
           </div>
 
           {/* VIEW SWITCHER PILLS */}
-          <div className="flex flex-wrap gap-1.5 rounded-lg border border-line bg-surface p-1 shadow-2xs">
+          <div className="flex flex-wrap gap-1.5 rounded-lg border border-line bg-surface p-1 shadow-sm">
             <button
               type="button"
               onClick={() => setView("list")}
               className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "list"
-                  ? "bg-primary text-white shadow-xs font-semibold"
+                  ? "bg-primary text-white shadow-sm font-semibold"
                   : "text-caption hover:text-ink"
               }`}
             >
@@ -86,7 +86,7 @@ export function EventsListing({
               onClick={() => setView("academic")}
               className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "academic"
-                  ? "bg-primary text-white shadow-xs font-semibold"
+                  ? "bg-primary text-white shadow-sm font-semibold"
                   : "text-caption hover:text-ink"
               }`}
             >
@@ -97,7 +97,7 @@ export function EventsListing({
               onClick={() => setView("calendar")}
               className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "calendar"
-                  ? "bg-primary text-white shadow-xs font-semibold"
+                  ? "bg-primary text-white shadow-sm font-semibold"
                   : "text-caption hover:text-ink"
               }`}
             >
@@ -144,7 +144,7 @@ export function EventsListing({
                   Approved by the Academic Board and affiliated health training regulatory councils.
                 </p>
               </div>
-              <Button asChild size="sm" variant="outline" className="shrink-0 bg-white shadow-xs">
+              <Button asChild size="sm" variant="outline" className="shrink-0 bg-white shadow-sm">
                 <Link href="/resources" className="flex items-center gap-1.5 text-xs">
                   <Download className="h-3.5 w-3.5" />
                   <span>Download PDF Schedule</span>
@@ -160,7 +160,7 @@ export function EventsListing({
                   className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 hover:bg-bg/40 transition-colors"
                 >
                   {/* Date Badge */}
-                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-line bg-bg text-center shadow-2xs">
+                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-line bg-bg text-center shadow-sm">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary leading-none">
                       {milestone.month}
                     </span>

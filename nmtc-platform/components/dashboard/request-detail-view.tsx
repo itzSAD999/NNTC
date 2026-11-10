@@ -189,7 +189,7 @@ export function RequestDetailView({
                     state === "completed"
                       ? "border-primary/30 bg-primary/5 text-primary"
                       : state === "active"
-                      ? "border-primary bg-primary text-white shadow-xs font-medium"
+                      ? "border-primary bg-primary text-white shadow-sm font-medium"
                       : state === "alert"
                       ? "border-danger/30 bg-danger/5 text-danger"
                       : "border-line bg-bg/50 text-caption opacity-70"

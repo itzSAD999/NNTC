@@ -92,7 +92,7 @@ export function EventsHomeStrip({ events }: { events: CollegeEvent[] }) {
             <div className="flex items-center justify-between border-b border-line pb-4">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Calendar className="h-4.5 w-4.5" />
+                  <Calendar className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="font-serif text-base font-bold text-ink">
@@ -113,7 +113,7 @@ export function EventsHomeStrip({ events }: { events: CollegeEvent[] }) {
               {keyMilestones.map((item) => (
                 <div key={item.id} className="flex items-start gap-3.5 py-3 first:pt-1 last:pb-1">
                   {/* Date Badge */}
-                  <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg border border-line bg-bg text-center shadow-2xs">
+                  <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg border border-line bg-bg text-center shadow-sm">
                     <span className="text-[9px] font-bold uppercase tracking-wider text-primary leading-none">
                       {item.month}
                     </span>
@@ -125,7 +125,7 @@ export function EventsHomeStrip({ events }: { events: CollegeEvent[] }) {
                   {/* Milestone Info */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="rounded bg-bg px-1.5 py-0.2 text-[10px] font-semibold text-caption border border-line">
+                      <span className="rounded bg-bg px-1.5 py-0.5 text-[10px] font-semibold text-caption border border-line">
                         {item.cohort}
                       </span>
                       <span className="text-[10px] font-medium text-caption">

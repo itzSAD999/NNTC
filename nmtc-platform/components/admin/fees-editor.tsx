@@ -110,9 +110,9 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("tuition")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "tuition"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -120,7 +120,7 @@ export function FeesEditor({
           <span>Programme Tuition & Fees</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.2 text-[10px]",
+              "rounded-full px-1.5 py-0.5 text-[10px]",
               activeTab === "tuition" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -132,9 +132,9 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("methods")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "methods"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -142,7 +142,7 @@ export function FeesEditor({
           <span>Payment Methods & Accounts</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.2 text-[10px]",
+              "rounded-full px-1.5 py-0.5 text-[10px]",
               activeTab === "methods" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -154,9 +154,9 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("scholarships")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "scholarships"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -164,7 +164,7 @@ export function FeesEditor({
           <span>Scholarships & Financial Aid</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.2 text-[10px]",
+              "rounded-full px-1.5 py-0.5 text-[10px]",
               activeTab === "scholarships" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -176,9 +176,9 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("policies")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "policies"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -424,7 +424,7 @@ function FeeRow({
   const [state, action] = useActionState(saveFee, {});
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-2xs hover:border-line/80 transition-shadow">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm hover:border-line/80 transition-shadow">
       <form
         action={action}
         className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 items-end"
@@ -540,7 +540,7 @@ function PaymentMethodRow({ method }: { method?: PaymentMethod }) {
   const [state, action] = useActionState(savePaymentMethod, {});
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-2xs">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm">
       <form action={action} className="grid gap-3 sm:grid-cols-12 items-end">
         {method ? <input type="hidden" name="id" value={method.id} /> : null}
 
@@ -606,7 +606,7 @@ function ScholarshipRow({ scholarship }: { scholarship?: Scholarship }) {
   const [state, action] = useActionState(saveScholarship, {});
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-5 shadow-2xs space-y-3">
+    <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-3">
       <form action={action} className="space-y-3">
         {scholarship ? <input type="hidden" name="id" value={scholarship.id} /> : null}
 

@@ -43,7 +43,7 @@ function SubmitButton({ label }: { label: string }) {
     <Button
       type="submit"
       disabled={pending}
-      className="bg-primary text-white hover:bg-primary-hover shadow-sm"
+      className="bg-primary text-white hover:bg-primary-deep shadow-sm"
     >
       {pending ? (
         <span className="flex items-center gap-1.5">
@@ -149,9 +149,9 @@ export function AdminSettingsForm({
           type="button"
           onClick={() => setActiveTab("branding")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "branding"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -163,9 +163,9 @@ export function AdminSettingsForm({
           type="button"
           onClick={() => setActiveTab("fees")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "fees"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -173,7 +173,7 @@ export function AdminSettingsForm({
           <span>Document Fees</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.2 text-[10px]",
+              "rounded-full px-1.5 py-0.5 text-[10px]",
               activeTab === "fees" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -185,9 +185,9 @@ export function AdminSettingsForm({
           type="button"
           onClick={() => setActiveTab("notifications")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "notifications"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -199,9 +199,9 @@ export function AdminSettingsForm({
           type="button"
           onClick={() => setActiveTab("system")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "system"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -516,7 +516,7 @@ export function AdminSettingsForm({
                     key={item.token}
                     type="button"
                     onClick={() => insertToken(item.token)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1 text-xs font-mono text-ink shadow-2xs hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1 text-xs font-mono text-ink shadow-sm hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
                   >
                     <span>{item.token}</span>
                     <span className="text-[10px] font-sans text-caption">({item.label})</span>
@@ -651,7 +651,7 @@ function DocumentFeeCard({ doc }: { doc: DocumentType }) {
   const timeline = DOC_TIMELINES[doc.code] ?? "3–5 working days processing";
 
   return (
-    <div className="flex flex-col justify-between rounded-xl border border-line bg-surface p-4 shadow-2xs hover:border-line/80 transition-shadow">
+    <div className="flex flex-col justify-between rounded-xl border border-line bg-surface p-4 shadow-sm hover:border-line/80 transition-shadow">
       <div>
         <div className="flex items-start justify-between gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-bg text-primary border border-line">

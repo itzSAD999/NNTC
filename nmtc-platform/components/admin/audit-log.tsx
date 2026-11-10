@@ -69,7 +69,7 @@ export function AuditLogTable({
   return (
     <div className="space-y-4">
       {/* Search and Server Filter Bar */}
-      <div className="rounded-xl border border-line bg-surface p-4 shadow-2xs space-y-4">
+      <div className="rounded-xl border border-line bg-surface p-4 shadow-sm space-y-4">
         {/* Instant Search Bar */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-caption" />
@@ -171,7 +171,7 @@ export function AuditLogTable({
       ) : filteredEvents.length === 0 ? (
         <EmptyState message="No audit events match your search term." />
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-2xs">
+        <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-sm">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead>
               <tr className="border-b border-line bg-bg/50 text-[0.7rem] uppercase tracking-wider text-caption font-semibold">

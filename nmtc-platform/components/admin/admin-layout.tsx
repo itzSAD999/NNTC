@@ -19,7 +19,7 @@ export function CollapsibleGuide({ section }: { section: AdminSectionKey }) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-2xs"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-sm"
         title="Page tips"
       >
         <HelpCircle className="h-3.5 w-3.5 text-primary" />
@@ -65,7 +65,7 @@ export function AdminListShell({
               <Link
                 href={guide.publicPath}
                 target="_blank"
-                className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[0.7rem] font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[0.7rem] font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-sm"
               >
                 <ExternalLink className="h-3 w-3" />
                 <span>Live page</span>
@@ -146,7 +146,7 @@ export function AdminSectionCard({
   return (
     <section
       className={cn(
-        "rounded-xl border border-line bg-surface p-5 sm:p-6 shadow-2xs space-y-5",
+        "rounded-xl border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5",
         className
       )}
     >
@@ -195,7 +195,7 @@ export function AdminTable({
   minWidth?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-2xs">
+    <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-sm">
       <table className="w-full text-left text-sm" style={{ minWidth }}>
         {children}
       </table>

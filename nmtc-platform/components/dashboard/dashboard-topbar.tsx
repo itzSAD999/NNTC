@@ -96,7 +96,7 @@ export function DashboardTopBar({ role, roleLabel }: DashboardTopBarProps) {
           className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg px-3 py-1 text-xs font-medium text-ink transition-colors hover:border-primary hover:text-primary"
         >
           <ExternalLink className="h-3.5 w-3.5 text-caption" />
-          <span className="hidden xs:inline">Live Site</span>
+          <span className="hidden sm:inline">Live Site</span>
         </Link>
 
         <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">

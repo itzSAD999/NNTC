@@ -99,9 +99,9 @@ export function AdmissionsEditor({
           type="button"
           onClick={() => setActiveTab("guidelines")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "guidelines"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -113,9 +113,9 @@ export function AdmissionsEditor({
           type="button"
           onClick={() => setActiveTab("checklist")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "checklist"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -123,7 +123,7 @@ export function AdmissionsEditor({
           <span>Required Documents</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.2 text-[10px]",
+              "rounded-full px-1.5 py-0.5 text-[10px]",
               activeTab === "checklist" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -135,9 +135,9 @@ export function AdmissionsEditor({
           type="button"
           onClick={() => setActiveTab("faqs")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-2xs",
+            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "faqs"
-              ? "bg-primary text-white shadow-xs font-semibold"
+              ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
           )}
         >
@@ -145,7 +145,7 @@ export function AdmissionsEditor({
           <span>Admissions FAQs</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.2 text-[10px]",
+              "rounded-full px-1.5 py-0.5 text-[10px]",
               activeTab === "faqs" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -206,7 +206,7 @@ export function AdmissionsEditor({
 
               <div className="space-y-3">
                 {steps.map((step, i) => (
-                  <div key={i} className="flex items-start gap-3 rounded-lg border border-line bg-surface p-3.5 shadow-2xs">
+                  <div key={i} className="flex items-start gap-3 rounded-lg border border-line bg-surface p-3.5 shadow-sm">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
                       {i + 1}
                     </span>
@@ -475,7 +475,7 @@ function FaqRow({ faq }: { faq?: AdmissionsFaq }) {
   const [state, action] = useActionState(saveAdmissionsFaq, {});
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-2xs">
+    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm">
       <form action={action} className="space-y-3">
         {faq ? <input type="hidden" name="id" value={faq.id} /> : null}
         <div className="space-y-1.5">
