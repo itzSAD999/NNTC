@@ -11,6 +11,8 @@ import {
   Filter,
   Plus,
   ExternalLink,
+  Receipt,
+  Trash2,
 } from "lucide-react";
 
 import {
@@ -24,6 +26,7 @@ import {
   type FeesActionState,
 } from "@/lib/actions/fees";
 import type {
+  FeeComponent,
   FeeWithProgram,
   FinancialAidContent,
   PaymentMethod,
@@ -110,7 +113,7 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("tuition")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
+            "flex items-center gap-2 rounded-none px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "tuition"
               ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
@@ -120,7 +123,7 @@ export function FeesEditor({
           <span>Programme Tuition & Fees</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.5 text-[10px]",
+              "rounded-none px-1.5 py-0.5 text-[10px]",
               activeTab === "tuition" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -132,7 +135,7 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("methods")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
+            "flex items-center gap-2 rounded-none px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "methods"
               ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
@@ -142,7 +145,7 @@ export function FeesEditor({
           <span>Payment Methods & Accounts</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.5 text-[10px]",
+              "rounded-none px-1.5 py-0.5 text-[10px]",
               activeTab === "methods" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -154,7 +157,7 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("scholarships")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
+            "flex items-center gap-2 rounded-none px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "scholarships"
               ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
@@ -164,7 +167,7 @@ export function FeesEditor({
           <span>Scholarships & Financial Aid</span>
           <span
             className={cn(
-              "rounded-full px-1.5 py-0.5 text-[10px]",
+              "rounded-none px-1.5 py-0.5 text-[10px]",
               activeTab === "scholarships" ? "bg-white/20 text-white" : "bg-bg text-caption"
             )}
           >
@@ -176,7 +179,7 @@ export function FeesEditor({
           type="button"
           onClick={() => setActiveTab("policies")}
           className={cn(
-            "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
+            "flex items-center gap-2 rounded-none px-3.5 py-2 text-xs sm:text-sm font-medium transition-all shadow-sm",
             activeTab === "policies"
               ? "bg-primary text-white shadow-sm font-semibold"
               : "bg-surface border border-line text-caption hover:text-ink hover:border-line/80"
@@ -189,7 +192,7 @@ export function FeesEditor({
 
       {/* TAB 1: TUITION & PROGRAMME FEE SCHEDULES */}
       {activeTab === "tuition" && (
-        <section className="rounded-xl border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
+        <section className="rounded-none border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
             <div>
               <h2 className="font-serif text-xl font-medium text-ink">
@@ -248,14 +251,14 @@ export function FeesEditor({
               <FeeRow key={fee.id} fee={fee} programs={programs} />
             ))}
             {filteredFees.length === 0 && (
-              <div className="rounded-lg border border-dashed border-line p-8 text-center text-xs text-caption">
+              <div className="rounded-none border border-dashed border-line p-8 text-center text-xs text-caption">
                 No fee schedules match your search or filter criteria.
               </div>
             )}
           </div>
 
           {/* Add New Fee Schedule */}
-          <div className="rounded-xl border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
+          <div className="rounded-none border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
             <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
               Create New Fee Schedule
             </p>
@@ -266,7 +269,7 @@ export function FeesEditor({
 
       {/* TAB 2: PAYMENT METHODS & ACCOUNTS */}
       {activeTab === "methods" && (
-        <section className="rounded-xl border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
+        <section className="rounded-none border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
             <div>
               <h2 className="font-serif text-xl font-medium text-ink">
@@ -276,7 +279,7 @@ export function FeesEditor({
                 Official institution bank accounts, MoMo merchant paybills, and cashier payment instructions.
               </p>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg px-3 py-1 text-xs font-medium text-caption">
+            <span className="inline-flex items-center gap-1.5 rounded-none border border-line bg-bg px-3 py-1 text-xs font-medium text-caption">
               {paymentMethods.length} Channels Active
             </span>
           </div>
@@ -287,13 +290,13 @@ export function FeesEditor({
                 <PaymentMethodRow key={m.id} method={m} />
               ))}
               {paymentMethods.length === 0 && (
-                <div className="rounded-lg border border-dashed border-line p-6 text-center text-xs text-caption">
+                <div className="rounded-none border border-dashed border-line p-6 text-center text-xs text-caption">
                   No payment methods configured yet.
                 </div>
               )}
             </div>
 
-            <div className="rounded-xl border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
+            <div className="rounded-none border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
               <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
                 Register New Payment Channel
               </p>
@@ -305,7 +308,7 @@ export function FeesEditor({
 
       {/* TAB 3: SCHOLARSHIPS & FINANCIAL AID */}
       {activeTab === "scholarships" && (
-        <section className="rounded-xl border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
+        <section className="rounded-none border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
             <div>
               <h2 className="font-serif text-xl font-medium text-ink">
@@ -315,7 +318,7 @@ export function FeesEditor({
                 Government bursary programs, NGO grants, and private nursing scholarships available to students.
               </p>
             </div>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg px-3 py-1 text-xs font-medium text-caption">
+            <span className="inline-flex items-center gap-1.5 rounded-none border border-line bg-bg px-3 py-1 text-xs font-medium text-caption">
               {scholarships.length} Aid Programs
             </span>
           </div>
@@ -326,13 +329,13 @@ export function FeesEditor({
                 <ScholarshipRow key={s.id} scholarship={s} />
               ))}
               {scholarships.length === 0 && (
-                <div className="rounded-lg border border-dashed border-line p-6 text-center text-xs text-caption">
+                <div className="rounded-none border border-dashed border-line p-6 text-center text-xs text-caption">
                   No scholarship programs added yet.
                 </div>
               )}
             </div>
 
-            <div className="rounded-xl border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
+            <div className="rounded-none border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
               <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
                 Add Scholarship or Grant Program
               </p>
@@ -344,7 +347,7 @@ export function FeesEditor({
 
       {/* TAB 4: BURSARY POLICIES & SCHEDULES */}
       {activeTab === "policies" && (
-        <section className="rounded-xl border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
+        <section className="rounded-none border border-line bg-surface p-6 shadow-sm sm:p-8 animate-in fade-in duration-200">
           <div className="border-b border-line pb-4 mb-6">
             <h2 className="font-serif text-xl font-medium text-ink">
               Bursary Policies & Guidelines
@@ -422,14 +425,57 @@ function FeeRow({
   programs: { id: string; name: string }[];
 }) {
   const [state, action] = useActionState(saveFee, {});
+  const [components, setComponents] = useState<FeeComponent[]>(
+    fee?.components && fee.components.length > 0 ? fee.components : []
+  );
+  const [showBreakdown, setShowBreakdown] = useState(
+    (fee?.components && fee.components.length > 0) || false
+  );
+  const [amount, setAmount] = useState<string | number>(
+    fee?.amount !== undefined ? fee.amount : ""
+  );
+
+  function handleAddComponent() {
+    setComponents((prev) => [...prev, { name: "", amount: 0 }]);
+  }
+
+  function handleRemoveComponent(index: number) {
+    const updated = components.filter((_, i) => i !== index);
+    setComponents(updated);
+    if (updated.length > 0) {
+      const sum = updated.reduce((acc, c) => acc + (Number(c.amount) || 0), 0);
+      setAmount(sum);
+    }
+  }
+
+  function handleComponentChange(
+    index: number,
+    field: "name" | "amount",
+    val: string | number
+  ) {
+    const updated = [...components];
+    if (field === "name") {
+      updated[index] = { ...updated[index], name: String(val) };
+    } else {
+      updated[index] = { ...updated[index], amount: Number(val) || 0 };
+    }
+    setComponents(updated);
+    const sum = updated.reduce((acc, c) => acc + (Number(c.amount) || 0), 0);
+    setAmount(sum);
+  }
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm hover:border-line/80 transition-shadow">
+    <div className="rounded-none border border-line bg-surface p-4 sm:p-5 shadow-sm hover:border-line/80 transition-shadow">
       <form
         action={action}
         className="grid gap-3 sm:grid-cols-2 lg:grid-cols-12 items-end"
       >
         {fee ? <input type="hidden" name="id" value={fee.id} /> : null}
+        <input
+          type="hidden"
+          name="components_json"
+          value={components.length > 0 ? JSON.stringify(components) : ""}
+        />
 
         <div className="space-y-1 sm:col-span-2 lg:col-span-3">
           <Label className="text-[11px] font-semibold uppercase tracking-wider text-caption">
@@ -438,7 +484,7 @@ function FeeRow({
           <select
             name="program_id"
             defaultValue={fee?.program_id ?? ""}
-            className="flex h-9 w-full rounded border border-line bg-bg px-2 text-xs font-medium text-ink"
+            className="flex h-9 w-full rounded-none border border-line bg-bg px-2 text-xs font-medium text-ink"
           >
             <option value="">All programmes</option>
             {programs.map((p) => (
@@ -457,7 +503,7 @@ function FeeRow({
             name="year_label"
             defaultValue={fee?.year_label}
             placeholder="e.g. Year 1"
-            className="h-9 text-xs font-medium"
+            className="h-9 text-xs font-medium rounded-none"
             required
           />
         </div>
@@ -470,52 +516,74 @@ function FeeRow({
             name="fee_type"
             defaultValue={fee?.fee_type}
             placeholder="e.g. Tuition & Clinical Training"
-            className="h-9 text-xs font-medium"
+            className="h-9 text-xs font-medium rounded-none"
             required
           />
         </div>
 
         <div className="space-y-1 sm:col-span-1 lg:col-span-2">
           <Label className="text-[11px] font-semibold uppercase tracking-wider text-caption">
-            Amount (GHS)
+            Total Amount (GHS)
           </Label>
           <Input
             name="amount"
             type="number"
             min={0}
             step="0.01"
-            defaultValue={fee?.amount}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder="0.00"
-            className="h-9 text-xs font-mono font-bold"
+            className="h-9 text-xs font-mono font-bold rounded-none"
             required
           />
         </div>
 
-        <div className="space-y-1 sm:col-span-1 lg:col-span-1">
+        <div className="space-y-1 sm:col-span-1 lg:col-span-2">
           <Label className="text-[11px] font-semibold uppercase tracking-wider text-caption">
-            Sort
+            Sort Order
           </Label>
           <Input
             name="sort_order"
             type="number"
             defaultValue={fee?.sort_order ?? 0}
-            className="h-9 text-xs"
+            className="h-9 text-xs rounded-none"
           />
         </div>
 
         <div className="space-y-1 sm:col-span-2 lg:col-span-8">
           <Label className="text-[11px] font-semibold uppercase tracking-wider text-caption">
-            Payment Due Note
+            Payment Due Note / Terms
           </Label>
           <Input
             name="due_note"
             defaultValue={fee?.due_note}
-            placeholder="e.g. Payable in full before start of Semester 1"
-            className="h-9 text-xs"
+            placeholder="e.g. 60% Semester 1, 40% before Semester 2"
+            className="h-9 text-xs rounded-none"
           />
         </div>
 
         <div className="flex items-center gap-2 sm:col-span-2 lg:col-span-4 justify-end">
+          <button
+            type="button"
+            onClick={() => {
+              if (!showBreakdown && components.length === 0) {
+                const half =
+                  typeof amount === "number" && amount > 0
+                    ? Math.round(amount / 2)
+                    : 500;
+                setComponents([
+                  { name: "Tuition & Academic Lectures", amount: half },
+                  { name: "Clinical Practicum & Demonstration Lab", amount: half },
+                ]);
+                setAmount(half * 2);
+              }
+              setShowBreakdown(!showBreakdown);
+            }}
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline px-2.5 py-1.5 border border-line bg-bg rounded-none"
+          >
+            <Receipt className="h-3.5 w-3.5" />
+            <span>{showBreakdown ? "Hide Levies" : "Itemize Components"}</span>
+          </button>
           <SubmitButton label={fee ? "Update" : "Add schedule"} />
           {fee ? (
             <DeleteConfirmButton
@@ -527,6 +595,77 @@ function FeeRow({
             />
           ) : null}
         </div>
+
+        {/* Itemized Components Builder Tray */}
+        {showBreakdown && (
+          <div className="sm:col-span-2 lg:col-span-12 rounded-none border border-line bg-bg/60 p-3.5 space-y-3 mt-1">
+            <div className="flex items-center justify-between border-b border-line pb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-caption flex items-center gap-1.5">
+                <Receipt className="h-3.5 w-3.5 text-primary" />
+                <span>Itemized Fee Components (Auto-Calculates Total Amount)</span>
+              </span>
+              <button
+                type="button"
+                onClick={handleAddComponent}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:underline"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Add Component</span>
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {components.map((comp, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <Input
+                    placeholder="Component name (e.g. Tuition, Practicum, Skills Lab)"
+                    value={comp.name}
+                    onChange={(e) =>
+                      handleComponentChange(idx, "name", e.target.value)
+                    }
+                    className="h-8 text-xs rounded-none flex-1 bg-surface"
+                  />
+                  <div className="flex items-center gap-1 shrink-0 w-36">
+                    <span className="text-xs text-caption font-mono">GHS</span>
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="0.00"
+                      value={comp.amount}
+                      onChange={(e) =>
+                        handleComponentChange(idx, "amount", e.target.value)
+                      }
+                      className="h-8 text-xs font-mono font-bold rounded-none bg-surface"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveComponent(idx)}
+                    className="p-1.5 text-caption hover:text-red-600 transition-colors"
+                    aria-label="Remove component"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+              {components.length === 0 && (
+                <p className="text-xs text-caption py-1">
+                  No itemized components added. Click &quot;Add Component&quot; to break this fee down.
+                </p>
+              )}
+            </div>
+
+            {components.length > 0 && (
+              <div className="pt-2 border-t border-line/70 flex items-center justify-between text-xs font-bold text-ink">
+                <span>Sum of Components:</span>
+                <span className="font-mono text-primary text-sm">
+                  GHS {Number(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="sm:col-span-2 lg:col-span-12">
           <Message state={state} />
@@ -540,7 +679,7 @@ function PaymentMethodRow({ method }: { method?: PaymentMethod }) {
   const [state, action] = useActionState(savePaymentMethod, {});
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 shadow-sm">
+    <div className="rounded-none border border-line bg-surface p-4 shadow-sm">
       <form action={action} className="grid gap-3 sm:grid-cols-12 items-end">
         {method ? <input type="hidden" name="id" value={method.id} /> : null}
 
@@ -552,7 +691,7 @@ function PaymentMethodRow({ method }: { method?: PaymentMethod }) {
             name="method"
             defaultValue={method?.method}
             placeholder="e.g. GCB Bank / MTN MoMo Paybill"
-            className="h-9 text-xs font-semibold"
+            className="h-9 text-xs font-semibold rounded-none"
             required
           />
         </div>
@@ -565,7 +704,7 @@ function PaymentMethodRow({ method }: { method?: PaymentMethod }) {
             name="details"
             defaultValue={method?.details}
             placeholder="Account No: 1234567890 · Branch: Nandom"
-            className="h-9 text-xs"
+            className="h-9 text-xs rounded-none"
           />
         </div>
 
@@ -577,7 +716,7 @@ function PaymentMethodRow({ method }: { method?: PaymentMethod }) {
             name="sort_order"
             type="number"
             defaultValue={method?.sort_order ?? 0}
-            className="h-9 text-xs"
+            className="h-9 text-xs rounded-none"
           />
         </div>
 
@@ -606,7 +745,7 @@ function ScholarshipRow({ scholarship }: { scholarship?: Scholarship }) {
   const [state, action] = useActionState(saveScholarship, {});
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-5 shadow-sm space-y-3">
+    <div className="rounded-none border border-line bg-surface p-5 shadow-sm space-y-3">
       <form action={action} className="space-y-3">
         {scholarship ? <input type="hidden" name="id" value={scholarship.id} /> : null}
 

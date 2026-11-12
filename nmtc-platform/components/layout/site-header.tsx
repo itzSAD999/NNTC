@@ -239,16 +239,54 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
             </span>
           </Link>
 
-          {/* Harvard Center Announcement Ticker */}
-          <div className="hidden lg:flex items-center gap-2 text-xs xl:text-sm text-white/90 truncate max-w-xl">
-            <span className="h-2 w-2 shrink-0 rounded-full bg-accent animate-pulse" />
+          {/* Direct Desktop Navigation Quicklinks */}
+          <nav
+            aria-label="Main navigation quick links"
+            className="hidden md:flex items-center gap-4 lg:gap-6 text-xs lg:text-[13px] font-medium tracking-wide text-white/80"
+          >
+            <Link
+              href="/about"
+              className="hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
+            >
+              About
+            </Link>
+            <Link
+              href="/programs"
+              className="hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
+            >
+              Programmes
+            </Link>
             <Link
               href="/admissions"
-              className="truncate hover:text-white transition-colors underline-offset-4 hover:underline"
+              className="hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
             >
-              Admissions Open: 2026/2027 Academic Year Nursing &amp; Midwifery Intake
+              Admissions
             </Link>
-          </div>
+            <Link
+              href="/financial-aid"
+              className="hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
+            >
+              Fees &amp; Aid
+            </Link>
+            <Link
+              href="/campus-life"
+              className="hidden lg:inline hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
+            >
+              Campus Life
+            </Link>
+            <Link
+              href="/news"
+              className="hidden xl:inline hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
+            >
+              News
+            </Link>
+            <Link
+              href="/contact"
+              className="hidden xl:inline hover:text-white transition-colors py-1 border-b-2 border-transparent hover:border-accent"
+            >
+              Contact
+            </Link>
+          </nav>
 
           {/* Harvard Right Action Buttons: Search + Menu */}
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
@@ -258,7 +296,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
                 setSearchOpen(true);
                 setMenuOpen(false);
               }}
-              className="inline-flex items-center gap-2 rounded border border-white/20 bg-white/5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition-all hover:border-white/40 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="inline-flex items-center gap-2 rounded-none border border-white/20 bg-white/5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition-all hover:border-white/40 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-label="Search NMTC"
             >
               <Search className="h-4 w-4 text-white/80" />
@@ -271,7 +309,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
                 setMenuOpen(true);
                 setSearchOpen(false);
               }}
-              className="inline-flex items-center gap-2.5 rounded border border-white/20 bg-white/5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition-all hover:border-white/40 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="inline-flex items-center gap-2.5 rounded-none border border-white/20 bg-white/5 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition-all hover:border-white/40 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               aria-expanded={menuOpen}
               aria-controls="harvard-fullscreen-menu"
               aria-label="Open menu"
@@ -458,7 +496,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
             aria-hidden="true"
           />
 
-          <div className="relative w-full max-w-2xl rounded-xl border border-line bg-surface p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-2xl rounded-none border border-line bg-surface p-6 shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-line pb-4">
               <div className="flex items-center gap-2.5 text-ink">
                 <Search className="h-5 w-5 text-primary" />
@@ -467,7 +505,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="rounded p-1 text-caption hover:bg-bg hover:text-ink transition-colors"
+                className="rounded-none p-1 text-caption hover:bg-bg hover:text-ink transition-colors"
                 aria-label="Close search"
               >
                 <X className="h-5 w-5" />
@@ -480,7 +518,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type to search programmes, admissions, tracking ID, resources..."
-                className="w-full rounded border border-line bg-bg px-4 py-3 text-sm text-ink placeholder:text-caption focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                className="w-full rounded-none border border-line bg-bg px-4 py-3 text-sm text-ink placeholder:text-caption focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                 autoFocus
               />
             </div>
@@ -492,7 +530,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
                     key={item.href}
                     href={item.href}
                     onClick={() => setSearchOpen(false)}
-                    className="flex items-center justify-between py-2.5 px-3 rounded hover:bg-bg transition-colors group"
+                    className="flex items-center justify-between py-2.5 px-3 rounded-none hover:bg-bg transition-colors group"
                   >
                     <div>
                       <p className="text-sm font-medium text-ink group-hover:text-primary transition-colors">
@@ -515,7 +553,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
             <div className="mt-4 pt-3 border-t border-line flex items-center justify-between text-xs text-caption">
               <span>
                 Press{" "}
-                <kbd className="rounded bg-bg border border-line px-1.5 py-0.5 font-mono">
+                <kbd className="rounded-none bg-bg border border-line px-1.5 py-0.5 font-mono">
                   ESC
                 </kbd>{" "}
                 to exit

@@ -53,6 +53,7 @@ export async function saveFee(
 
   const id = formData.get("id")?.toString();
   const programId = formData.get("program_id")?.toString() ?? "";
+  const componentsJson = formData.get("components_json")?.toString();
 
   const parsed = feeSchema.safeParse({
     program_id: programId,
@@ -67,13 +68,26 @@ export async function saveFee(
     return { error: parsed.error.errors[0]?.message ?? "Invalid input." };
   }
 
+  let finalDueNote = parsed.data.due_note ?? "";
+  if (componentsJson) {
+    try {
+      const parsedComps = JSON.parse(componentsJson);
+      if (Array.isArray(parsedComps) && parsedComps.length > 0) {
+        finalDueNote = `__COMPONENTS__:${JSON.stringify({
+          note: parsed.data.due_note ?? "",
+          components: parsedComps,
+        })}`;
+      }
+    } catch {}
+  }
+
   const supabase = await createClient();
   const payload = {
     program_id: parsed.data.program_id || null,
     year_label: parsed.data.year_label,
     fee_type: parsed.data.fee_type,
     amount: parsed.data.amount,
-    due_note: parsed.data.due_note ?? "",
+    due_note: finalDueNote,
     sort_order: parsed.data.sort_order,
     updated_at: new Date().toISOString(),
   };

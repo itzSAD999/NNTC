@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ExploreStrip } from "@/components/marketing/explore-strip";
 import { HeroSection } from "@/components/marketing/hero-section";
 import { HighlightsStrip } from "@/components/marketing/highlights-strip";
+import { ImpactStatsStrip } from "@/components/marketing/impact-stats-strip";
 import { HomeCtaBand } from "@/components/marketing/home-cta-band";
 import { EventsHomeStrip } from "@/components/marketing/events-home-strip";
 import { NewsCard } from "@/components/marketing/news-card";
@@ -33,6 +34,7 @@ export default async function HomePage() {
     <>
       <HeroSection settings={settings} />
       <HighlightsStrip items={highlights} />
+      <ImpactStatsStrip />
       <ExploreStrip />
       <EventsHomeStrip events={events} />
 

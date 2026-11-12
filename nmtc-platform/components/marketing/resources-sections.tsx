@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { ArrowDownToLine, FileCheck2, FileText } from "lucide-react";
 
 import type { Resource } from "@/lib/types/expansion";
 import { getStoragePublicUrl } from "@/lib/utils/format";
@@ -9,45 +9,76 @@ export function ResourcesSections({
   groups: { category: string; items: Resource[] }[];
 }) {
   return (
-    <div className="section-grid space-y-12 py-12 md:space-y-16 md:py-16">
+    <div className="section-grid space-y-16 py-16 md:space-y-20 md:py-20">
       {groups.map(({ category, items }) => (
         <section key={category} aria-labelledby={`res-${category}`}>
-          <h2
-            id={`res-${category}`}
-            className="hairline-b pb-4 font-serif text-display-md"
-          >
-            {category}
-          </h2>
-          <ul className="mt-6 divide-y divide-line rounded border border-line bg-surface">
+          <div className="border-b border-line pb-4 mb-8">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+              Student Library
+            </p>
+            <h2
+              id={`res-${category}`}
+              className="mt-2 font-serif text-3xl sm:text-4xl font-medium tracking-tight text-ink"
+            >
+              {category}
+            </h2>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2">
             {items.map((item) => {
               const fileUrl = getStoragePublicUrl(item.file_url);
               return (
-                <li
+                <div
                   key={item.id}
-                  className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col justify-between rounded-none border border-line bg-surface p-6 sm:p-7 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
                 >
                   <div>
-                    <p className="font-medium text-ink">{item.title}</p>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-none bg-red-50 text-red-700 border border-red-200 shadow-sm">
+                        <FileText className="h-6 w-6" />
+                      </div>
+                      <span className="rounded-none bg-primary/10 px-2.5 py-0.5 text-[0.68rem] font-bold uppercase tracking-wider text-primary border border-primary/20">
+                        Official PDF
+                      </span>
+                    </div>
+
+                    <h3 className="font-serif text-xl font-medium text-ink transition-colors group-hover:text-primary">
+                      {item.title}
+                    </h3>
+
                     {item.description ? (
-                      <p className="mt-1 text-sm text-caption">{item.description}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-caption font-light">
+                        {item.description}
+                      </p>
                     ) : null}
                   </div>
-                  {fileUrl ? (
-                    <a
-                      href={fileUrl}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex shrink-0 items-center gap-2 rounded border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white"
-                    >
-                      <Download className="h-4 w-4" aria-hidden />
-                      Download
-                    </a>
-                  ) : null}
-                </li>
+
+                  <div className="mt-6 pt-5 border-t border-line/60 flex items-center justify-between">
+                    <span className="text-xs text-caption font-mono">
+                      NMTC Library Verified
+                    </span>
+
+                    {fileUrl ? (
+                      <a
+                        href={fileUrl}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-none bg-primary px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-primary-deep"
+                      >
+                        <ArrowDownToLine className="h-4 w-4" />
+                        <span>Download PDF</span>
+                      </a>
+                    ) : (
+                      <span className="text-xs text-caption italic">
+                        Available on campus
+                      </span>
+                    )}
+                  </div>
+                </div>
               );
             })}
-          </ul>
+          </div>
         </section>
       ))}
     </div>

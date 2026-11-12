@@ -69,11 +69,11 @@ export function EventsListing({
           </div>
 
           {/* VIEW SWITCHER PILLS */}
-          <div className="flex flex-wrap gap-1.5 rounded-lg border border-line bg-surface p-1 shadow-sm">
+          <div className="flex flex-wrap gap-1.5 rounded-none border border-line bg-surface p-1 shadow-sm">
             <button
               type="button"
               onClick={() => setView("list")}
-              className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+              className={`rounded-none px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "list"
                   ? "bg-primary text-white shadow-sm font-semibold"
                   : "text-caption hover:text-ink"
@@ -84,7 +84,7 @@ export function EventsListing({
             <button
               type="button"
               onClick={() => setView("academic")}
-              className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+              className={`rounded-none px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "academic"
                   ? "bg-primary text-white shadow-sm font-semibold"
                   : "text-caption hover:text-ink"
@@ -95,7 +95,7 @@ export function EventsListing({
             <button
               type="button"
               onClick={() => setView("calendar")}
-              className={`rounded-md px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+              className={`rounded-none px-3 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
                 view === "calendar"
                   ? "bg-primary text-white shadow-sm font-semibold"
                   : "text-caption hover:text-ink"
@@ -116,7 +116,7 @@ export function EventsListing({
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-line bg-surface p-8 text-center text-caption">
+              <div className="rounded-none border border-line bg-surface p-8 text-center text-caption">
                 <CalendarDays className="mx-auto h-8 w-8 text-caption/50" />
                 <p className="mt-2 font-medium text-ink">
                   No upcoming public events scheduled currently.
@@ -132,7 +132,7 @@ export function EventsListing({
         {/* VIEW 2: ACADEMIC CALENDAR KEY DATES */}
         {view === "academic" && (
           <div className="mt-8 space-y-8 animate-in fade-in duration-200">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-primary/20 bg-primary/5 p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-none border border-primary/20 bg-primary/5 p-5">
               <div>
                 <div className="flex items-center gap-2">
                   <GraduationCap className="h-5 w-5 text-primary" />
@@ -144,7 +144,7 @@ export function EventsListing({
                   Approved by the Academic Board and affiliated health training regulatory councils.
                 </p>
               </div>
-              <Button asChild size="sm" variant="outline" className="shrink-0 bg-white shadow-sm">
+              <Button asChild size="sm" variant="outline" className="shrink-0 bg-white shadow-sm rounded-none">
                 <Link href="/resources" className="flex items-center gap-1.5 text-xs">
                   <Download className="h-3.5 w-3.5" />
                   <span>Download PDF Schedule</span>
@@ -153,14 +153,14 @@ export function EventsListing({
             </div>
 
             {/* Milestones Timeline */}
-            <div className="rounded-xl border border-line bg-surface divide-y divide-line shadow-sm">
+            <div className="rounded-none border border-line bg-surface divide-y divide-line shadow-sm">
               {ACADEMIC_CALENDAR_MILESTONES.map((milestone) => (
                 <div
                   key={milestone.id}
                   className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 hover:bg-bg/40 transition-colors"
                 >
                   {/* Date Badge */}
-                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-line bg-bg text-center shadow-sm">
+                  <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-none border border-line bg-bg text-center shadow-sm">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary leading-none">
                       {milestone.month}
                     </span>
@@ -197,7 +197,7 @@ export function EventsListing({
 
         {/* VIEW 3: MONTHLY ACTIVITY GRID */}
         {view === "calendar" && (
-          <div className="mt-8 rounded-xl border border-line bg-surface p-6 shadow-sm animate-in fade-in duration-200">
+          <div className="mt-8 rounded-none border border-line bg-surface p-6 shadow-sm animate-in fade-in duration-200">
             <div className="flex items-center justify-between border-b border-line pb-4">
               <button
                 type="button"

@@ -36,7 +36,23 @@ export async function getFinancialAidForEdit(): Promise<FinancialAidAdminData> {
         | null;
       const program = Array.isArray(prog) ? prog[0] : prog;
       const { program: _p, ...fee } = row;
-      return { ...fee, program: program ?? null } as FeeWithProgram;
+
+      let components = fee.components as import("@/lib/types/expansion").FeeComponent[] | undefined;
+      let dueNote = String(fee.due_note ?? "");
+      if (dueNote.startsWith("__COMPONENTS__:")) {
+        try {
+          const parsed = JSON.parse(dueNote.replace("__COMPONENTS__:", ""));
+          components = parsed.components;
+          dueNote = parsed.note ?? "";
+        } catch {}
+      }
+
+      return {
+        ...fee,
+        due_note: dueNote,
+        components: components ?? fee.components,
+        program: program ?? null,
+      } as FeeWithProgram;
     }
   );
 

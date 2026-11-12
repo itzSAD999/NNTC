@@ -75,6 +75,11 @@ export type AdmissionsFaq = {
   updated_at: string;
 };
 
+export type FeeComponent = {
+  name: string;
+  amount: number;
+};
+
 export type Fee = {
   id: string;
   program_id: string | null;
@@ -83,6 +88,7 @@ export type Fee = {
   amount: number;
   due_note: string;
   sort_order: number;
+  components?: FeeComponent[];
   created_at: string;
   updated_at: string;
 };

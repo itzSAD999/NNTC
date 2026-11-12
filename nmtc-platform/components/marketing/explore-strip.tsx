@@ -73,9 +73,9 @@ export function ExploreStrip() {
           </p>
         </div>
 
-        <ul className="mt-12 grid gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-12 grid gap-px overflow-hidden rounded-none border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {EXPLORE_ITEMS.map(({ href, label, description, icon: Icon }) => (
-            <li key={href} className="bg-surface">
+            <li key={href} className="bg-surface rounded-none">
               <Link
                 href={href}
                 className="group flex h-full flex-col p-6 transition-colors hover:bg-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:p-8"
@@ -91,7 +91,7 @@ export function ExploreStrip() {
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-caption">
                   {description}
                 </p>
-                <span className="mt-5 text-sm font-medium text-primary">
+                <span className="mt-5 text-sm font-medium text-primary group-hover:text-primary-deep">
                   Learn more →
                 </span>
               </Link>
