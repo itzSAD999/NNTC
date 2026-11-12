@@ -34,13 +34,13 @@ export async function getLatestPosts(limit = 3): Promise<Post[]> {
       .order("published_at", { ascending: false })
       .limit(limit);
 
-    if (error || !data) {
-      return [];
+    if (error || !data || data.length === 0) {
+      return previewPosts(limit);
     }
 
     return data as Post[];
   } catch {
-    return [];
+    return previewPosts(limit);
   }
 }
 
@@ -59,13 +59,13 @@ export async function getPublishedPosts(): Promise<Post[]> {
       .order("is_pinned", { ascending: false })
       .order("published_at", { ascending: false });
 
-    if (error || !data) {
-      return [];
+    if (error || !data || data.length === 0) {
+      return previewPosts();
     }
 
     return data as Post[];
   } catch {
-    return [];
+    return previewPosts();
   }
 }
 
@@ -88,18 +88,20 @@ export async function getPostBySlug(
       .single();
 
     if (error || !data) {
-      return null;
+      const fallback = PREVIEW_POSTS.find((p) => p.slug === slug);
+      return fallback ? { ...fallback, author: { full_name: "NMTC Communications" } } : null;
     }
 
     return data as PostWithAuthor;
   } catch {
-    return null;
+    const fallback = PREVIEW_POSTS.find((p) => p.slug === slug);
+    return fallback ? { ...fallback, author: { full_name: "NMTC Communications" } } : null;
   }
 }
 
 export async function getAllPostSlugs(): Promise<string[]> {
   if (!isSupabaseConfigured()) {
-    return [];
+    return PREVIEW_POSTS.map((p) => p.slug);
   }
 
   try {
@@ -110,12 +112,12 @@ export async function getAllPostSlugs(): Promise<string[]> {
       .not("published_at", "is", null)
       .lte("published_at", new Date().toISOString());
 
-    if (error || !data) {
-      return [];
+    if (error || !data || data.length === 0) {
+      return PREVIEW_POSTS.map((p) => p.slug);
     }
 
-    return (data as { slug: string }[]).map((p) => p.slug);
+    return (data as Array<{ slug: string }>).map((row) => row.slug);
   } catch {
-    return [];
+    return PREVIEW_POSTS.map((p) => p.slug);
   }
 }

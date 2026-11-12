@@ -17,6 +17,19 @@
     --color-warning: #b8860b;
     --color-danger: #9a1b2f;
 
+    /* RGB channel tokens for Tailwind <alpha-value> opacity utilities */
+    --color-bg-rgb: 251 251 249;
+    --color-surface-rgb: 255 255 255;
+    --color-ink-rgb: 20 36 27;
+    --color-primary-rgb: 26 94 58;
+    --color-primary-deep-rgb: 14 61 38;
+    --color-accent-rgb: 154 27 47;
+    --color-muted-rgb: 107 122 114;
+    --color-line-rgb: 226 230 227;
+    --color-success-rgb: 26 122 74;
+    --color-warning-rgb: 184 134 11;
+    --color-danger-rgb: 154 27 47;
+
     /* shadcn/ui variables mapped to NMTC tokens (HSL channels) */
     --background: 60 33% 98%;
     --foreground: 152 29% 11%;
@@ -118,6 +131,33 @@
 
   .link-arrow {
     @apply text-sm font-medium text-primary hover:text-primary-deep;
+  }
+
+  /* =========================================================================
+     Mobile Navigation & Hamburger Menu System
+     ========================================================================= */
+  .hamburger-button {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded border border-line bg-surface text-ink transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:hidden;
+  }
+
+  .mobile-nav-backdrop {
+    @apply fixed inset-0 top-[4.25rem] z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-200 lg:hidden;
+  }
+
+  .mobile-nav-panel {
+    @apply border-t border-line bg-surface/98 shadow-2xl backdrop-blur-md max-h-[calc(100dvh-4.25rem)] overflow-y-auto lg:hidden;
+  }
+
+  .mobile-nav-group-title {
+    @apply px-3 py-1 text-[0.65rem] font-bold uppercase tracking-widest text-caption;
+  }
+
+  .mobile-nav-link {
+    @apply flex min-h-11 items-center justify-between rounded px-3 py-2 text-sm font-medium transition-colors text-caption hover:bg-bg hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .mobile-nav-link-active {
+    @apply bg-bg font-semibold text-primary;
   }
 
   .sr-only {

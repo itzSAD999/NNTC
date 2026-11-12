@@ -85,6 +85,6 @@ export async function getAccreditations(): Promise<Accreditation[]> {
 
     return data as Accreditation[];
   } catch {
-    return [];
+    return DEFAULT_ACCREDITATIONS;
   }
 }

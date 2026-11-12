@@ -32,7 +32,7 @@ export async function getPublishedStaff(): Promise<StaffProfileWithDepartment[]>
       .eq("is_published", true)
       .order("sort_order");
 
-    if (error || !data) return previewPublishedStaff();
+    if (error || !data || data.length === 0) return previewPublishedStaff();
     return mapStaffRows(data as Array<Record<string, unknown>>);
   } catch {
     return previewPublishedStaff();
@@ -66,7 +66,8 @@ export async function getDepartmentsForFilter(): Promise<Department[]> {
   try {
     const supabase = await createClient();
     const { data } = await supabase.from("departments").select("*").order("name");
-    return (data ?? []) as Department[];
+    if (data && data.length > 0) return data as Department[];
+    return PREVIEW_DEPARTMENTS;
   } catch {
     return PREVIEW_DEPARTMENTS;
   }
@@ -79,12 +80,15 @@ export async function getAllStaffSlugs(): Promise<string[]> {
 
   try {
     const supabase = await createClient();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("staff_profiles")
       .select("slug")
       .eq("is_published", true);
-    return (data ?? []).map((r) => (r as { slug: string }).slug);
+    if (error || !data || data.length === 0) {
+      return previewPublishedStaff().map((s) => s.slug);
+    }
+    return (data as Array<{ slug: string }>).map((r) => r.slug);
   } catch {
-    return [];
+    return previewPublishedStaff().map((s) => s.slug);
   }
 }

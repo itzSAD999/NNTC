@@ -6,6 +6,26 @@ interface ContactDetailsProps {
   settings: Settings;
 }
 
+function toEmbedMapUrl(raw: string): string {
+  try {
+    const parsed = new URL(raw);
+    if (
+      (parsed.hostname.includes("google.com") || parsed.hostname.includes("maps.google.")) &&
+      !parsed.pathname.includes("/maps/embed") &&
+      !parsed.searchParams.has("output")
+    ) {
+      if (parsed.pathname === "/" || parsed.pathname === "") {
+        parsed.pathname = "/maps";
+      }
+      parsed.searchParams.set("output", "embed");
+      return parsed.toString();
+    }
+  } catch {
+    // Keep original string if not a valid URL
+  }
+  return raw;
+}
+
 export function ContactDetails({ settings }: ContactDetailsProps) {
   const offices = [
     {
@@ -92,7 +112,7 @@ export function ContactDetails({ settings }: ContactDetailsProps) {
           <div className="mt-4 overflow-hidden rounded border border-line">
             <iframe
               title="NMTC location on Google Maps"
-              src={settings.google_maps_url}
+              src={toEmbedMapUrl(settings.google_maps_url)}
               className="aspect-[4/3] w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

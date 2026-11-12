@@ -36,8 +36,12 @@ export async function getAdmissionsPageData(): Promise<AdmissionsPageData> {
 
     return {
       content: (contentRes.data as AdmissionsContent) ?? PREVIEW_ADMISSIONS,
-      documents: (docsRes.data as DocumentRequired[]) ?? PREVIEW_DOCUMENTS_REQUIRED,
-      faqs: (faqsRes.data as AdmissionsFaq[]) ?? PREVIEW_ADMISSIONS_FAQS,
+      documents: docsRes.data?.length
+        ? (docsRes.data as DocumentRequired[])
+        : PREVIEW_DOCUMENTS_REQUIRED,
+      faqs: faqsRes.data?.length
+        ? (faqsRes.data as AdmissionsFaq[])
+        : PREVIEW_ADMISSIONS_FAQS,
     };
   } catch {
     return {

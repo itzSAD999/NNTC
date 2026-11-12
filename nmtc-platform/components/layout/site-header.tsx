@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, Menu, Search, Shield, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
-  flattenSiteNav,
   isGroupActive,
   isNavActive,
   isNavGroup,
@@ -26,14 +25,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
   const [open, setOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
   const pathname = usePathname();
-  const logoUrl = getStoragePublicUrl(settings.logo_url);
-  const shortName = settings.college_name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 4);
-
-  const mobileLinks = flattenSiteNav();
+  const logoUrl = getStoragePublicUrl(settings.logo_url) ?? "/images/nmtc-crest.svg";
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -43,38 +35,42 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
   }, [open]);
 
   useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    if (open) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
     setCampusOpen(false);
     setOpen(false);
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-surface/98 backdrop-blur-md">
-      <div className="section-grid flex h-[4.25rem] items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-line bg-surface/95 backdrop-blur-md">
+      <div className="section-grid flex h-[4.25rem] items-center justify-between gap-4 xl:gap-6">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-3 text-ink transition-colors hover:text-primary"
+          className="flex shrink-0 items-center gap-3 text-ink transition-colors hover:text-primary"
         >
-          {logoUrl ? (
-            <Image
-              src={logoUrl}
-              alt=""
-              width={40}
-              height={40}
-              className="h-10 w-10 shrink-0 object-contain"
-            />
-          ) : (
-            <span
-              aria-hidden="true"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-line bg-bg text-xs font-semibold text-primary"
-            >
-              {shortName}
-            </span>
-          )}
-          <span className="min-w-0 leading-tight">
+          <Image
+            src={logoUrl}
+            alt={`${settings.college_name} crest`}
+            width={40}
+            height={40}
+            unoptimized={logoUrl.endsWith(".svg")}
+            className="h-10 w-10 shrink-0 rounded object-contain"
+          />
+          <span className="leading-tight">
             <span className="block font-serif text-base font-medium md:text-lg">
               NMTC
             </span>
-            <span className="hidden text-[0.65rem] uppercase tracking-[0.14em] text-caption lg:block">
+            <span className="hidden whitespace-nowrap text-[0.6rem] uppercase tracking-[0.1em] text-caption 2xl:block">
               Nursing &amp; Midwifery Training College
             </span>
           </span>
@@ -97,7 +93,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
                   <button
                     type="button"
                     className={cn(
-                      "inline-flex items-center gap-1 rounded px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                      "inline-flex whitespace-nowrap items-center gap-1 rounded px-2.5 py-2 text-sm font-medium transition-colors xl:px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                       active
                         ? "bg-bg text-ink"
                         : "text-caption hover:bg-bg hover:text-ink"
@@ -137,7 +133,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "whitespace-nowrap rounded px-2.5 py-2 text-sm font-medium transition-colors xl:px-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   active
                     ? "bg-bg text-ink"
                     : "text-caption hover:bg-bg hover:text-ink"
@@ -157,10 +153,10 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded border border-line text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:hidden"
+            className="hamburger-button"
             aria-expanded={open}
             aria-controls="mobile-nav"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? "Close navigation menu" : "Open navigation menu"}
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -168,43 +164,129 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
         </div>
       </div>
 
+      {/* Mobile Navigation Backdrop Overlay */}
+      {open ? (
+        <div
+          className="mobile-nav-backdrop"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      ) : null}
+
+      {/* Mobile Navigation Panel */}
       <div
         id="mobile-nav"
         className={cn(
-          "border-t border-line bg-surface lg:hidden",
+          "mobile-nav-panel",
           open ? "block" : "hidden"
         )}
       >
-        <nav aria-label="Mobile navigation" className="section-grid py-4">
-          <ul className="flex flex-col gap-1">
-            {mobileLinks.map(({ href, label }) => {
-              const active = isNavActive(pathname, href);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={cn(
-                      "block min-h-11 rounded px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      active
-                        ? "bg-bg font-medium text-ink"
-                        : "text-caption hover:bg-bg hover:text-ink"
-                    )}
-                    aria-current={active ? "page" : undefined}
-                    onClick={() => setOpen(false)}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              );
-            })}
-            <li className="mt-2 border-t border-line pt-3">
-              <Button asChild className="w-full">
-                <Link href="/request" onClick={() => setOpen(false)}>
-                  Request a Document
-                </Link>
-              </Button>
-            </li>
-          </ul>
+        <nav aria-label="Mobile navigation" className="section-grid py-4 space-y-4">
+          {/* Primary Institutional Links */}
+          <div className="space-y-1">
+            <p className="mobile-nav-group-title">Academics &amp; Admissions</p>
+            <ul className="flex flex-col gap-0.5">
+              {SITE_NAV.filter((item) => !isNavGroup(item)).map((item) => {
+                if (isNavGroup(item)) return null;
+                const active = isNavActive(pathname, item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "mobile-nav-link",
+                        active && "mobile-nav-link-active"
+                      )}
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => setOpen(false)}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronRight className="h-4 w-4 text-line shrink-0" aria-hidden />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* Campus & Community Group */}
+          {SITE_NAV.filter(isNavGroup).map((group) => (
+            <div key={group.label} className="border-t border-line/70 pt-3 space-y-1">
+              <p className="mobile-nav-group-title">Campus &amp; Community</p>
+              <ul className="flex flex-col gap-0.5">
+                {group.items.map((subItem) => {
+                  const active = isNavActive(pathname, subItem.href);
+                  return (
+                    <li key={subItem.href}>
+                      <Link
+                        href={subItem.href}
+                        className={cn(
+                          "mobile-nav-link",
+                          active && "mobile-nav-link-active"
+                        )}
+                        aria-current={active ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                      >
+                        <span>{subItem.label}</span>
+                        <ChevronRight className="h-4 w-4 text-line shrink-0" aria-hidden />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+
+          {/* Document Services & Action Card */}
+          <div className="border-t border-line/70 pt-3 space-y-2">
+            <p className="mobile-nav-group-title">Document &amp; Student Services</p>
+            <Button asChild className="w-full justify-center">
+              <Link href="/request" onClick={() => setOpen(false)}>
+                <FileText className="mr-2 h-4 w-4" />
+                <span>Request an Academic Document</span>
+              </Link>
+            </Button>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <Link
+                href="/request/track"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-1.5 rounded border border-line bg-surface px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-bg hover:text-primary"
+              >
+                <Search className="h-3.5 w-3.5 text-caption shrink-0" />
+                <span>Track Request</span>
+              </Link>
+              <Link
+                href="/verify"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-1.5 rounded border border-line bg-surface px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-bg hover:text-primary"
+              >
+                <Shield className="h-3.5 w-3.5 text-caption shrink-0" />
+                <span>Verify Credential</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Quick Contact & Portal Footer */}
+          <div className="border-t border-line/70 pt-3 text-xs text-caption">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              {settings.phone_main ? (
+                <a
+                  href={`tel:${settings.phone_main}`}
+                  className="hover:text-primary transition-colors"
+                >
+                  {settings.phone_main}
+                </a>
+              ) : null}
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="font-medium text-primary hover:text-primary-deep transition-colors ml-auto"
+              >
+                Staff Portal &rarr;
+              </Link>
+            </div>
+          </div>
         </nav>
       </div>
     </header>

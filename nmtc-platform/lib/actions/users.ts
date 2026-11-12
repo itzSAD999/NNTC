@@ -33,7 +33,7 @@ export async function createStaff(
   if (!isAdminConfigured()) {
     return {
       error:
-        "Staff creation requires SUPABASE_SERVICE_ROLE_KEY in .env.local.",
+        "Staff creation requires SUPABASE_SECRET_KEY (or legacy SUPABASE_SERVICE_ROLE_KEY) in .env.local.",
     };
   }
 
@@ -183,7 +183,7 @@ export async function resetStaffPassword(
   if (!isAdminConfigured()) {
     return {
       error:
-        "Password reset requires SUPABASE_SERVICE_ROLE_KEY in .env.local.",
+        "Password reset requires SUPABASE_SECRET_KEY (or legacy SUPABASE_SERVICE_ROLE_KEY) in .env.local.",
     };
   }
 

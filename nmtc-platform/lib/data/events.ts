@@ -28,6 +28,14 @@ export async function getUpcomingEvents(limit?: number): Promise<CollegeEvent[]>
 
   try {
     const supabase = await createClient();
+    const { count } = await supabase
+      .from("events")
+      .select("id", { count: "exact", head: true });
+    if (!count) {
+      const items = sortUpcoming(PREVIEW_EVENTS);
+      return limit ? items.slice(0, limit) : items;
+    }
+
     const now = new Date().toISOString();
     const { data, error } = await supabase
       .from("events")
@@ -52,6 +60,13 @@ export async function getPastEvents(): Promise<CollegeEvent[]> {
 
   try {
     const supabase = await createClient();
+    const { count } = await supabase
+      .from("events")
+      .select("id", { count: "exact", head: true });
+    if (!count) {
+      return sortPast(PREVIEW_EVENTS);
+    }
+
     const now = new Date().toISOString();
     const { data, error } = await supabase
       .from("events")
@@ -94,8 +109,9 @@ export async function getAllEventSlugs(): Promise<string[]> {
   try {
     const supabase = await createClient();
     const { data } = await supabase.from("events").select("slug");
+    if (!data?.length) return PREVIEW_EVENTS.map((e) => e.slug);
     return (data ?? []).map((r) => (r as { slug: string }).slug);
   } catch {
-    return [];
+    return PREVIEW_EVENTS.map((e) => e.slug);
   }
 }

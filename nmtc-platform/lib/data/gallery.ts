@@ -13,7 +13,7 @@ export async function getGalleryAlbums(): Promise<GalleryAlbumWithMedia[]> {
       .select("*, media:gallery_media(*)")
       .order("sort_order");
 
-    if (error || !data) return previewGalleryAlbums();
+    if (error || !data || data.length === 0) return previewGalleryAlbums();
 
     return (data as Array<Record<string, unknown>>).map((row) => {
       const media = (row.media as GalleryAlbumWithMedia["media"] | undefined) ?? [];

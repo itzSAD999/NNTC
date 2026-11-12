@@ -19,7 +19,7 @@ export async function getPublishedPrograms(): Promise<ProgramWithDepartment[]> {
       .eq("is_published", true)
       .order("sort_order", { ascending: true });
 
-    if (error || !data) return previewProgramsWithDepartments();
+    if (error || !data || data.length === 0) return previewProgramsWithDepartments();
 
     return (data as Array<Record<string, unknown>>).map((row) => {
       const dept = row.department as
@@ -77,13 +77,17 @@ export async function getAllProgramSlugs(): Promise<string[]> {
 
   try {
     const supabase = await createClient();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("programs")
       .select("slug")
       .eq("is_published", true);
 
-    return (data ?? []).map((r) => (r as { slug: string }).slug);
+    if (error || !data || data.length === 0) {
+      return previewProgramsWithDepartments().map((p) => p.slug);
+    }
+
+    return (data as Array<{ slug: string }>).map((r) => r.slug);
   } catch {
-    return [];
+    return previewProgramsWithDepartments().map((p) => p.slug);
   }
 }

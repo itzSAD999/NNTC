@@ -14,7 +14,7 @@ export async function getPublishedResources(): Promise<Resource[]> {
       .eq("is_published", true)
       .order("sort_order");
 
-    if (error || !data) return previewPublishedResources();
+    if (error || !data || data.length === 0) return previewPublishedResources();
     return data as Resource[];
   } catch {
     return previewPublishedResources();

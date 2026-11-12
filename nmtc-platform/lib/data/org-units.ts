@@ -13,7 +13,7 @@ export async function getOrgUnits(): Promise<OrgUnit[]> {
       .select("*")
       .order("sort_order");
 
-    if (error || !data) return PREVIEW_ORG_UNITS;
+    if (error || !data || data.length === 0) return PREVIEW_ORG_UNITS;
     return data as OrgUnit[];
   } catch {
     return PREVIEW_ORG_UNITS;

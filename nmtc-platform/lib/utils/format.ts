@@ -18,18 +18,18 @@ export function getSiteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 }
 
-const MISSING_SEED_PLACEHOLDERS = new Set([
-  "/images/lecture-hall.jpg",
-  "/images/clinical-care.jpg",
-  "/images/graduation.jpg",
-  "/images/healthcare-team.jpg",
+const BUILTIN_RESOURCE_PATHS = new Set([
+  "documents/student-handbook.pdf",
+  "documents/academic-calendar.pdf",
+  "documents/clinical-logbook.pdf",
+  "documents/exam-timetable.pdf",
 ]);
 
 export function getStoragePublicUrl(path: string | null): string | null {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  if (MISSING_SEED_PLACEHOLDERS.has(path)) return null;
   if (path.startsWith("/")) return path;
+  if (BUILTIN_RESOURCE_PATHS.has(path)) return `/${path}`;
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!base) return path;
   const normalized = path.replace(/^\/+/, "");

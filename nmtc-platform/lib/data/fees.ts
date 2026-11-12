@@ -56,10 +56,12 @@ export async function getFinancialAidPageData(): Promise<FinancialAidPageData> {
 
     return {
       fees: fees.length ? fees : PREVIEW_FEES,
-      paymentMethods:
-        (methodsRes.data as PaymentMethod[]) ?? PREVIEW_PAYMENT_METHODS,
-      scholarships:
-        (scholarshipsRes.data as Scholarship[]) ?? PREVIEW_SCHOLARSHIPS,
+      paymentMethods: methodsRes.data?.length
+        ? (methodsRes.data as PaymentMethod[])
+        : PREVIEW_PAYMENT_METHODS,
+      scholarships: scholarshipsRes.data?.length
+        ? (scholarshipsRes.data as Scholarship[])
+        : PREVIEW_SCHOLARSHIPS,
       content:
         (contentRes.data as FinancialAidContent) ?? PREVIEW_FINANCIAL_AID,
     };
