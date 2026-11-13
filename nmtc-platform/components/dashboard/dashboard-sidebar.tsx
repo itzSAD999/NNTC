@@ -23,6 +23,9 @@ import {
   UserCog,
   Sliders,
   ShieldCheck,
+  RotateCcw,
+  CheckCircle2,
+  Clock,
   ExternalLink,
   LogOut,
   ChevronDown,
@@ -61,6 +64,9 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   UserCog,
   Sliders,
   ShieldCheck,
+  RotateCcw,
+  CheckCircle2,
+  Clock,
 };
 
 interface DashboardSidebarProps {

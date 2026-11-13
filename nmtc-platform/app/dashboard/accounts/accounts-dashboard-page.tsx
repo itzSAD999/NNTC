@@ -1,4 +1,5 @@
-import { Receipt, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { Receipt, CheckCircle2, ArrowRight, Award, BadgePercent, Clock } from "lucide-react";
 
 import { PreviewBanner } from "@/components/admin/preview-banner";
 import { RequestQueue } from "@/components/dashboard/request-queue";
@@ -6,6 +7,7 @@ import { RequestWorkflowGuide } from "@/components/dashboard/request-workflow-gu
 import { isPreviewId } from "@/lib/data/admin-preview";
 import { requireStaffRole } from "@/lib/auth/session";
 import { getRequestsByStatus } from "@/lib/data/dashboard-requests";
+import { Button } from "@/components/ui/button";
 
 export default async function AccountsDashboardPage() {
   await requireStaffRole(["accounts"]);
@@ -16,13 +18,24 @@ export default async function AccountsDashboardPage() {
   ]);
   const preview = pending.some((r) => isPreviewId(r.id));
 
+  const urgentQueue = pending.slice(0, 5);
+
   return (
     <div className="space-y-8">
-      <header className="flex items-start justify-between gap-3">
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 border-b border-line pb-6">
         <div>
-          <h1 className="font-serif text-display-md">Accounts Office</h1>
-          <p className="mt-1 text-sm text-caption">
-            Confirm payments, then send them to the Principal. You only act on payment checks.
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-bold uppercase tracking-widest bg-primary text-white">
+              Bursary Desk
+            </span>
+            <span className="text-xs text-caption font-medium">Finance &amp; Accounts Division</span>
+          </div>
+          <h1 className="font-serif text-3xl sm:text-4xl font-medium tracking-tight text-ink">
+            Accounts Office
+          </h1>
+          <p className="mt-1 text-sm text-caption max-w-xl">
+            Confirm student document payments, audit digital transaction references, and manage institutional fee schedules.
           </p>
         </div>
         <RequestWorkflowGuide highlight="accounts" />
@@ -30,53 +43,131 @@ export default async function AccountsDashboardPage() {
 
       {preview ? <PreviewBanner /> : null}
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="border border-line bg-white p-5">
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-caption">
-            <Receipt className="h-4 w-4 text-primary" />
-            Payment check
-          </p>
-          <p className="mt-4 font-serif text-3xl font-bold text-ink">{pending.length}</p>
-          <p className="mt-1 text-xs text-caption">Your step</p>
+      {/* KPI Action Cards */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Card 1: Payment Check */}
+        <div className="relative flex flex-col justify-between border border-primary/40 bg-white p-5 shadow-sm">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary">
+                <Receipt className="h-4 w-4" />
+                Payment Checks
+              </span>
+              {pending.length > 0 ? (
+                <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              ) : null}
+            </div>
+            <p className="mt-3 font-serif text-3xl font-bold text-ink">{pending.length}</p>
+            <p className="mt-1 text-xs text-caption">Awaiting verification</p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-line/60">
+            <Button asChild size="sm" className="w-full justify-between rounded-none font-semibold">
+              <Link href="/dashboard/accounts/pending">
+                <span>Open Payment Queue</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
         </div>
-        <div className="border border-line bg-white p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-caption">With Principal</p>
-          <p className="mt-4 font-serif text-3xl font-bold text-ink">{signed.length}</p>
+
+        {/* Card 2: With Principal */}
+        <div className="relative flex flex-col justify-between border border-line bg-white p-5 shadow-sm">
+          <div>
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-caption">
+              <Award className="h-4 w-4 text-primary" />
+              With Principal
+            </span>
+            <p className="mt-3 font-serif text-3xl font-bold text-ink">{signed.length}</p>
+            <p className="mt-1 text-xs text-caption">Payment cleared by Bursary</p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-line/60">
+            <Button asChild variant="outline" size="sm" className="w-full justify-between rounded-none font-semibold">
+              <Link href="/dashboard/accounts/cleared">
+                <span>View Forwarded</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
         </div>
-        <div className="border border-line bg-white p-5">
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-caption">
-            <CheckCircle2 className="h-4 w-4 text-primary" />
-            Collected
-          </p>
-          <p className="mt-4 font-serif text-3xl font-bold text-ink">{done.length}</p>
+
+        {/* Card 3: Collected / Reconciled */}
+        <div className="relative flex flex-col justify-between border border-line bg-white p-5 shadow-sm">
+          <div>
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-caption">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              Collected Archive
+            </span>
+            <p className="mt-3 font-serif text-3xl font-bold text-ink">{done.length}</p>
+            <p className="mt-1 text-xs text-caption">Settled and dispatched</p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-line/60">
+            <Button asChild variant="outline" size="sm" className="w-full justify-between rounded-none font-semibold">
+              <Link href="/dashboard/accounts/collected">
+                <span>View Archive</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        {/* Card 4: Fee Schedules */}
+        <div className="relative flex flex-col justify-between border border-line bg-white p-5 shadow-sm">
+          <div>
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-caption">
+              <BadgePercent className="h-4 w-4 text-primary" />
+              Fee Schedules &amp; Aid
+            </span>
+            <p className="mt-3 font-serif text-3xl font-bold text-ink">Bursary</p>
+            <p className="mt-1 text-xs text-caption">Tuition &amp; breakdown rates</p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-line/60">
+            <Button asChild variant="outline" size="sm" className="w-full justify-between rounded-none font-semibold">
+              <Link href="/dashboard/admin/fees">
+                <span>Manage Fee Rates</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-ink">Pending</h2>
-        <RequestQueue
-          requests={pending}
-          stage="pending"
-          emptyMessage="No requests awaiting payment verification."
-        />
-      </section>
+      {/* Priority Action Required: Top Urgent Requests */}
+      <section className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-line pb-3">
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-semibold text-ink">
+              Action Required — Payment Verification Queue
+            </h2>
+            {pending.length > 0 ? (
+              <span className="px-2 py-0.5 text-xs font-bold bg-primary text-white">
+                {pending.length}
+              </span>
+            ) : null}
+          </div>
+          {pending.length > 5 ? (
+            <Button asChild variant="ghost" size="sm" className="text-primary font-semibold hover:underline">
+              <Link href="/dashboard/accounts/pending">
+                View all {pending.length} requests in queue &rarr;
+              </Link>
+            </Button>
+          ) : null}
+        </div>
 
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-ink">Signed</h2>
-        <RequestQueue
-          requests={signed}
-          stage="signed"
-          emptyMessage="No payment-confirmed requests yet."
-        />
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-ink">Processed</h2>
-        <RequestQueue
-          requests={done}
-          stage="processed"
-          emptyMessage="No collected requests yet."
-        />
+        {pending.length > 0 ? (
+          <RequestQueue
+            requests={urgentQueue}
+            stage="pending"
+            emptyMessage="No requests awaiting payment verification."
+          />
+        ) : (
+          <div className="border border-line bg-white p-8 text-center space-y-2">
+            <CheckCircle2 className="h-8 w-8 text-primary mx-auto" />
+            <p className="font-serif text-lg font-medium text-ink">Queue is Empty</p>
+            <p className="text-xs text-caption max-w-sm mx-auto">
+              All academic-cleared requests have had their payments verified.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

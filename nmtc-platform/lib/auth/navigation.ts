@@ -23,12 +23,12 @@ export const GROUP_METADATA: Record<
   { label: string; description: string }
 > = {
   command: {
-    label: "Executive Desk",
-    description: "Institutional overview and health",
+    label: "Workspace Overview",
+    description: "Main desk summary and institutional metrics",
   },
   operations: {
-    label: "Document Processing",
-    description: "Verification gates & student requests",
+    label: "Document Processing Queues",
+    description: "Dedicated queues for each verification stage",
   },
   academics: {
     label: "Academic & Admissions",
@@ -49,48 +49,119 @@ export const GROUP_METADATA: Record<
 };
 
 export const DASHBOARD_NAV: DashboardNavItem[] = [
+  // 1. Primary Workspaces (Each role lands on their own dedicated overview)
   {
     href: "/dashboard/admin",
     label: "Executive Overview",
     roles: ["super_admin"],
     group: "command",
     iconName: "LayoutDashboard",
-    description: "Platform metrics and executive summary",
+    description: "Platform metrics and institutional summary",
+  },
+  {
+    href: "/dashboard/principal",
+    label: "Principal Overview",
+    roles: ["principal"],
+    group: "command",
+    iconName: "LayoutDashboard",
+    description: "Executive endorsement desk & institutional metrics",
+  },
+  {
+    href: "/dashboard/academic",
+    label: "Academic Overview",
+    roles: ["academic"],
+    group: "command",
+    iconName: "LayoutDashboard",
+    description: "Records verification & curriculum summary",
+  },
+  {
+    href: "/dashboard/accounts",
+    label: "Accounts Overview",
+    roles: ["accounts"],
+    group: "command",
+    iconName: "LayoutDashboard",
+    description: "Payment verification & fee reconciliation summary",
   },
   {
     href: "/dashboard/editor",
-    label: "Content desk",
+    label: "Editorial Desk",
     roles: ["content_editor"],
     group: "command",
     iconName: "LayoutDashboard",
     description: "News, events, and public pages",
   },
 
-  // 2. Document Processing & Inquiries (Strictly segregated by desk)
+  // 2. Principal Dedicated Subpages
   {
-    href: "/dashboard/academic",
-    label: "Academic Review Desk",
-    roles: ["academic", "super_admin"],
-    group: "operations",
-    iconName: "FileCheck2",
-    description: "Transcript & result verification",
-  },
-  {
-    href: "/dashboard/accounts",
-    label: "Accounts Review Desk",
-    roles: ["accounts", "super_admin"],
-    group: "operations",
-    iconName: "Receipt",
-    description: "Payment confirmation & bursary audit",
-  },
-  {
-    href: "/dashboard/principal",
-    label: "Principal Signature Desk",
+    href: "/dashboard/principal/pending",
+    label: "Awaiting Signatures",
     roles: ["principal", "super_admin"],
     group: "operations",
     iconName: "Award",
-    description: "Executive endorsement & seal",
+    description: "Cleared requests awaiting Principal endorsement",
   },
+  {
+    href: "/dashboard/principal/issued",
+    label: "Signed & Issued Archive",
+    roles: ["principal", "super_admin"],
+    group: "operations",
+    iconName: "CheckCircle2",
+    description: "History of all officially released documents",
+  },
+
+  // 3. Academic Office Dedicated Subpages
+  {
+    href: "/dashboard/academic/pending",
+    label: "Pending Verification",
+    roles: ["academic", "super_admin"],
+    group: "operations",
+    iconName: "FileCheck2",
+    description: "Submitted transcript & attestation checks",
+  },
+  {
+    href: "/dashboard/academic/returned",
+    label: "Returned to Students",
+    roles: ["academic", "super_admin"],
+    group: "operations",
+    iconName: "RotateCcw",
+    description: "Discrepancy queries & resubmissions",
+  },
+  {
+    href: "/dashboard/academic/cleared",
+    label: "Cleared to Accounts",
+    roles: ["academic", "super_admin"],
+    group: "operations",
+    iconName: "CheckCircle2",
+    description: "Academically verified requests forwarded",
+  },
+
+  // 4. Accounts Office Dedicated Subpages
+  {
+    href: "/dashboard/accounts/pending",
+    label: "Payment Verification",
+    roles: ["accounts", "super_admin"],
+    group: "operations",
+    iconName: "Receipt",
+    description: "Paystack & bank slip reconciliation",
+  },
+  {
+    href: "/dashboard/accounts/cleared",
+    label: "Cleared to Principal",
+    roles: ["accounts", "super_admin"],
+    group: "operations",
+    iconName: "Award",
+    description: "Payment cleared & forwarded for signature",
+  },
+  {
+    href: "/dashboard/accounts/collected",
+    label: "Collected & Dispatched",
+    roles: ["accounts", "super_admin"],
+    group: "operations",
+    iconName: "CheckCircle2",
+    description: "Finalized and collected document archive",
+  },
+
+  // 5. Inquiries & Communications
   {
     href: "/dashboard/admin/inbox",
     label: "Inquiries & Inbox",
@@ -100,7 +171,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
     description: "Public contact messages & student queries",
   },
 
-  // 3. Academic & Admissions (Academic Affairs, Content Editor, Super Admin)
+  // 6. Academic & Admissions Management
   {
     href: "/dashboard/admin/programs",
     label: "Programmes & Courses",
@@ -134,7 +205,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
     description: "Handbooks, forms & downloads",
   },
 
-  // 4. Public Portal & Media (Content Editor & Super Admin only)
+  // 7. Public Portal & Media
   {
     href: "/dashboard/admin/news",
     label: "News & Bulletins",
@@ -176,7 +247,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
     description: "History, mission & leadership",
   },
 
-  // 5. Bursary & Accounts (Bursary Officers & Super Admin only)
+  // 8. Bursary & Finance
   {
     href: "/dashboard/admin/fees",
     label: "Fee Schedules & Aid",
@@ -186,7 +257,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
     description: "Tuition rates, bank accounts & aid",
   },
 
-  // 6. System & Governance (Restricted strictly by duty)
+  // 9. System & Governance
   {
     href: "/dashboard/admin/staff",
     label: "Faculty & Staff Directory",
