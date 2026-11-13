@@ -310,5 +310,84 @@
 }
 
 main {
- animation: page-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: page-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hero Section High-Impact Animations */
+@keyframes hero-fade-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-badge-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12px, 0) scale(0.95);
+  }
+  70% {
+    transform: translate3d(0, 1px, 0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes draw-underline {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes ken-burns-slow {
+  0% {
+    transform: scale(1.0);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}
+
+.animate-hero-badge {
+  animation: hero-badge-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-hero-title {
+  animation: hero-fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.animate-hero-sub {
+  animation: hero-fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+}
+
+.animate-hero-actions {
+  animation: hero-fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+
+.animate-hero-stats {
+  animation: hero-fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.75s both;
+}
+
+.animate-ken-burns {
+  animation: ken-burns-slow 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-draw-line {
+  transform-origin: left;
+  animation: draw-underline 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.7s both;
 }
