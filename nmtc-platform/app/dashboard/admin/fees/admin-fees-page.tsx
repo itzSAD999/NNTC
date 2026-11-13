@@ -1,11 +1,11 @@
 import { FeesEditor } from "@/components/admin/fees-editor";
 import { AdminListShell } from "@/components/admin/admin-layout";
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireFeesStaff } from "@/lib/auth/permissions";
 import { listLooksPreviewed } from "@/lib/data/admin-preview";
 import { getFinancialAidForEdit } from "@/lib/data/admin-fees";
 
 export default async function AdminFeesPage() {
-  await requireContentStaff();
+  await requireFeesStaff();
   const data = await getFinancialAidForEdit();
 
   return (

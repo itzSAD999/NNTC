@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { Plus, X } from "lucide-react";
 
 import {
   createDepartment,
@@ -134,7 +135,7 @@ function DepartmentRow({ department }: { department: Department }) {
   );
 }
 
-function AddDepartmentForm() {
+function AddDepartmentForm({ onClose }: { onClose?: () => void }) {
   const [state, formAction] = useActionState(createDepartment, {});
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -149,25 +150,27 @@ function AddDepartmentForm() {
       setName("");
       setSlug("");
       setSlugTouched(false);
+      onClose?.();
     }
-  }, [state.success]);
+  }, [state.success, onClose]);
 
   return (
     <AdminSectionCard
-      title="Add department"
+      title="Create New Department"
       description="Departments group programmes and staff profiles — they do not have their own public page."
     >
       <form action={formAction} className="space-y-4">
         <Message state={state} />
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="dept-name">Name</Label>
+            <Label htmlFor="dept-name">Department Name</Label>
             <Input
               id="dept-name"
               name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nursing Department"
+              placeholder="e.g. Nursing Department"
+              autoFocus
               required
             />
           </div>
@@ -182,12 +185,23 @@ function AddDepartmentForm() {
               }}
             />
             <FieldHint>
-              Filled in from the name. Used internally — departments do not have
-              their own public page.
+              Auto-generated identifier used internally to link programmes and faculty.
             </FieldHint>
           </div>
         </div>
-        <SubmitButton label="Add department" />
+        <div className="flex items-center gap-2 pt-2">
+          <SubmitButton label="Create Department" />
+          {onClose && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </form>
     </AdminSectionCard>
   );
@@ -198,6 +212,7 @@ export function DepartmentsEditor({
 }: {
   departments: Department[];
 }) {
+  const [showAddForm, setShowAddForm] = useState(false);
   const [search, setSearch] = useState("");
 
   const filteredDepartments = useMemo(() => {
@@ -208,10 +223,39 @@ export function DepartmentsEditor({
 
   return (
     <div className="space-y-6">
-      <AddDepartmentForm />
+      {/* Top Action Bar with Add Department Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 rounded-lg border border-line bg-surface p-4 shadow-sm">
+        <div>
+          <h2 className="font-serif text-base font-semibold text-ink">
+            Department Directory
+          </h2>
+          <p className="text-xs text-caption">
+            {departments.length} registered department{departments.length === 1 ? "" : "s"} across Nursing &amp; Midwifery.
+          </p>
+        </div>
+        <Button
+          type="button"
+          onClick={() => setShowAddForm((prev) => !prev)}
+          className="inline-flex items-center gap-2 self-start sm:self-auto"
+        >
+          {showAddForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+          <span>{showAddForm ? "Close Form" : "Add Department"}</span>
+        </Button>
+      </div>
+
+      {/* Conditionally Rendered Add Form */}
+      {showAddForm && (
+        <div className="animate-in fade-in slide-in-from-top-3 duration-200">
+          <AddDepartmentForm onClose={() => setShowAddForm(false)} />
+        </div>
+      )}
 
       {departments.length === 0 ? (
-        <EmptyState message="No departments yet. Add one above — programmes and staff profiles link to departments." />
+        <div className="space-y-4">
+          {!showAddForm && (
+            <EmptyState message="No departments yet. Click 'Add Department' above to create one — programmes and staff profiles link to departments." />
+          )}
+        </div>
       ) : (
         <div className="space-y-4">
           <AdminListFilterBar

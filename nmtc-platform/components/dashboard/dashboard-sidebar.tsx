@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -287,8 +288,15 @@ export function DashboardSidebar({
                 )}
                 title="Nandom NMTC Portal"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white shadow-sm">
-                  <Shield className="h-5 w-5 fill-white/20" />
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white p-0.5 shadow-sm ring-1 ring-line/60 overflow-hidden">
+                  <Image
+                    src="/images/nmtc-crest.png"
+                    alt="NMTC Crest"
+                    width={36}
+                    height={36}
+                    className="h-full w-full object-contain"
+                    priority
+                  />
                 </div>
                 {!isCollapsed && (
                   <div className="min-w-0 flex-1">

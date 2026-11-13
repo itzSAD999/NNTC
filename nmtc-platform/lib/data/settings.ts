@@ -5,7 +5,7 @@ import type { Settings } from "@/types/database";
 export const DEFAULT_SETTINGS: Settings = {
   id: 1,
   college_name: "Nandom Nursing and Midwifery Training College",
-  motto: "Excellence in Nursing and Midwifery Education",
+  motto: "Aut Primis Aut Cum Primis — Integrity, Professionalism, Excellence",
   logo_url: "/images/nmtc-crest.png",
   primary_color: "#1A5E3A",
   accent_color: "#9A1B2F",

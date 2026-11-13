@@ -2,13 +2,13 @@ import Link from "next/link";
 
 import { ResourcesList } from "@/components/admin/resources-list";
 import { AdminListShell } from "@/components/admin/admin-layout";
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { listLooksPreviewed } from "@/lib/data/admin-preview";
 import { listAllResources } from "@/lib/data/admin-resources";
 import { Button } from "@/components/ui/button";
 
 export default async function AdminResourcesPage() {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const resources = await listAllResources();
 
   return (

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 
 import { StaffForm } from "@/components/admin/staff-form";
 import { AdminEditShell } from "@/components/admin/admin-layout";
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireStaffDirectoryStaff } from "@/lib/auth/permissions";
 import { getStaffForEdit, listDepartments } from "@/lib/data/admin-staff";
 
 export default async function AdminStaffEditPage({
@@ -10,7 +10,7 @@ export default async function AdminStaffEditPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireContentStaff();
+  await requireStaffDirectoryStaff();
   const { id } = await params;
   const [profile, departments] = await Promise.all([
     getStaffForEdit(id),

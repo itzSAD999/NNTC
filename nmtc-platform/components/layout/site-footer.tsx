@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   FacebookMark,
   InstagramMark,
@@ -19,6 +20,25 @@ export function SiteFooter({ settings }: SiteFooterProps) {
       <div className="section-grid py-14 md:py-16">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_1.6fr] lg:items-start">
           <div>
+            <div className="mb-6 flex items-center gap-3.5">
+              <div className="relative h-14 w-14 shrink-0 rounded-full bg-white p-1 shadow-md ring-2 ring-white/20 overflow-hidden">
+                <Image
+                  src="/images/nmtc-crest.png"
+                  alt={`${settings.college_name} Crest`}
+                  width={56}
+                  height={56}
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <div className="min-w-0">
+                <p className="font-serif font-bold text-lg text-ink tracking-tight leading-tight">
+                  NANDOM NMTC
+                </p>
+                <p className="text-[0.68rem] uppercase tracking-wider text-ink/75 font-mono">
+                  Aut Primis Aut Cum Primis
+                </p>
+              </div>
+            </div>
             <p className="font-serif text-3xl font-medium tracking-tight text-ink sm:text-4xl">
               Stay in the know
             </p>

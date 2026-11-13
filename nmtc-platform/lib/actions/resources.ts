@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { resourceFormSchema } from "@/lib/validation/resources";
@@ -18,7 +18,7 @@ export async function createResource(
   _prev: ResourceActionState,
   formData: FormData
 ): Promise<ResourceActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const parsed = resourceFormSchema.safeParse({
     title: formData.get("title")?.toString() ?? "",
@@ -59,7 +59,7 @@ export async function updateResource(
   _prev: ResourceActionState,
   formData: FormData
 ): Promise<ResourceActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const id = formData.get("id")?.toString();
   if (!id) return { error: "Missing resource ID." };
@@ -99,7 +99,7 @@ export async function updateResource(
 }
 
 export async function toggleResourcePublishedForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString();
   const isPublished = formData.get("is_published")?.toString() === "true";
   if (!id) return;
@@ -119,7 +119,7 @@ export async function toggleResourcePublishedForm(formData: FormData): Promise<v
 }
 
 export async function deleteResourceForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString();
   if (!id) return;
 

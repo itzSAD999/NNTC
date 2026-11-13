@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { createClient } from "@/lib/supabase/server";
 import { departmentFormSchema } from "@/lib/validation/department";
 
@@ -12,7 +12,7 @@ export async function createDepartment(
   _prev: DepartmentActionState,
   formData: FormData
 ): Promise<DepartmentActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const parsed = departmentFormSchema.safeParse({
     name: formData.get("name")?.toString() ?? "",
@@ -42,7 +42,7 @@ export async function updateDepartment(
   _prev: DepartmentActionState,
   formData: FormData
 ): Promise<DepartmentActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const id = formData.get("id")?.toString();
   if (!id) return { error: "Missing department ID." };
@@ -75,7 +75,7 @@ export async function updateDepartment(
 }
 
 export async function deleteDepartmentForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString();
   if (!id) return;
 

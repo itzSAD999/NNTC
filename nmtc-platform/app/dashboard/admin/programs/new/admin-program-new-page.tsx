@@ -1,10 +1,10 @@
 import { ProgramForm } from "@/components/admin/program-form";
 import { AdminEditShell } from "@/components/admin/admin-layout";
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { listDepartments } from "@/lib/data/admin-programs";
 
 export default async function AdminProgramNewPage() {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const departments = await listDepartments();
 
   return (

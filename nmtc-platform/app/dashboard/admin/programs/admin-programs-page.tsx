@@ -2,13 +2,13 @@ import Link from "next/link";
 
 import { ProgramsList } from "@/components/admin/programs-list";
 import { AdminListShell } from "@/components/admin/admin-layout";
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { listLooksPreviewed } from "@/lib/data/admin-preview";
 import { listAllPrograms } from "@/lib/data/admin-programs";
 import { Button } from "@/components/ui/button";
 
 export default async function AdminProgramsPage() {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const programs = await listAllPrograms();
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
  Calendar,
@@ -47,11 +47,35 @@ export function EventsListing({
  year: "numeric",
  });
 
+ const touchStartX = useRef<number | null>(null);
+ const touchStartY = useRef<number | null>(null);
+
  function shiftMonth(delta: number) {
  setMonth((m) => {
  const d = new Date(m.year, m.month + delta, 1);
  return { year: d.getFullYear(), month: d.getMonth() };
  });
+ }
+
+ function handleTouchStart(e: React.TouchEvent) {
+ touchStartX.current = e.touches[0].clientX;
+ touchStartY.current = e.touches[0].clientY;
+ }
+
+ function handleTouchEnd(e: React.TouchEvent) {
+ if (touchStartX.current === null || touchStartY.current === null) return;
+ const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+ const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+ if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+ if (deltaX < 0) {
+ shiftMonth(1);
+ } else {
+ shiftMonth(-1);
+ }
+ }
+ touchStartX.current = null;
+ touchStartY.current = null;
  }
 
  return (
@@ -200,7 +224,11 @@ export function EventsListing({
 
  {/* VIEW 3: MONTHLY ACTIVITY GRID */}
  {view === "calendar" && (
- <div className="mt-8 rounded-none border border-line bg-surface p-6 shadow-sm animate-in fade-in duration-200">
+ <div
+ onTouchStart={handleTouchStart}
+ onTouchEnd={handleTouchEnd}
+ className="mt-8 rounded-none border border-line bg-surface p-6 shadow-sm animate-in fade-in duration-200 select-none touch-pan-y"
+ >
  <div className="flex items-center justify-between border-b border-line pb-4">
  <button
  type="button"
@@ -252,6 +280,9 @@ export function EventsListing({
  </ul>
  )}
  </div>
+ <p className="mt-3 text-center text-[0.68rem] text-caption sm:hidden select-none">
+ Swipe left or right across the calendar to switch months
+ </p>
  </div>
  )}
  </section>

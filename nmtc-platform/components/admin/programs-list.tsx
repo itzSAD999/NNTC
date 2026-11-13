@@ -25,9 +25,30 @@ import {
   AdminTableHead,
   AdminTableTh,
 } from "@/components/admin/admin-layout";
+import { ListThumb } from "@/components/admin/list-thumb";
 import { PublicLinkPreview } from "@/components/admin/admin-help";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
+
+function getProgramImage(program: ProgramWithDepartment): string {
+  const slug = (program.slug || "").toLowerCase();
+  const name = (program.name || "").toLowerCase();
+  if (slug.includes("midwifer") || name.includes("midwifer")) {
+    return "/images/admissions-guide-student.jpg";
+  }
+  if (slug.includes("community") || name.includes("community")) {
+    return "/images/healthcare-team.jpg";
+  }
+  if (
+    slug.includes("general") ||
+    name.includes("general") ||
+    slug.includes("nurs") ||
+    name.includes("nurs")
+  ) {
+    return "/images/clinical-care.jpg";
+  }
+  return "/images/clinical-theatre.jpg";
+}
 
 function ProgramActions({ program }: { program: ProgramWithDepartment }) {
   return (
@@ -108,6 +129,7 @@ function ProgramsListContent({ programs }: { programs: ProgramWithDepartment[] }
           table={
             <AdminTable minWidth="720px">
               <AdminTableHead>
+                <AdminTableTh>Cover</AdminTableTh>
                 <AdminTableTh>Name</AdminTableTh>
                 <AdminTableTh>Department</AdminTableTh>
                 <AdminTableTh>Order</AdminTableTh>
@@ -120,6 +142,12 @@ function ProgramsListContent({ programs }: { programs: ProgramWithDepartment[] }
                     key={program.id}
                     className="border-b border-line last:border-0"
                   >
+                    <td className="px-4 py-3">
+                      <ListThumb
+                        src={getProgramImage(program)}
+                        alt={program.name}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <Link
                         href={`/dashboard/admin/programs/${program.id}`}
@@ -152,17 +180,23 @@ function ProgramsListContent({ programs }: { programs: ProgramWithDepartment[] }
           cards={filtered.map((program) => (
             <AdminMobileCard key={program.id}>
               <div className="space-y-3">
-                <div>
-                  <Link
-                    href={`/dashboard/admin/programs/${program.id}`}
-                    className="font-medium text-primary hover:underline"
-                  >
-                    {program.name}
-                  </Link>
-                  <PublicLinkPreview
-                    basePath="/programs"
-                    slug={program.slug}
+                <div className="flex items-center gap-3">
+                  <ListThumb
+                    src={getProgramImage(program)}
+                    alt={program.name}
                   />
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/dashboard/admin/programs/${program.id}`}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {program.name}
+                    </Link>
+                    <PublicLinkPreview
+                      basePath="/programs"
+                      slug={program.slug}
+                    />
+                  </div>
                 </div>
                 <p className="text-xs text-caption">
                   {program.department?.name ?? "No department"} · Order{" "}

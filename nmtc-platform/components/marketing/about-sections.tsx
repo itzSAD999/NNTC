@@ -108,6 +108,58 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
  icon: Sparkles,
  };
 
+ const theme = key.includes("excellence")
+ ? {
+ bar: "bg-[#9A1B2F]/40",
+ barHover: "group-hover:bg-[#9A1B2F]",
+ iconBox: "border-[#9A1B2F]/25 bg-[#9A1B2F]/10 text-[#9A1B2F]",
+ iconBoxHover: "group-hover:bg-[#9A1B2F] group-hover:text-white group-hover:border-[#9A1B2F]",
+ subtitle: "text-[#9A1B2F]",
+ underline: "bg-[#9A1B2F]/30",
+ underlineHover: "group-hover:bg-[#9A1B2F]",
+ pillarBadge: "text-[#9A1B2F]",
+ cardBorderHover: "hover:border-[#9A1B2F]",
+ titleHover: "group-hover:text-[#9A1B2F]",
+ }
+ : key.includes("compassion")
+ ? {
+ bar: "bg-[#D99B00]/50",
+ barHover: "group-hover:bg-[#D99B00]",
+ iconBox: "border-[#D99B00]/30 bg-[#D99B00]/15 text-[#9A6D00]",
+ iconBoxHover: "group-hover:bg-[#D99B00] group-hover:text-white group-hover:border-[#D99B00]",
+ subtitle: "text-[#9A6D00]",
+ underline: "bg-[#D99B00]/40",
+ underlineHover: "group-hover:bg-[#D99B00]",
+ pillarBadge: "text-[#9A6D00]",
+ cardBorderHover: "hover:border-[#D99B00]",
+ titleHover: "group-hover:text-[#9A6D00]",
+ }
+ : key.includes("professionalism")
+ ? {
+ bar: "bg-[#0D5C75]/40",
+ barHover: "group-hover:bg-[#0D5C75]",
+ iconBox: "border-[#0D5C75]/25 bg-[#0D5C75]/10 text-[#0D5C75]",
+ iconBoxHover: "group-hover:bg-[#0D5C75] group-hover:text-white group-hover:border-[#0D5C75]",
+ subtitle: "text-[#0D5C75]",
+ underline: "bg-[#0D5C75]/30",
+ underlineHover: "group-hover:bg-[#0D5C75]",
+ pillarBadge: "text-[#0D5C75]",
+ cardBorderHover: "hover:border-[#0D5C75]",
+ titleHover: "group-hover:text-[#0D5C75]",
+ }
+ : {
+ bar: "bg-[#1A5E3A]/40",
+ barHover: "group-hover:bg-[#1A5E3A]",
+ iconBox: "border-[#1A5E3A]/25 bg-[#1A5E3A]/10 text-[#1A5E3A]",
+ iconBoxHover: "group-hover:bg-[#1A5E3A] group-hover:text-white group-hover:border-[#1A5E3A]",
+ subtitle: "text-[#1A5E3A]",
+ underline: "bg-[#1A5E3A]/30",
+ underlineHover: "group-hover:bg-[#1A5E3A]",
+ pillarBadge: "text-[#1A5E3A]",
+ cardBorderHover: "hover:border-[#1A5E3A]",
+ titleHover: "group-hover:text-[#1A5E3A]",
+ };
+
  if (key.includes("integrity")) {
  meta = {
  subtitle: "Honesty & Ethics",
@@ -138,14 +190,14 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
 
  return (
  <Reveal as="div" key={value} delay={idx * 80}>
- <article className="group relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-line bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary hover:bg-primary/[0.015] hover:shadow-xl">
- {/* Top Green Accent Bar */}
- <div className="absolute top-0 left-0 h-1 w-full bg-primary/40 transition-colors duration-300 group-hover:bg-primary" />
+ <article className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-line bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl ${theme.cardBorderHover}`}>
+ {/* Top Crest Accent Bar */}
+ <div className={`absolute top-0 left-0 h-1 w-full transition-colors duration-300 ${theme.bar} ${theme.barHover}`} />
 
  <div>
  {/* Top Row: Icon + Numeral */}
  <div className="flex items-center justify-between mb-5">
- <div className="flex h-11 w-11 items-center justify-center border border-primary/20 bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
+ <div className={`flex h-11 w-11 items-center justify-center border transition-colors duration-300 ${theme.iconBox} ${theme.iconBoxHover}`}>
  <Icon className="h-5 w-5" />
  </div>
  <span className="font-mono text-xs font-bold tracking-widest text-caption uppercase">
@@ -154,17 +206,17 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
  </div>
 
  {/* Value Title */}
- <h3 className="font-serif text-2xl font-bold tracking-tight text-ink transition-colors duration-200 group-hover:text-primary">
+ <h3 className={`font-serif text-2xl font-bold tracking-tight text-ink transition-colors duration-200 ${theme.titleHover}`}>
  {value}
  </h3>
 
  {/* Subtitle */}
- <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+ <p className={`mt-1 text-xs font-semibold uppercase tracking-[0.16em] ${theme.subtitle}`}>
  {meta.subtitle}
  </p>
 
  {/* Underline */}
- <div className="mt-3 mb-4 h-[2px] w-10 bg-primary/30 transition-all duration-300 group-hover:w-16 group-hover:bg-primary" />
+ <div className={`mt-3 mb-4 h-[2px] w-10 transition-all duration-300 group-hover:w-16 ${theme.underline} ${theme.underlineHover}`} />
 
  {/* Description */}
  <p className="text-sm leading-relaxed text-caption">
@@ -175,7 +227,7 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
  {/* Bottom Footer Accent */}
  <div className="mt-6 pt-3.5 border-t border-line/60 flex items-center justify-between text-xs text-caption">
  <span className="font-medium text-ink/70">NNTC Pillar</span>
- <span className="font-mono text-[11px] text-primary font-semibold">0{idx + 1}</span>
+ <span className={`font-mono text-[11px] font-semibold ${theme.pillarBadge}`}>0{idx + 1}</span>
  </div>
  </article>
  </Reveal>

@@ -28,8 +28,10 @@ export const metadata: Metadata = {
     icon: [
       { url: "/images/nmtc-crest.png" },
       { url: "/favicon.ico" },
+      { url: "/favicon.png", type: "image/png" },
     ],
     apple: [
+      { url: "/apple-touch-icon.png" },
       { url: "/images/nmtc-crest.png" },
     ],
   },

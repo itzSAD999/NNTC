@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { createClient } from "@/lib/supabase/server";
 import {
   admissionsContentSchema,
@@ -17,7 +17,7 @@ export async function updateAdmissionsContent(
   _prev: AdmissionsActionState,
   formData: FormData
 ): Promise<AdmissionsActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const parsed = admissionsContentSchema.safeParse({
     application_form_url: formData.get("application_form_url")?.toString() ?? "",
@@ -64,7 +64,7 @@ export async function saveDocumentRequired(
   _prev: AdmissionsActionState,
   formData: FormData
 ): Promise<AdmissionsActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const id = formData.get("id")?.toString();
   const parsed = documentRequiredSchema.safeParse({
@@ -105,7 +105,7 @@ export async function saveDocumentRequired(
 }
 
 export async function deleteDocumentForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
   await supabase.from("documents_required").delete().eq("id", id);
@@ -117,7 +117,7 @@ export async function saveAdmissionsFaq(
   _prev: AdmissionsActionState,
   formData: FormData
 ): Promise<AdmissionsActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const id = formData.get("id")?.toString();
   const parsed = admissionsFaqSchema.safeParse({
@@ -150,7 +150,7 @@ export async function saveAdmissionsFaq(
 }
 
 export async function deleteFaqForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
   await supabase.from("admissions_faqs").delete().eq("id", id);

@@ -251,7 +251,7 @@ export const DASHBOARD_NAV: DashboardNavItem[] = [
   {
     href: "/dashboard/admin/fees",
     label: "Fee Schedules & Aid",
-    roles: ["super_admin", "accounts"],
+    roles: ["super_admin", "accounts", "principal"],
     group: "finance",
     iconName: "BadgePercent",
     description: "Tuition rates, bank accounts & aid",

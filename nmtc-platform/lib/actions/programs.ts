@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { programFormSchema } from "@/lib/validation/program";
@@ -45,7 +45,7 @@ export async function createProgram(
   _prev: ProgramActionState,
   formData: FormData
 ): Promise<ProgramActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const parsed = programFormSchema.safeParse({
     name: formData.get("name")?.toString() ?? "",
@@ -112,7 +112,7 @@ export async function updateProgram(
   _prev: ProgramActionState,
   formData: FormData
 ): Promise<ProgramActionState> {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   const id = formData.get("id")?.toString() ?? "";
   if (!id) return { error: "Programme ID required." };
@@ -181,7 +181,7 @@ export async function updateProgram(
 }
 
 export async function toggleProgramPublishedForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
 
@@ -212,7 +212,7 @@ export async function toggleProgramPublishedForm(formData: FormData): Promise<vo
 }
 
 export async function deleteProgramForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireAcademicStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
   await supabase.from("programs").delete().eq("id", id);

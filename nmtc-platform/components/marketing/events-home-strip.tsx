@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
@@ -70,11 +70,38 @@ export function EventsHomeStrip({ events }: { events: CollegeEvent[] }) {
     return parsed.filter((row) => dateKey(row.start) === selectedKey);
   }, [parsed, selectedKey]);
 
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
   function shiftMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
     setYear(next.getFullYear());
     setMonth(next.getMonth());
     setSelectedKey(null);
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Dominant horizontal swipe (>40px and >1.3x dy)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      if (deltaX < 0) {
+        // Swiped left -> advance to next month
+        shiftMonth(1);
+      } else {
+        // Swiped right -> go to previous month
+        shiftMonth(-1);
+      }
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
   }
 
   return (
@@ -102,7 +129,11 @@ export function EventsHomeStrip({ events }: { events: CollegeEvent[] }) {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start">
           <Reveal variant="up">
-            <div>
+            <div
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              className="select-none touch-pan-y"
+            >
               <div className="flex items-center justify-between border-b border-line pb-3">
                 <button
                   type="button"
@@ -167,6 +198,9 @@ export function EventsHomeStrip({ events }: { events: CollegeEvent[] }) {
                   );
                 })}
               </div>
+              <p className="mt-2 text-center text-[0.68rem] text-caption lg:hidden select-none">
+                Swipe left or right to switch months
+              </p>
             </div>
           </Reveal>
 

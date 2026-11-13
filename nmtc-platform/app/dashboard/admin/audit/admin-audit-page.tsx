@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AuditLogTable } from "@/components/admin/audit-log";
 import { AdminListShell } from "@/components/admin/admin-layout";
 import { LoadingState } from "@/components/ui/loading-state";
-import { requireSuperAdmin } from "@/lib/auth/permissions";
+import { requireAuditStaff } from "@/lib/auth/permissions";
 import { listLooksPreviewed } from "@/lib/data/admin-preview";
 import {
   listAuditActors,
@@ -21,7 +21,7 @@ type PageProps = {
 };
 
 export default async function AdminAuditPage({ searchParams }: PageProps) {
-  await requireSuperAdmin();
+  await requireAuditStaff();
   const params = await searchParams;
 
   const filters: AuditFilters = {

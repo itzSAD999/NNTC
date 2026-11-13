@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Pin } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Pin } from "lucide-react";
 
 import { MEDIA } from "@/lib/media";
 import { formatShortDate, getStoragePublicUrl } from "@/lib/utils/format";
@@ -37,6 +37,8 @@ export function NewsMobileCarousel({ posts }: NewsMobileCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  const totalCards = posts.length + 1;
+
   const handleScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -44,7 +46,7 @@ export function NewsMobileCarousel({ posts }: NewsMobileCarouselProps) {
       ? (el.firstElementChild as HTMLElement).offsetWidth + 16
       : 300;
     const index = Math.round(el.scrollLeft / cardWidth);
-    setActiveIndex(Math.max(0, Math.min(index, posts.length - 1)));
+    setActiveIndex(Math.max(0, Math.min(index, totalCards - 1)));
   };
 
   const scrollToIndex = (index: number) => {
@@ -66,18 +68,18 @@ export function NewsMobileCarousel({ posts }: NewsMobileCarouselProps) {
   };
 
   const handleNext = () => {
-    scrollToIndex(Math.min(posts.length - 1, activeIndex + 1));
+    scrollToIndex(Math.min(totalCards - 1, activeIndex + 1));
   };
 
   if (!posts || posts.length === 0) return null;
 
   return (
     <div className="lg:hidden mt-6">
-      {/* Swipeable track with CSS snap */}
+      {/* Swipeable track with CSS snap & smooth vertical pass-through */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:-mx-6 sm:px-6 touch-pan-x"
+        className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:-mx-6 sm:px-6 overscroll-x-contain"
         style={{ scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }}
       >
         {posts.map((post, idx) => {
@@ -156,6 +158,41 @@ export function NewsMobileCarousel({ posts }: NewsMobileCarouselProps) {
             </article>
           );
         })}
+
+        {/* Final Slide: "See More Stories" Dedicated Action Card */}
+        <article
+          className={cn(
+            "group snap-start shrink-0 w-[84vw] max-w-[340px] flex flex-col justify-between overflow-hidden rounded-none border p-6 sm:p-7 shadow-sm transition-all duration-300 hover:border-primary hover:bg-primary/[0.04] hover:shadow-md",
+            activeIndex === posts.length
+              ? "border-primary bg-primary/[0.03] shadow-md"
+              : "border-primary/20 bg-primary/[0.015]"
+          )}
+        >
+          <div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-none border border-primary/30 bg-primary/10 text-primary mb-5 group-hover:bg-primary group-hover:text-white transition-colors">
+              <ArrowRight className="h-6 w-6" />
+            </div>
+            <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-primary">
+              Official Archive
+            </p>
+            <h3 className="mt-2 font-serif text-2xl font-bold tracking-tight text-ink group-hover:text-primary transition-colors">
+              See More Stories
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-caption">
+              Browse the complete archive of student activities, clinical postings, matriculation ceremonies, and public advisories from Nandom NMTC.
+            </p>
+          </div>
+
+          <div className="mt-8 pt-4 border-t border-primary/20">
+            <Link
+              href="/news"
+              className="inline-flex w-full items-center justify-center gap-2 bg-primary px-4 py-3 text-xs font-semibold text-white shadow-sm hover:bg-primary/90 transition-colors"
+            >
+              <span>Explore All News &amp; Bulletins</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </article>
       </div>
 
       {/* Swipe navigation & indicator dots */}
@@ -175,12 +212,12 @@ export function NewsMobileCarousel({ posts }: NewsMobileCarouselProps) {
 
         {/* Carousel indicator dots */}
         <div className="flex items-center gap-1.5" role="tablist" aria-label="Stories navigation">
-          {posts.map((_, i) => (
+          {Array.from({ length: totalCards }).map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => scrollToIndex(i)}
-              aria-label={`Go to story ${i + 1}`}
+              aria-label={i === posts.length ? "Go to see more stories" : `Go to story ${i + 1}`}
               aria-selected={activeIndex === i}
               role="tab"
               className={cn(
@@ -207,7 +244,7 @@ export function NewsMobileCarousel({ posts }: NewsMobileCarouselProps) {
           <button
             type="button"
             onClick={handleNext}
-            disabled={activeIndex === posts.length - 1}
+            disabled={activeIndex === totalCards - 1}
             aria-label="Next story"
             className="flex h-7 w-7 items-center justify-center rounded-none border border-line bg-white text-ink transition hover:bg-surface disabled:opacity-30 disabled:pointer-events-none"
           >

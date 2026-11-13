@@ -1,6 +1,6 @@
 "use server";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireStaffSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -11,7 +11,7 @@ export type UploadResult = { path?: string; error?: string };
 export async function uploadPublicAsset(
   formData: FormData
 ): Promise<UploadResult> {
-  await requireContentStaff();
+  await requireStaffSession();
 
   const file = formData.get("file");
   const folder = formData.get("folder")?.toString()?.trim() || "uploads";
@@ -39,7 +39,7 @@ export async function uploadPublicAsset(
 }
 
 export async function uploadDocument(formData: FormData): Promise<UploadResult> {
-  await requireContentStaff();
+  await requireStaffSession();
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) {

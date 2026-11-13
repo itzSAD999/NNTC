@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireStaffDirectoryStaff } from "@/lib/auth/permissions";
 import { redirectWithNotice } from "@/lib/admin/redirect-notice";
 import { createClient } from "@/lib/supabase/server";
 import { staffFormSchema } from "@/lib/validation/staff";
@@ -18,7 +18,7 @@ export async function createStaff(
   _prev: StaffActionState,
   formData: FormData
 ): Promise<StaffActionState> {
-  await requireContentStaff();
+  await requireStaffDirectoryStaff();
 
   const parsed = staffFormSchema.safeParse({
     full_name: formData.get("full_name")?.toString() ?? "",
@@ -67,7 +67,7 @@ export async function updateStaff(
   _prev: StaffActionState,
   formData: FormData
 ): Promise<StaffActionState> {
-  await requireContentStaff();
+  await requireStaffDirectoryStaff();
 
   const id = formData.get("id")?.toString();
   if (!id) return { error: "Missing profile ID." };
@@ -116,7 +116,7 @@ export async function updateStaff(
 }
 
 export async function toggleStaffPublishedForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireStaffDirectoryStaff();
   const id = formData.get("id")?.toString();
   const isPublished = formData.get("is_published")?.toString() === "true";
   if (!id) return;
@@ -136,7 +136,7 @@ export async function toggleStaffPublishedForm(formData: FormData): Promise<void
 }
 
 export async function deleteStaffForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireStaffDirectoryStaff();
   const id = formData.get("id")?.toString();
   if (!id) return;
 

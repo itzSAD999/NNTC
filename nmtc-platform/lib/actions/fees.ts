@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireFeesStaff } from "@/lib/auth/permissions";
 import { createClient } from "@/lib/supabase/server";
 import {
   feeSchema,
@@ -17,7 +17,7 @@ export async function updateFinancialAidContent(
   _prev: FeesActionState,
   formData: FormData
 ): Promise<FeesActionState> {
-  await requireContentStaff();
+  await requireFeesStaff();
 
   const parsed = financialAidContentSchema.safeParse({
     payment_schedule: formData.get("payment_schedule")?.toString() ?? "",
@@ -49,7 +49,7 @@ export async function saveFee(
   _prev: FeesActionState,
   formData: FormData
 ): Promise<FeesActionState> {
-  await requireContentStaff();
+  await requireFeesStaff();
 
   const id = formData.get("id")?.toString();
   const programId = formData.get("program_id")?.toString() ?? "";
@@ -104,7 +104,7 @@ export async function saveFee(
 }
 
 export async function deleteFeeForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireFeesStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
   await supabase.from("fees").delete().eq("id", id);
@@ -116,7 +116,7 @@ export async function savePaymentMethod(
   _prev: FeesActionState,
   formData: FormData
 ): Promise<FeesActionState> {
-  await requireContentStaff();
+  await requireFeesStaff();
 
   const id = formData.get("id")?.toString();
   const parsed = paymentMethodSchema.safeParse({
@@ -149,7 +149,7 @@ export async function savePaymentMethod(
 }
 
 export async function deletePaymentMethodForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireFeesStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
   await supabase.from("payment_methods").delete().eq("id", id);
@@ -161,7 +161,7 @@ export async function saveScholarship(
   _prev: FeesActionState,
   formData: FormData
 ): Promise<FeesActionState> {
-  await requireContentStaff();
+  await requireFeesStaff();
 
   const id = formData.get("id")?.toString();
   const parsed = scholarshipSchema.safeParse({
@@ -198,7 +198,7 @@ export async function saveScholarship(
 }
 
 export async function deleteScholarshipForm(formData: FormData): Promise<void> {
-  await requireContentStaff();
+  await requireFeesStaff();
   const id = formData.get("id")?.toString() ?? "";
   const supabase = await createClient();
   await supabase.from("scholarships").delete().eq("id", id);

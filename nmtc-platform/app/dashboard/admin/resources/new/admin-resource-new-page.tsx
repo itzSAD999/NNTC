@@ -1,9 +1,9 @@
 import { ResourceForm } from "@/components/admin/resource-form";
 import { AdminEditShell } from "@/components/admin/admin-layout";
-import { requireContentStaff } from "@/lib/auth/permissions";
+import { requireAcademicStaff } from "@/lib/auth/permissions";
 
 export default async function AdminResourceNewPage() {
-  await requireContentStaff();
+  await requireAcademicStaff();
 
   return (
     <AdminEditShell
