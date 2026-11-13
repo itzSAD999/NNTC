@@ -273,6 +273,12 @@ export async function resubmitRequest(
   }
 
   const data = parsed.data;
+  if (!data.document_type_id) {
+    return {
+      error: "Please select a document type.",
+      fieldErrors: { document_type_id: "Document type is required" },
+    };
+  }
   const docType = await getDocumentTypeById(data.document_type_id);
   if (!docType) {
     return { error: "Selected document type is not available." };

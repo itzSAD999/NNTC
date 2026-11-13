@@ -80,7 +80,7 @@ export function FinancialAidSections({
       Boolean(item) &&
       !aligned.some((existing) => {
         const n = existing.name.toLowerCase();
-        const source = item.name.toLowerCase();
+        const source = item?.name ? item.name.toLowerCase() : "";
         return source.includes("hub")
           ? n.includes("hub")
           : n.includes("secretariat");
