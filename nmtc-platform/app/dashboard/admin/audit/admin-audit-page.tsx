@@ -4,6 +4,7 @@ import { AuditLogTable } from "@/components/admin/audit-log";
 import { AdminListShell } from "@/components/admin/admin-layout";
 import { LoadingState } from "@/components/ui/loading-state";
 import { requireSuperAdmin } from "@/lib/auth/permissions";
+import { listLooksPreviewed } from "@/lib/data/admin-preview";
 import {
   listAuditActors,
   listAuditEvents,
@@ -35,7 +36,7 @@ export default async function AdminAuditPage({ searchParams }: PageProps) {
   ]);
 
   return (
-    <AdminListShell section="audit">
+    <AdminListShell section="audit" preview={listLooksPreviewed(events)}>
       <Suspense fallback={<LoadingState label="Loading audit events…" />}>
         <AuditLogTable
           events={events}

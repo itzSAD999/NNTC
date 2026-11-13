@@ -49,14 +49,21 @@ export const GROUP_METADATA: Record<
 };
 
 export const DASHBOARD_NAV: DashboardNavItem[] = [
-  // 1. Executive Desk (Super Admin & Principal only)
   {
     href: "/dashboard/admin",
     label: "Executive Overview",
-    roles: ["super_admin", "principal"],
+    roles: ["super_admin"],
     group: "command",
     iconName: "LayoutDashboard",
     description: "Platform metrics and executive summary",
+  },
+  {
+    href: "/dashboard/editor",
+    label: "Content desk",
+    roles: ["content_editor"],
+    group: "command",
+    iconName: "LayoutDashboard",
+    description: "News, events, and public pages",
   },
 
   // 2. Document Processing & Inquiries (Strictly segregated by desk)

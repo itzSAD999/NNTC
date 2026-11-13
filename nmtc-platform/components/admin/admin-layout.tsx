@@ -1,56 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ExternalLink, HelpCircle, X } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
+import { PreviewBanner } from "@/components/admin/preview-banner";
+import { DeskHelp } from "@/components/dashboard/desk-help";
 import type { AdminSectionKey } from "@/lib/admin/page-guides";
 import { ADMIN_SECTION_GUIDES } from "@/lib/admin/page-guides";
 import { cn } from "@/lib/utils";
 
-/** Compact Guide Tip: Unobtrusive help trigger taking zero extra vertical space by default */
 export function CollapsibleGuide({ section }: { section: AdminSectionKey }) {
   const guide = ADMIN_SECTION_GUIDES[section];
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-sm"
-        title="Page tips"
-      >
-        <HelpCircle className="h-3.5 w-3.5 text-primary" />
-        <span>{open ? "Hide tips" : "Page tips"}</span>
-      </button>
-
-      {open && (
-        <div className="mt-3 flex items-start justify-between gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-ink shadow-sm">
-          <p className="leading-relaxed">{guide.howItWorks}</p>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="text-caption hover:text-ink shrink-0 p-0.5"
-            aria-label="Close tips"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      )}
-    </div>
-  );
+  return <DeskHelp title="Page tips">{guide.howItWorks}</DeskHelp>;
 }
 
 /** List page shell: Clean header + action button, zero visual clutter */
 export function AdminListShell({
   section,
   action,
+  preview,
   children,
 }: {
   section: AdminSectionKey;
   action?: ReactNode;
+  preview?: boolean;
   children: ReactNode;
 }) {
   const guide = ADMIN_SECTION_GUIDES[section];
@@ -65,7 +39,7 @@ export function AdminListShell({
               <Link
                 href={guide.publicPath}
                 target="_blank"
-                className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-0.5 text-[0.7rem] font-medium text-caption hover:border-primary hover:text-primary transition-colors shadow-sm"
+                className="inline-flex items-center gap-1 border border-line bg-white px-2.5 py-0.5 text-[0.7rem] font-medium text-caption hover:border-primary hover:text-primary"
               >
                 <ExternalLink className="h-3 w-3" />
                 <span>Live page</span>
@@ -80,6 +54,8 @@ export function AdminListShell({
           {action ? <div className="shrink-0">{action}</div> : null}
         </div>
       </div>
+
+      {preview ? <PreviewBanner /> : null}
 
       {children}
     </div>
@@ -146,7 +122,7 @@ export function AdminSectionCard({
   return (
     <section
       className={cn(
-        "rounded-xl border border-line bg-surface p-5 sm:p-6 shadow-sm space-y-5",
+        "border border-line bg-white p-5 sm:p-6 space-y-5",
         className
       )}
     >
@@ -195,7 +171,7 @@ export function AdminTable({
   minWidth?: string;
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-sm">
+    <div className="overflow-x-auto border border-line bg-white">
       <table className="w-full text-left text-sm" style={{ minWidth }}>
         {children}
       </table>
@@ -206,7 +182,7 @@ export function AdminTable({
 export function AdminTableHead({ children }: { children: ReactNode }) {
   return (
     <thead>
-      <tr className="border-b border-line bg-bg/50 text-[0.7rem] uppercase tracking-wider text-caption font-semibold">
+      <tr className="border-b border-line bg-[#f7f7f7] text-[0.7rem] uppercase tracking-wider text-caption font-semibold">
         {children}
       </tr>
     </thead>

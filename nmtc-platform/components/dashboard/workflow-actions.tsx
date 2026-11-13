@@ -23,12 +23,16 @@ interface WorkflowActionsProps {
   requestId: string;
   status: RequestStatus;
   role: Role;
+  preview?: boolean;
+  onPreviewStatus?: (status: RequestStatus) => void;
 }
 
 export function WorkflowActions({
   requestId,
   status,
   role,
+  preview = false,
+  onPreviewStatus,
 }: WorkflowActionsProps) {
   const [pending, startTransition] = useTransition();
   const [note, setNote] = useState("");
@@ -36,7 +40,7 @@ export function WorkflowActions({
   const [message, setMessage] = useState<WorkflowActionState | null>(null);
 
   const actions = useMemo(
-    () => getWorkflowUiActions(status, role),
+    () => (role === "content_editor" ? [] : getWorkflowUiActions(status, role)),
     [status, role]
   );
 
@@ -54,6 +58,17 @@ export function WorkflowActions({
 
   function run(actionId: string) {
     setMessage(null);
+    const action = actions.find((item) => item.id === actionId);
+    if (!action) return;
+
+    if (preview) {
+      onPreviewStatus?.(action.toStatus);
+      setNoteActionId(null);
+      setNote("");
+      setMessage({ success: true });
+      return;
+    }
+
     const handler = handlers[actionId];
     if (!handler) return;
 
@@ -67,9 +82,28 @@ export function WorkflowActions({
     });
   }
 
+  if (role === "content_editor") {
+    return (
+      <div className="border border-line bg-white p-5">
+        <h2 className="font-serif text-lg">Actions</h2>
+        <p className="mt-2 text-sm text-caption">
+          Content editors do not process document requests.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4 rounded border border-line bg-surface p-5">
-      <h2 className="font-serif text-display-sm">Actions</h2>
+    <div className="space-y-4 border border-line bg-white p-5">
+      <div>
+        <h2 className="font-serif text-lg">Actions</h2>
+        {preview ? (
+          <p className="mt-1 text-xs text-caption">
+            Sample request — buttons update this screen so you can practise the
+            desk flow.
+          </p>
+        ) : null}
+      </div>
 
       {message?.error ? (
         <p role="alert" className="text-sm text-danger">
@@ -78,7 +112,7 @@ export function WorkflowActions({
       ) : null}
       {message?.success ? (
         <p role="status" className="text-sm text-success">
-          Request updated successfully.
+          {preview ? "Status updated on this preview." : "Request updated."}
         </p>
       ) : null}
 
@@ -102,7 +136,17 @@ export function WorkflowActions({
             </Button>
           ))}
         </div>
-      ) : null}
+      ) : (
+        <p className="text-sm text-caption">
+          {role === "super_admin"
+            ? "Processing stays with Academic, Accounts, or the Principal. Use those desks to act."
+            : status === "collected"
+              ? "This request is complete."
+              : status === "returned"
+                ? "Awaiting the student. No staff action at this stage."
+                : "No action for your desk at this stage."}
+        </p>
+      )}
 
       {noteActionId ? (
         <div className="space-y-3 border-t border-line pt-4">
@@ -121,16 +165,6 @@ export function WorkflowActions({
             {pending ? "Submitting…" : "Submit with note"}
           </Button>
         </div>
-      ) : null}
-
-      {status === "collected" ? (
-        <p className="text-sm text-caption">This request is complete.</p>
-      ) : null}
-
-      {status === "returned" ? (
-        <p className="text-sm text-caption">
-          Awaiting student action. No staff actions available at this stage.
-        </p>
       ) : null}
     </div>
   );

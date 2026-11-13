@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 
 import { submitRequest } from "@/lib/actions/requests";
@@ -32,6 +34,21 @@ export function RequestForm({
   const [receiptError, setReceiptError] = useState<string | null>(null);
   const [receiptName, setReceiptName] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [docError, setDocError] = useState<string | null>(null);
+
+  const selectedTotal = useMemo(() => {
+    return documentTypes
+      .filter((dt) => selectedDocs.includes(dt.id))
+      .reduce((sum, dt) => sum + dt.fee_amount, 0);
+  }, [documentTypes, selectedDocs]);
+
+  function toggleDoc(id: string) {
+    setSelectedDocs((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+    setDocError(null);
+  }
 
   const {
     register,
@@ -51,6 +68,10 @@ export function RequestForm({
     const file = fileInput?.files?.[0] ?? null;
     const fileErr = validateReceiptFile(file);
     setReceiptError(fileErr);
+    if (selectedDocs.length === 0) {
+      setDocError("Select at least one document.");
+      return;
+    }
 
     if (fileErr) return;
 
@@ -60,6 +81,7 @@ export function RequestForm({
         formData.append(key, String(value));
       }
     });
+    selectedDocs.forEach((id) => formData.append("document_type_ids", id));
     if (file) {
       formData.append("receipt", file);
     }
@@ -194,29 +216,41 @@ export function RequestForm({
           ) : null}
         </div>
 
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="document_type_id">Document type *</Label>
-          <select
-            id="document_type_id"
-            {...register("document_type_id")}
-            defaultValue=""
-            className="flex h-10 w-full rounded border border-line bg-surface px-3 py-2 text-sm"
-            aria-invalid={!!errors.document_type_id}
-          >
-            <option value="" disabled>
-              Select document type
-            </option>
-            {documentTypes.map((dt) => (
-              <option key={dt.id} value={dt.id}>
-                {dt.name} — GHS {dt.fee_amount.toFixed(2)}
-              </option>
-            ))}
-          </select>
-          {errors.document_type_id ? (
-            <p className="text-xs text-danger">
-              {errors.document_type_id.message}
+        <div className="space-y-3 sm:col-span-2">
+          <Label>Documents *</Label>
+          <p className="text-xs text-caption">Tap every document you need. Each one is submitted as its own request.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {documentTypes.map((dt) => {
+              const on = selectedDocs.includes(dt.id);
+              return (
+                <button
+                  key={dt.id}
+                  type="button"
+                  onClick={() => toggleDoc(dt.id)}
+                  className={cn(
+                    "flex items-start justify-between gap-3 border p-4 text-left transition",
+                    on
+                      ? "border-primary bg-primary text-white"
+                      : "border-line bg-white hover:border-primary"
+                  )}
+                >
+                  <span>
+                    <span className="block font-serif text-base font-semibold">{dt.name}</span>
+                    <span className={cn("mt-1 block text-xs", on ? "text-white/80" : "text-caption")}>
+                      GHS {dt.fee_amount.toFixed(2)}
+                    </span>
+                  </span>
+                  {on ? <Check className="h-5 w-5 shrink-0" /> : null}
+                </button>
+              );
+            })}
+          </div>
+          {selectedDocs.length > 0 ? (
+            <p className="text-sm font-medium text-ink">
+              {selectedDocs.length} selected · GHS {selectedTotal.toFixed(2)}
             </p>
           ) : null}
+          {docError ? <p className="text-xs text-danger">{docError}</p> : null}
         </div>
 
         <div className="space-y-2 sm:col-span-2">

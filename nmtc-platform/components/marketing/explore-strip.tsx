@@ -1,103 +1,108 @@
+import Image from "next/image";
 import Link from "next/link";
-import {
-  BookOpen,
-  GraduationCap,
-  Home,
-  Images,
-  Stethoscope,
-  Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-const EXPLORE_ITEMS: {
-  href: string;
-  label: string;
-  description: string;
-  icon: LucideIcon;
-}[] = [
+import { Reveal } from "@/components/motion/reveal";
+import { MEDIA } from "@/lib/media";
+
+const ITEMS = [
   {
     href: "/programs",
-    label: "Programmes",
-    description: "Nursing and midwifery pathways accredited for Ghana.",
-    icon: GraduationCap,
+    label: "Nursing & Midwifery",
+    description: "Diploma pathways with supervised clinical practice.",
+    tags: ["General Nursing", "Midwifery"],
+    photo: MEDIA.lecture,
   },
   {
     href: "/admissions",
-    label: "Admissions",
-    description: "Entry requirements, deadlines, and how to apply.",
-    icon: BookOpen,
-  },
-  {
-    href: "/faculty",
-    label: "Staff & lecturers",
-    description: "Meet the educators behind clinical training.",
-    icon: Users,
+    label: "Admissions & Aid",
+    description: "Requirements, fees, and how to apply.",
+    tags: ["Apply", "Fees", "Scholarships"],
+    photo: MEDIA.graduation,
   },
   {
     href: "/campus-life",
-    label: "Campus life",
-    description: "Accommodation, welfare, clubs, and student support.",
-    icon: Home,
-  },
-  {
-    href: "/gallery",
-    label: "Gallery",
-    description: "Campus moments, ceremonies, and clinical practice.",
-    icon: Images,
+    label: "Campus & Community",
+    description: "Hostels, skills labs, and student life in Nandom.",
+    tags: ["Hostels", "Gallery", "Events"],
+    photo: MEDIA.campus,
   },
   {
     href: "/resources",
     label: "Resources",
-    description: "Handbooks, timetables, forms, and academic calendars.",
-    icon: Stethoscope,
+    description: "Handbooks, forms, calendars, and student downloads.",
+    tags: ["Handbook", "Forms", "Calendar"],
+    photo: MEDIA.team,
   },
-];
+] as const;
 
 export function ExploreStrip() {
   return (
-    <section aria-labelledby="explore-heading" className="border-b border-line bg-bg">
-      <div className="section-grid py-16 md:py-20">
-        <div className="max-w-2xl">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
-            Explore NMTC
+    <section
+      aria-labelledby="explore-heading"
+      data-nav="dark"
+      className="bg-[#111] py-16 text-white md:py-20"
+    >
+      <div className="section-grid grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+        <div>
+          <Reveal variant="fade">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55">
+            Academics
           </p>
           <h2
             id="explore-heading"
-            className="mt-3 font-serif text-display-md md:text-display-lg"
+            className="mt-3 font-serif text-3xl font-medium tracking-tight text-white sm:text-4xl md:text-5xl"
           >
-            The parts that make our college whole
+            Training that prepares you to practise
           </h2>
-          <p className="mt-4 text-base text-caption">
-            From admissions to campus life — structured pathways for prospective
-            students, families, and partners across the Upper West Region.
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-white/70">
+            Programmes, admissions, campus life, and student resources — organised so you can find the next step without hunting.
           </p>
+          </Reveal>
+
+          <ol className="mt-10 space-y-8">
+            {ITEMS.map((item, i) => (
+              <Reveal as="li" key={item.href} delay={i * 90} className="border-t border-white/15 pt-6">
+                <p className="font-mono text-xs text-white/45">0{i + 1}</p>
+                <h3 className="mt-2 font-serif text-2xl text-white">
+                  <Link href={item.href} className="hover:underline">
+                    {item.label}
+                  </Link>
+                </h3>
+                <p className="mt-2 max-w-lg text-sm text-white/70">{item.description}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {item.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="border border-white/20 px-2 py-0.5 text-[0.7rem] text-white/80"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <Link
+                  href={item.href}
+                  className="mt-3 inline-block text-sm font-medium text-white underline underline-offset-4"
+                >
+                  Learn more
+                </Link>
+              </Reveal>
+            ))}
+          </ol>
         </div>
 
-        <ul className="mt-12 grid gap-px overflow-hidden rounded-none border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {EXPLORE_ITEMS.map(({ href, label, description, icon: Icon }) => (
-            <li key={href} className="bg-surface rounded-none">
-              <Link
-                href={href}
-                className="group flex h-full flex-col p-6 transition-colors hover:bg-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:p-8"
-              >
-                <Icon
-                  className="h-5 w-5 text-primary"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
-                <h3 className="mt-4 font-serif text-lg text-ink group-hover:text-primary">
-                  {label}
-                </h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-caption">
-                  {description}
-                </p>
-                <span className="mt-5 text-sm font-medium text-primary group-hover:text-primary-deep">
-                  Learn more →
-                </span>
-              </Link>
-            </li>
+        <div className="hidden space-y-3 lg:block">
+          {ITEMS.map((item, i) => (
+            <Reveal key={item.href} variant="image" delay={90 + i * 90} className="relative aspect-[16/10] overflow-hidden border border-white/10">
+              <Image
+                src={item.photo}
+                alt=""
+                fill
+                className="object-cover"
+                sizes="40vw"
+              />
+            </Reveal>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

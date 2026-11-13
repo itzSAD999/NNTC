@@ -69,6 +69,7 @@ export async function saveDocumentRequired(
   const id = formData.get("id")?.toString();
   const parsed = documentRequiredSchema.safeParse({
     label: formData.get("label")?.toString() ?? "",
+    details: formData.get("details")?.toString() ?? "",
     sort_order: formData.get("sort_order")?.toString() ?? "0",
   });
 
@@ -79,13 +80,22 @@ export async function saveDocumentRequired(
   const supabase = await createClient();
   const payload = {
     label: parsed.data.label,
+    details: parsed.data.details?.trim() || null,
     sort_order: parsed.data.sort_order,
     updated_at: new Date().toISOString(),
   };
 
-  const { error } = id
+  let { error } = id
     ? await supabase.from("documents_required").update(payload).eq("id", id)
     : await supabase.from("documents_required").insert(payload);
+
+  if (error?.message?.includes("details")) {
+    const { details: _details, ...withoutDetails } = payload;
+    const retry = id
+      ? await supabase.from("documents_required").update(withoutDetails).eq("id", id)
+      : await supabase.from("documents_required").insert(withoutDetails);
+    error = retry.error;
+  }
 
   if (error) return { error: "Could not save document." };
 

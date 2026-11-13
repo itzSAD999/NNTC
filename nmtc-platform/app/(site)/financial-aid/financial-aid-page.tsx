@@ -6,27 +6,27 @@ import { getFinancialAidPageData } from "@/lib/data/fees";
 import { getSettings } from "@/lib/data/settings";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSettings();
-  return {
-    title: `Fees & Financial Aid — ${settings.college_name}`,
-    description: `Tuition fees, payment methods, scholarships, SLTF, and financial support at ${settings.college_name}.`,
-  };
+ const settings = await getSettings();
+ return {
+ title: `Fees & Financial Aid — ${settings.college_name}`,
+ description: `Tuition fees, payment methods, scholarships, SLTF, and financial support at ${settings.college_name}.`,
+ };
 }
 
 export default async function FinancialAidPage() {
-  const [data, settings] = await Promise.all([
-    getFinancialAidPageData(),
-    getSettings(),
-  ]);
+ const [data, settings] = await Promise.all([
+ getFinancialAidPageData(),
+ getSettings(),
+ ]);
 
-  return (
-    <>
-      <PageHeader
-        eyebrow="Finance"
-        title="Fees & financial aid"
-        description="Transparent fee schedules, payment options, scholarships, and support for students facing hardship."
-      />
-      <FinancialAidSections data={data} settings={settings} />
-    </>
-  );
+ return (
+ <>
+ <PageHeader
+ eyebrow="Finance"
+ title="Fees & financial aid"
+ description="Fees, payments, and scholarships."
+ />
+ <FinancialAidSections data={data} settings={settings} />
+ </>
+ );
 }

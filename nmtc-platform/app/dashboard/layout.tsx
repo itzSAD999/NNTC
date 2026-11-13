@@ -24,7 +24,7 @@ export default async function DashboardLayout({
   const roleLabel = ROLE_LABELS[session.staff.role] ?? session.staff.role;
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg">
+    <div className="flex min-h-screen flex-col bg-[#f4f4f5]">
       {devPreview.enabled ? (
         <div className="w-full">
           <DevRoleSwitcher

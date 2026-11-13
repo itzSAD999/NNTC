@@ -7,8 +7,6 @@ import {
   ArrowLeft,
   Building2,
   Calendar,
-  CheckCircle2,
-  Clock,
   Copy,
   CreditCard,
   ExternalLink,
@@ -16,11 +14,8 @@ import {
   GraduationCap,
   Mail,
   Phone,
-  ShieldCheck,
   Truck,
   User,
-  AlertCircle,
-  FileCheck,
 } from "lucide-react";
 
 import type { RequestDetail } from "@/lib/data/dashboard-requests";
@@ -28,7 +23,10 @@ import { ReferenceDisplay } from "@/components/requests/reference-display";
 import { StatusPill } from "@/components/ui/status-pill";
 import { STATUS_LABELS } from "@/lib/requests/status-labels";
 import { StaffTimeline } from "@/components/dashboard/staff-timeline";
+import { PreviewBanner } from "@/components/admin/preview-banner";
 import { WorkflowActions } from "@/components/dashboard/workflow-actions";
+import { RequestWorkflowGuide } from "@/components/dashboard/request-workflow-guide";
+import { isPreviewId } from "@/lib/data/admin-preview";
 import { formatShortDate } from "@/lib/utils/format";
 import type { RequestStatus, Role } from "@/lib/constants";
 
@@ -39,50 +37,16 @@ interface RequestDetailViewProps {
   backLabel: string;
 }
 
-// Stage progress milestones
-const WORKFLOW_STAGES = [
-  { key: "submitted", label: "Submitted & Paid" },
-  { key: "academic", label: "Academic Audit" },
-  { key: "accounts", label: "Accounts Clearance" },
-  { key: "principal", label: "Principal Sign" },
-  { key: "issued", label: "Ready / Issued" },
-];
-
-function getStageState(stageKey: string, status: RequestStatus) {
-  const order: Record<RequestStatus, number> = {
-    submitted: 1,         // At Academic Desk
-    academic_approved: 2, // At Accounts Desk
-    payment_confirmed: 3, // At Principal Desk
-    approved: 4,          // Endorsed by Principal, ready for collection
-    collected: 5,         // Handed over / complete
-    returned: 0,          // Returned to student for correction
+function documentName(request: RequestDetail) {
+  const docRel = request.document_types as
+    | { name: string; fee_amount: number }
+    | { name: string; fee_amount: number }[]
+    | null;
+  const doc = Array.isArray(docRel) ? docRel[0] : docRel;
+  return {
+    name: doc?.name ?? "Official document",
+    fee: (doc?.fee_amount ?? request.amount_expected).toFixed(2),
   };
-
-  const currentLevel = order[status] ?? 0;
-
-  switch (stageKey) {
-    case "submitted":
-      return currentLevel >= 1 ? "completed" : "active";
-    case "academic":
-      if (currentLevel > 1) return "completed";
-      if (currentLevel === 1) return "active";
-      if (status === "returned") return "alert";
-      return "upcoming";
-    case "accounts":
-      if (currentLevel > 2) return "completed";
-      if (currentLevel === 2) return "active";
-      return "upcoming";
-    case "principal":
-      if (currentLevel > 3) return "completed";
-      if (currentLevel === 3) return "active";
-      return "upcoming";
-    case "issued":
-      if (currentLevel === 5) return "completed";
-      if (currentLevel === 4) return "active";
-      return "upcoming";
-    default:
-      return "upcoming";
-  }
 }
 
 export function RequestDetailView({
@@ -92,301 +56,267 @@ export function RequestDetailView({
   backLabel,
 }: RequestDetailViewProps) {
   const [copiedId, setCopiedId] = useState(false);
-
-  const docRel = request.document_types as
-    | { name: string; fee_amount: number }
-    | { name: string; fee_amount: number }[]
-    | null;
-  const doc = Array.isArray(docRel) ? docRel[0] : docRel;
-
+  const preview = isPreviewId(request.id);
+  const [status, setStatus] = useState(request.status as RequestStatus);
+  const { name: docName, fee: feeAmount } = documentName(request);
   const isPdf = request.receipt_url?.toLowerCase().endsWith(".pdf") ?? false;
-  const feeAmount = (doc?.fee_amount ?? request.amount_expected).toFixed(2);
-
-  const copyStudentId = () => {
-    navigator.clipboard.writeText(request.student_id);
-    setCopiedId(true);
-    setTimeout(() => setCopiedId(false), 2000);
-  };
-
-  // Get student initials for avatar
-  const initials = request.student_name
-    .split(" ")
-    .map((n) => n[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
-  const isDeliveryPickup =
+  const pickup =
+    request.delivery_method?.toLowerCase() === "collection" ||
     request.delivery_method?.toLowerCase() === "pickup" ||
     request.delivery_method?.toLowerCase() === "in_person";
 
+  const showRecords = role === "academic" || role === "super_admin";
+  const showPayment = role === "accounts" || role === "super_admin";
+  const showAudit = role === "super_admin";
+  const compactPrincipal = role === "principal";
+  const deskHelp =
+    role === "academic" || role === "accounts" || role === "principal"
+      ? role
+      : null;
+
   return (
-    <div className="space-y-8">
-      {/* Back Link */}
-      <div>
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-3">
         <Link
           href={backHref}
-          className="inline-flex items-center gap-2 text-sm font-medium text-caption hover:text-primary transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-medium text-caption hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>{backLabel}</span>
+          {backLabel}
         </Link>
+        {deskHelp ? <RequestWorkflowGuide highlight={deskHelp} /> : null}
       </div>
 
-      {/* HEADER CARD */}
-      <header className="rounded-xl border border-line bg-surface p-6 shadow-sm">
+      {preview ? <PreviewBanner label="Sample request" /> : null}
+
+      <header className="border border-line bg-white p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-3">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
               <ReferenceDisplay referenceNo={request.reference_no} size="lg" />
-              <StatusPill
-                status={request.status as RequestStatus}
-                label={STATUS_LABELS[request.status as RequestStatus]}
-              />
+              <StatusPill status={status} label={STATUS_LABELS[status]} />
             </div>
-            <h1 className="font-serif text-2xl font-bold text-ink">
-              {doc?.name ?? "Official Document Request"}
-            </h1>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-caption">
-              <span className="flex items-center gap-1.5">
+            <h1 className="font-serif text-2xl font-bold text-ink">{docName}</h1>
+            <p className="text-sm text-caption">
+              {request.student_name} · {request.student_id}
+            </p>
+            <p className="flex flex-wrap items-center gap-3 text-xs text-caption">
+              <span className="inline-flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" />
-                Submitted on {formatShortDate(request.created_at)}
+                {formatShortDate(request.created_at)}
               </span>
-              <span className="flex items-center gap-1.5">
-                {isDeliveryPickup ? (
+              <span className="inline-flex items-center gap-1.5">
+                {pickup ? (
                   <>
-                    <Building2 className="h-3.5 w-3.5" /> Campus Pickup (Nandom Registry)
+                    <Building2 className="h-3.5 w-3.5" /> Campus collection
                   </>
                 ) : (
                   <>
-                    <Truck className="h-3.5 w-3.5" /> Dispatch / Courier Delivery
+                    <Truck className="h-3.5 w-3.5" /> {request.delivery_method}
                   </>
                 )}
               </span>
-            </div>
+            </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="rounded-lg border border-line bg-bg px-3 py-1.5 font-mono text-sm font-semibold text-ink">
-              GHS {feeAmount}
-            </span>
-          </div>
-        </div>
-
-        {/* WORKFLOW PIPELINE STEPPER */}
-        <div className="mt-8 border-t border-line pt-6">
-          <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
-            Processing Pipeline & Audit Milestones
+          <p className="border border-line bg-[#f7f7f7] px-3 py-1.5 font-mono text-sm font-semibold">
+            GHS {feeAmount}
           </p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {WORKFLOW_STAGES.map((stage, idx) => {
-              const state = getStageState(stage.key, request.status as RequestStatus);
-              return (
-                <div
-                  key={stage.key}
-                  className={`relative flex items-center gap-2.5 rounded-lg border p-2.5 transition-colors ${
-                    state === "completed"
-                      ? "border-primary/30 bg-primary/5 text-primary"
-                      : state === "active"
-                      ? "border-primary bg-primary text-white shadow-sm font-medium"
-                      : state === "alert"
-                      ? "border-danger/30 bg-danger/5 text-danger"
-                      : "border-line bg-bg/50 text-caption opacity-70"
-                  }`}
-                >
-                  <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
-                    {state === "completed" ? (
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                    ) : state === "active" ? (
-                      <span className="text-[11px] font-bold">{idx + 1}</span>
-                    ) : state === "alert" ? (
-                      <AlertCircle className="h-4 w-4 text-danger" />
-                    ) : (
-                      <span className="text-[11px]">{idx + 1}</span>
-                    )}
-                  </div>
-                  <span className="truncate text-xs font-medium">
-                    {stage.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </header>
 
-      {/* TWO-COLUMN CLINICAL DOSSIER & VERIFICATION DESK */}
-      <div className="grid gap-8 lg:grid-cols-12">
-        {/* COLUMN 1: STUDENT ACADEMIC DOSSIER (7 COLS) */}
+      <div className="grid gap-6 lg:grid-cols-12">
         <section className="space-y-6 lg:col-span-7">
-          <div className="rounded-xl border border-line bg-surface p-6 shadow-sm">
-            {/* Student Header */}
-            <div className="flex items-start gap-4 border-b border-line pb-5">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-serif text-lg font-bold">
-                {initials || <User className="h-6 w-6" />}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
+          {compactPrincipal ? (
+            <div className="border border-line bg-white p-5 sm:p-6">
+              <h2 className="font-serif text-lg">Document to sign</h2>
+              <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs uppercase tracking-wider text-caption">
+                    Student
+                  </dt>
+                  <dd className="mt-1 font-medium text-ink">
+                    {request.student_name}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wider text-caption">
+                    Index
+                  </dt>
+                  <dd className="mt-1 font-mono text-ink">{request.student_id}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wider text-caption">
+                    Programme
+                  </dt>
+                  <dd className="mt-1 text-ink">{request.program}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wider text-caption">
+                    Document
+                  </dt>
+                  <dd className="mt-1 text-ink">{docName}</dd>
+                </div>
+              </dl>
+              <p className="mt-4 text-sm text-caption">
+                Accounts has verified payment. Sign to issue, or send back if
+                the record still needs correction.
+              </p>
+            </div>
+          ) : (
+            <div className="border border-line bg-white p-5 sm:p-6">
+              <div className="flex items-start gap-4 border-b border-line pb-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-primary/10 font-serif font-bold text-primary">
+                  {request.student_name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase() || <User className="h-5 w-5" />}
+                </div>
+                <div className="min-w-0">
                   <h2 className="font-serif text-xl font-bold text-ink">
                     {request.student_name}
                   </h2>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-xs font-medium text-primary">
-                    <ShieldCheck className="h-3 w-3" /> Enrolled / Alumni
-                  </span>
-                </div>
-
-                <div className="mt-1.5 flex items-center gap-2">
-                  <span className="text-xs text-caption">Student / Index ID:</span>
-                  <span className="rounded bg-bg px-2 py-0.5 font-mono text-xs font-bold text-ink border border-line">
-                    {request.student_id}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={copyStudentId}
-                    className="inline-flex items-center gap-1 text-xs text-caption hover:text-primary"
-                    title="Copy student index number"
-                  >
-                    <Copy className="h-3 w-3" />
-                    {copiedId ? "Copied" : "Copy"}
-                  </button>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
+                    <span className="font-mono text-ink">{request.student_id}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(request.student_id);
+                        setCopiedId(true);
+                        setTimeout(() => setCopiedId(false), 2000);
+                      }}
+                      className="inline-flex items-center gap-1 text-caption hover:text-primary"
+                    >
+                      <Copy className="h-3 w-3" />
+                      {copiedId ? "Copied" : "Copy"}
+                    </button>
+                  </div>
                 </div>
               </div>
+
+              {showRecords || role === "accounts" ? (
+                <div className="mt-5 grid gap-3 sm:grid-cols-2 text-sm">
+                  <div className="border border-line p-3">
+                    <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-caption">
+                      <GraduationCap className="h-4 w-4 text-primary" />
+                      Programme
+                    </p>
+                    <p className="mt-1 font-medium text-ink">{request.program}</p>
+                  </div>
+                  <div className="border border-line p-3">
+                    <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-caption">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      Cohort
+                    </p>
+                    <p className="mt-1 font-medium text-ink">
+                      Year {request.year_completed}
+                    </p>
+                  </div>
+                  {showRecords ? (
+                    <>
+                      <div className="border border-line p-3">
+                        <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-caption">
+                          <Mail className="h-4 w-4 text-primary" />
+                          Email
+                        </p>
+                        <a
+                          href={`mailto:${request.student_email}`}
+                          className="mt-1 block truncate text-primary hover:underline"
+                        >
+                          {request.student_email}
+                        </a>
+                      </div>
+                      <div className="border border-line p-3">
+                        <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-caption">
+                          <Phone className="h-4 w-4 text-primary" />
+                          Phone
+                        </p>
+                        {request.student_phone ? (
+                          <a
+                            href={`tel:${request.student_phone}`}
+                            className="mt-1 block text-primary hover:underline"
+                          >
+                            {request.student_phone}
+                          </a>
+                        ) : (
+                          <span className="mt-1 text-caption">Not provided</span>
+                        )}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {showRecords ? (
+                <div className="mt-5 border-t border-line pt-4">
+                  <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-caption">
+                    <FileText className="h-4 w-4 text-primary" />
+                    Purpose
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink">
+                    {request.purpose || "Official records request."}
+                  </p>
+                </div>
+              ) : null}
             </div>
+          )}
 
-            {/* Academic Information Grid */}
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 text-sm">
-              <div className="space-y-1 rounded-lg border border-line bg-bg/40 p-3.5">
-                <div className="flex items-center gap-2 text-caption">
-                  <GraduationCap className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium uppercase tracking-wider">Programme</span>
-                </div>
-                <p className="font-semibold text-ink">{request.program}</p>
-              </div>
-
-              <div className="space-y-1 rounded-lg border border-line bg-bg/40 p-3.5">
-                <div className="flex items-center gap-2 text-caption">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium uppercase tracking-wider">Class / Cohort</span>
-                </div>
-                <p className="font-semibold text-ink">Year {request.year_completed}</p>
-              </div>
-
-              <div className="space-y-1 rounded-lg border border-line bg-bg/40 p-3.5">
-                <div className="flex items-center gap-2 text-caption">
-                  <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium uppercase tracking-wider">Email Address</span>
-                </div>
-                <a
-                  href={`mailto:${request.student_email}`}
-                  className="block font-medium text-primary hover:underline truncate"
-                >
-                  {request.student_email}
-                </a>
-              </div>
-
-              <div className="space-y-1 rounded-lg border border-line bg-bg/40 p-3.5">
-                <div className="flex items-center gap-2 text-caption">
-                  <Phone className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium uppercase tracking-wider">Phone Number</span>
-                </div>
-                {request.student_phone ? (
-                  <a
-                    href={`tel:${request.student_phone}`}
-                    className="block font-medium text-primary hover:underline"
-                  >
-                    {request.student_phone}
-                  </a>
-                ) : (
-                  <span className="text-caption italic">Not provided</span>
-                )}
-              </div>
-            </div>
-
-            {/* Statement of Purpose */}
-            <div className="mt-6 space-y-2 border-t border-line pt-5">
-              <div className="flex items-center gap-2 text-caption">
-                <FileText className="h-4 w-4 text-primary" />
-                <span className="text-xs font-semibold uppercase tracking-wider">
-                  Declared Purpose / Endorsement Objective
-                </span>
-              </div>
-              <div className="rounded-lg border border-line/80 bg-bg p-4 text-sm text-ink leading-relaxed italic">
-                &ldquo;{request.purpose || "Official records requirement for professional accreditation."}&rdquo;
-              </div>
-            </div>
-          </div>
-
-          {/* WORKFLOW ACTION DESK */}
-          <div className="space-y-4">
-            <WorkflowActions
-              requestId={request.id}
-              status={request.status as RequestStatus}
-              role={role}
-            />
-          </div>
+          <WorkflowActions
+            requestId={request.id}
+            status={status}
+            role={role}
+            preview={preview}
+            onPreviewStatus={setStatus}
+          />
         </section>
 
-        {/* COLUMN 2: DOCUMENT & PAYMENT AUDIT DESK (5 COLS) */}
         <section className="space-y-6 lg:col-span-5">
-          {/* Payment Verification Card */}
-          <div className="rounded-xl border border-line bg-surface p-6 shadow-sm">
-            <div className="flex items-center justify-between border-b border-line pb-4">
-              <div className="flex items-center gap-2.5">
-                <CreditCard className="h-5 w-5 text-primary" />
-                <h3 className="font-serif text-lg font-bold text-ink">
-                  Payment Verification
-                </h3>
+          {showPayment ? (
+            <div className="border border-line bg-white p-5 sm:p-6">
+              <div className="flex items-center justify-between border-b border-line pb-4">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                  <h3 className="font-serif text-lg">Payment / receipt</h3>
+                </div>
+                <span className="font-mono text-sm font-bold">GHS {feeAmount}</span>
               </div>
-              <span className="font-mono text-sm font-bold text-primary">
-                GHS {feeAmount}
-              </span>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-caption">Statutory Fee:</span>
-                <span className="font-mono font-medium text-ink">GHS {feeAmount}</span>
+              <div className="mt-4 space-y-2 text-sm">
+                <p className="flex justify-between">
+                  <span className="text-caption">Amount</span>
+                  <span>GHS {feeAmount}</span>
+                </p>
+                <p className="flex justify-between">
+                  <span className="text-caption">Delivery</span>
+                  <span className="capitalize">{request.delivery_method}</span>
+                </p>
               </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-caption">Collection Channel:</span>
-                <span className="font-medium text-ink">Paystack MoMo / Cash Receipt</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-caption">Delivery Mode:</span>
-                <span className="font-medium capitalize text-ink">{request.delivery_method}</span>
-              </div>
-            </div>
-
-            {/* Receipt Preview */}
-            <div className="mt-6 border-t border-line pt-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-caption">
-                  Submitted Proof of Payment
-                </span>
+              <div className="mt-4 border-t border-line pt-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-caption">
+                    Proof of payment
+                  </span>
+                  {request.receiptSignedUrl ? (
+                    <a
+                      href={request.receiptSignedUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                    >
+                      Full size <ExternalLink className="h-3 w-3" />
+                    </a>
+                  ) : null}
+                </div>
                 {request.receiptSignedUrl ? (
-                  <a
-                    href={request.receiptSignedUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                  >
-                    <span>Full size</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                ) : null}
-              </div>
-
-              {request.receiptSignedUrl ? (
-                <div className="space-y-2">
-                  {isPdf ? (
+                  isPdf ? (
                     <iframe
                       title="Payment receipt"
                       src={request.receiptSignedUrl}
-                      className="aspect-[4/3] w-full rounded-lg border border-line bg-bg"
+                      className="aspect-[4/3] w-full border border-line"
                     />
                   ) : (
-                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-line bg-bg/50">
+                    <div className="relative aspect-[4/3] w-full border border-line bg-[#f7f7f7]">
                       <Image
                         src={request.receiptSignedUrl}
                         alt="Payment receipt"
@@ -395,38 +325,26 @@ export function RequestDetailView({
                         unoptimized
                       />
                     </div>
-                  )}
-                  <p className="text-[11px] text-caption flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    Security link expires in 60s. Refresh to re-authenticate.
+                  )
+                ) : (
+                  <p className="border border-dashed border-line p-4 text-sm text-caption">
+                    {preview
+                      ? "Sample request — no receipt file attached."
+                      : "No receipt uploaded. Confirm only if payment is already on the college books."}
                   </p>
-                </div>
-              ) : (
-                <div className="rounded-lg border border-dashed border-line bg-bg/50 p-6 text-center">
-                  <CreditCard className="mx-auto h-8 w-8 text-caption/60" />
-                  <p className="mt-2 text-xs font-medium text-ink">
-                    No physical receipt uploaded
-                  </p>
-                  <p className="mt-1 text-[11px] text-caption">
-                    Direct automated MoMo settlement or fee exemption.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
+          ) : null}
 
-          {/* AUDIT TIMELINE CARD */}
-          <div className="rounded-xl border border-line bg-surface p-6 shadow-sm">
-            <div className="flex items-center gap-2.5 border-b border-line pb-4">
-              <FileCheck className="h-5 w-5 text-primary" />
-              <h3 className="font-serif text-lg font-bold text-ink">
-                Audit Trail & History
-              </h3>
+          {showAudit ? (
+            <div className="border border-line bg-white p-5 sm:p-6">
+              <h3 className="font-serif text-lg">Audit history</h3>
+              <div className="mt-4">
+                <StaffTimeline items={request.events} />
+              </div>
             </div>
-            <div className="mt-5">
-              <StaffTimeline items={request.events} />
-            </div>
-          </div>
+          ) : null}
         </section>
       </div>
     </div>

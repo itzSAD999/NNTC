@@ -104,6 +104,7 @@ export function UsersManager({
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [showCreate, setShowCreate] = useState(false);
 
   const filteredStaff = useMemo(() => {
     return staff.filter((member) => {
@@ -128,8 +129,14 @@ export function UsersManager({
       <Suspense fallback={null}>
         <AdminListToast />
       </Suspense>
+      {showCreate ? (
       <section className="rounded border border-line bg-surface p-6">
-        <h2 className="font-serif text-display-sm">Create staff account</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-serif text-display-sm">Create staff account</h2>
+          <Button type="button" variant="ghost" size="sm" onClick={() => setShowCreate(false)}>
+            Cancel
+          </Button>
+        </div>
         <form action={createAction} className="mt-6 grid gap-4 sm:grid-cols-2">
           <ActionMessage state={createState} />
           <div className="space-y-2 sm:col-span-2 sm:grid sm:grid-cols-2 sm:gap-4">
@@ -172,9 +179,17 @@ export function UsersManager({
           </div>
         </form>
       </section>
+      ) : null}
 
       <section>
-        <h2 className="font-serif text-display-sm">Staff accounts</h2>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-serif text-display-sm">Staff accounts</h2>
+          {showCreate ? null : (
+            <Button type="button" size="sm" onClick={() => setShowCreate(true)}>
+              Create staff
+            </Button>
+          )}
+        </div>
         <div className="mt-4 space-y-4">
           <AdminListFilterBar
             search={search}

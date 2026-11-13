@@ -1,3 +1,4 @@
+import { PREVIEW_AUDIT } from "@/lib/data/admin-preview";
 import { createClient } from "@/lib/supabase/server";
 import type { RequestStatus } from "@/lib/constants";
 
@@ -47,7 +48,15 @@ export async function listAuditEvents(
 
   const { data, error } = await query;
 
-  if (error || !data) return [];
+  if (error || !data || data.length === 0) {
+    return PREVIEW_AUDIT.filter((row) => {
+      if (filters.status && row.request_status !== filters.status) return false;
+      if (filters.actor && !row.actor_label.toLowerCase().includes(filters.actor.toLowerCase())) {
+        return false;
+      }
+      return true;
+    });
+  }
 
   let rows = (data as Array<{
     id: string;
@@ -86,5 +95,8 @@ export async function listAuditActors(): Promise<string[]> {
     .order("actor_label");
 
   const labels = new Set((data ?? []).map((r) => r.actor_label));
+  if (labels.size === 0) {
+    return Array.from(new Set(PREVIEW_AUDIT.map((r) => r.actor_label))).sort();
+  }
   return Array.from(labels).sort();
 }

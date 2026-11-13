@@ -2,11 +2,11 @@ import { SiteShell } from "@/components/layout/site-shell";
 import { getSettings } from "@/lib/data/settings";
 
 export default async function SiteLayout({
-  children,
+ children,
 }: Readonly<{
-  children: React.ReactNode;
+ children: React.ReactNode;
 }>) {
-  const settings = await getSettings();
+ const settings = await getSettings();
 
-  return <SiteShell settings={settings}>{children}</SiteShell>;
+ return <SiteShell settings={settings}>{children}</SiteShell>;
 }

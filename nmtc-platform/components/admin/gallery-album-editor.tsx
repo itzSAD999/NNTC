@@ -164,6 +164,7 @@ function NewMediaRow({
 export function GalleryAlbumEditor({ album }: { album: GalleryAlbumWithMedia }) {
   const [albumState, albumAction] = useActionState(saveGalleryAlbum, {});
   const [dirty, setDirty] = useState(false);
+  const [addingMedia, setAddingMedia] = useState(false);
 
   useUnsavedChanges(dirty);
 
@@ -227,10 +228,23 @@ export function GalleryAlbumEditor({ album }: { album: GalleryAlbumWithMedia }) 
           {album.media.map((m) => (
             <MediaRow key={m.id} albumId={album.id} media={m} />
           ))}
-          <NewMediaRow
-            albumId={album.id}
-            nextOrder={album.media.length + 1}
-          />
+          {addingMedia ? (
+            <div>
+              <div className="mb-2 flex justify-end">
+                <Button type="button" variant="outline" size="sm" onClick={() => setAddingMedia(false)}>
+                  Cancel
+                </Button>
+              </div>
+              <NewMediaRow
+                albumId={album.id}
+                nextOrder={album.media.length + 1}
+              />
+            </div>
+          ) : (
+            <Button type="button" onClick={() => setAddingMedia(true)}>
+              Add media
+            </Button>
+          )}
         </div>
       </AdminSectionCard>
     </div>

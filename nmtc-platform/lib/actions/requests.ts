@@ -68,6 +68,15 @@ export async function submitRequest(
   const receiptFile = receipt instanceof File && receipt.size > 0 ? receipt : null;
   const receiptError = validateReceiptFile(receiptFile);
 
+  const documentTypeIds = Array.from(
+    new Set(
+      formData
+        .getAll("document_type_ids")
+        .map((v) => String(v))
+        .filter(Boolean)
+    )
+  );
+
   const raw = {
     student_name: formData.get("student_name")?.toString() ?? "",
     student_id: formData.get("student_id")?.toString() ?? "",
@@ -75,7 +84,6 @@ export async function submitRequest(
     student_phone: formData.get("student_phone")?.toString() || undefined,
     program: formData.get("program")?.toString() ?? "",
     year_completed: formData.get("year_completed")?.toString() ?? "",
-    document_type_id: formData.get("document_type_id")?.toString() ?? "",
     purpose: formData.get("purpose")?.toString() ?? "",
     delivery_method: formData.get("delivery_method")?.toString() ?? "",
   };
@@ -101,35 +109,13 @@ export async function submitRequest(
     };
   }
 
+  if (documentTypeIds.length === 0) {
+    return { error: "Select at least one document." };
+  }
+
   const data = parsed.data;
-  const docType = await getDocumentTypeById(data.document_type_id);
-
-  if (!docType) {
-    return { error: "Selected document type is not available." };
-  }
-
   const supabase = createAdminClient();
-
-  const { data: inserted, error: insertError } = await supabase
-    .from("requests")
-    .insert({
-      student_name: data.student_name,
-      student_id: data.student_id,
-      student_email: data.student_email,
-      student_phone: data.student_phone ?? null,
-      program: data.program,
-      year_completed: data.year_completed,
-      document_type_id: data.document_type_id,
-      purpose: data.purpose,
-      delivery_method: data.delivery_method,
-      status: "submitted" as const,
-    })
-    .select("id, reference_no")
-    .single();
-
-  if (insertError || !inserted) {
-    return { error: "Could not submit your request. Please try again." };
-  }
+  const references: string[] = [];
 
   const ext =
     receiptFile!.type === "application/pdf"
@@ -137,58 +123,88 @@ export async function submitRequest(
       : receiptFile!.type === "image/png"
         ? "png"
         : "jpg";
-  const storagePath = `${inserted.id}/${crypto.randomUUID()}-receipt.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(STORAGE_BUCKETS.receipts)
-    .upload(storagePath, receiptFile!, {
-      contentType: receiptFile!.type,
-      upsert: false,
+  for (const typeId of documentTypeIds) {
+    const docType = await getDocumentTypeById(typeId);
+    if (!docType) {
+      return { error: "One of the selected document types is not available." };
+    }
+
+    const { data: inserted, error: insertError } = await supabase
+      .from("requests")
+      .insert({
+        student_name: data.student_name,
+        student_id: data.student_id,
+        student_email: data.student_email,
+        student_phone: data.student_phone ?? null,
+        program: data.program,
+        year_completed: data.year_completed,
+        document_type_id: typeId,
+        purpose: data.purpose,
+        delivery_method: data.delivery_method,
+        status: "submitted" as const,
+      })
+      .select("id, reference_no")
+      .single();
+
+    if (insertError || !inserted) {
+      return { error: "Could not submit your request. Please try again." };
+    }
+
+    const storagePath = `${inserted.id}/${crypto.randomUUID()}-receipt.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKETS.receipts)
+      .upload(storagePath, receiptFile!, {
+        contentType: receiptFile!.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      await supabase.from("requests").delete().eq("id", inserted.id);
+      return { error: "Could not upload receipt. Please try again." };
+    }
+
+    const { error: receiptUpdateError } = await supabase
+      .from("requests")
+      .update({ receipt_url: storagePath })
+      .eq("id", inserted.id);
+
+    if (receiptUpdateError) {
+      await supabase.storage.from(STORAGE_BUCKETS.receipts).remove([storagePath]);
+      await supabase.from("requests").delete().eq("id", inserted.id);
+      return { error: "Could not save your request. Please try again." };
+    }
+
+    await supabase.from("request_events").insert({
+      request_id: inserted.id,
+      actor_id: null,
+      actor_label: "Student",
+      action: "submitted",
+      note: null,
     });
 
-  if (uploadError) {
-    await supabase.from("requests").delete().eq("id", inserted.id);
-    return { error: "Could not upload receipt. Please try again." };
-  }
-
-  const { error: receiptUpdateError } = await supabase
-    .from("requests")
-    .update({ receipt_url: storagePath })
-    .eq("id", inserted.id);
-
-  if (receiptUpdateError) {
-    await supabase.storage.from(STORAGE_BUCKETS.receipts).remove([storagePath]);
-    await supabase.from("requests").delete().eq("id", inserted.id);
-    return { error: "Could not save your request. Please try again." };
-  }
-
-  await supabase.from("request_events").insert({
-    request_id: inserted.id,
-    actor_id: null,
-    actor_label: "Student",
-    action: "submitted",
-    note: null,
-  });
-
-  await sendRequestConfirmationEmail({
-    to: data.student_email,
-    studentName: data.student_name,
-    referenceNo: inserted.reference_no,
-    documentTypeName: docType.name,
-    amountExpected: docType.fee_amount,
-    deliveryMethod: data.delivery_method,
-  });
-
-  if (data.student_phone) {
-    await sendRequestSubmittedSms({
-      phone: data.student_phone,
+    await sendRequestConfirmationEmail({
+      to: data.student_email,
       studentName: data.student_name,
       referenceNo: inserted.reference_no,
-      docType: docType.name,
-    }).catch(() => {});
+      documentTypeName: docType.name,
+      amountExpected: docType.fee_amount,
+      deliveryMethod: data.delivery_method,
+    });
+
+    if (data.student_phone) {
+      await sendRequestSubmittedSms({
+        phone: data.student_phone,
+        studentName: data.student_name,
+        referenceNo: inserted.reference_no,
+        docType: docType.name,
+      }).catch(() => {});
+    }
+
+    references.push(inserted.reference_no);
   }
 
-  redirect(`/request/success?ref=${encodeURIComponent(inserted.reference_no)}`);
+  redirect(`/request/success?ref=${encodeURIComponent(references.join(","))}`);
 }
 
 export async function resubmitRequest(

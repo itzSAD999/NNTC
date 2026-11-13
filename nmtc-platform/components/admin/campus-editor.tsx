@@ -22,6 +22,7 @@ import {
   createUnsavedFormProps,
 } from "@/components/admin/unsaved-changes";
 import { useUnsavedChanges } from "@/lib/hooks/use-unsaved-changes";
+import { ListThumb } from "@/components/admin/list-thumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -151,6 +152,7 @@ function NewSectionForm() {
 
 export function CampusEditor({ sections }: { sections: CampusSection[] }) {
   const [openId, setOpenId] = useState<string | null>(sections[0]?.id ?? null);
+  const [adding, setAdding] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -163,12 +165,13 @@ export function CampusEditor({ sections }: { sections: CampusSection[] }) {
                 type="button"
                 onClick={() => setOpenId(section.id)}
                 className={cn(
-                  "rounded border px-3 py-1.5 text-sm transition-colors",
+                  "flex items-center gap-2 rounded-none border px-3 py-1.5 text-sm transition-colors",
                   openId === section.id
                     ? "border-primary bg-primary/10 font-medium text-primary"
                     : "border-line bg-surface text-caption hover:text-ink"
                 )}
               >
+                <ListThumb src={section.image_url} alt="" />
                 {section.title}
               </button>
             ))}
@@ -204,7 +207,20 @@ export function CampusEditor({ sections }: { sections: CampusSection[] }) {
         </p>
       )}
 
-      <NewSectionForm />
+      {adding ? (
+        <div>
+          <div className="mb-3 flex justify-end">
+            <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>
+              Cancel
+            </Button>
+          </div>
+          <NewSectionForm />
+        </div>
+      ) : (
+        <Button type="button" onClick={() => setAdding(true)}>
+          Add section
+        </Button>
+      )}
     </div>
   );
 }

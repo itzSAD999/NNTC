@@ -1,164 +1,107 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Award, Clock, Users, GraduationCap, ShieldCheck } from "lucide-react";
+import { Award, Clock, ShieldCheck, Users } from "lucide-react";
+
+import { Reveal } from "@/components/motion/reveal";
 
 interface CounterStat {
-  id: string;
-  target: number;
-  suffix: string;
-  label: string;
-  sublabel: string;
-  icon: typeof Award;
+ id: string;
+ target: number;
+ suffix: string;
+ label: string;
+ icon: typeof Award;
 }
 
 const STATS: CounterStat[] = [
-  {
-    id: "pass-rate",
-    target: 100,
-    suffix: "%",
-    label: "NMC Licensure Pass Rate",
-    sublabel: "Exemplary performance across Ghana Nursing & Midwifery Council exams",
-    icon: ShieldCheck,
-  },
-  {
-    id: "clinical-hours",
-    target: 2400,
-    suffix: "+",
-    label: "Clinical Practicum Hours",
-    sublabel: "Direct bedside care rotations at St. Theresa's Hospital & district clinics",
-    icon: Clock,
-  },
-  {
-    id: "alumni",
-    target: 1200,
-    suffix: "+",
-    label: "Nurses & Midwives Graduated",
-    sublabel: "Healthcare practitioners serving nationwide and international health systems",
-    icon: Users,
-  },
-  {
-    id: "heritage",
-    target: 25,
-    suffix: "+",
-    label: "Years of Healthcare Heritage",
-    sublabel: "Educating compassionate caregivers in the Upper West Region",
-    icon: Award,
-  },
+ { id: "pass-rate", target: 100, suffix: "%", label: "Licensure pass rate", icon: ShieldCheck },
+ { id: "clinical-hours", target: 2400, suffix: "+", label: "Clinical hours", icon: Clock },
+ { id: "alumni", target: 1200, suffix: "+", label: "Graduates", icon: Users },
+ { id: "heritage", target: 25, suffix: "+", label: "Years of training", icon: Award },
 ];
 
 function AnimatedNumber({
-  target,
-  suffix,
-  inView,
+ target,
+ suffix,
+ inView,
 }: {
-  target: number;
-  suffix: string;
-  inView: boolean;
+ target: number;
+ suffix: string;
+ inView: boolean;
 }) {
-  const [current, setCurrent] = useState(0);
+ const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    if (!inView) return;
+ useEffect(() => {
+ if (!inView) return;
+ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+ setCurrent(target);
+ return;
+ }
+ const startTime = performance.now();
+ const duration = 1400;
 
-    let start = 0;
-    const duration = 1600; // ms
-    const startTime = performance.now();
+ function animate(now: number) {
+ const progress = Math.min((now - startTime) / duration, 1);
+ const easeOut = 1 - Math.pow(1 - progress, 3);
+ setCurrent(Math.floor(easeOut * target));
+ if (progress < 1) requestAnimationFrame(animate);
+ else setCurrent(target);
+ }
 
-    function animate(currentTime: number) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const easeOut = 1 - Math.pow(1 - progress, 3);
-      const val = Math.floor(easeOut * target);
+ const id = requestAnimationFrame(animate);
+ return () => cancelAnimationFrame(id);
+ }, [inView, target]);
 
-      setCurrent(val);
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        setCurrent(target);
-      }
-    }
-
-    const frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
-  }, [inView, target]);
-
-  return (
-    <span className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-ink tabular-nums">
-      {current.toLocaleString()}
-      <span className="text-accent">{suffix}</span>
-    </span>
-  );
+ return (
+ <span className="font-serif text-4xl font-bold tabular-nums text-ink sm:text-5xl">
+ {current.toLocaleString()}
+ <span className="text-primary">{suffix}</span>
+ </span>
+ );
 }
 
 export function ImpactStatsStrip() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+ const containerRef = useRef<HTMLDivElement>(null);
+ const [inView, setInView] = useState(false);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+ useEffect(() => {
+ const el = containerRef.current;
+ if (!el) return;
+ const observer = new IntersectionObserver(
+ ([entry]) => {
+ if (entry?.isIntersecting) {
+ setInView(true);
+ observer.disconnect();
+ }
+ },
+ { threshold: 0.2 }
+ );
+ observer.observe(el);
+ return () => observer.disconnect();
+ }, []);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <section
-      ref={containerRef}
-      aria-label="Institutional Key Statistics"
-      className="border-b border-line bg-surface py-12 sm:py-16 transition-colors"
-    >
-      <div className="section-grid">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-          {STATS.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={stat.id}
-                className="relative rounded-none border border-line bg-bg/50 p-6 sm:p-7 transition-all duration-300 hover:border-ink/30 hover:bg-surface hover:-translate-y-0.5"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-none border border-line bg-surface text-primary">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-caption">
-                    Accredited
-                  </span>
-                </div>
-
-                <div className="mb-2">
-                  <AnimatedNumber
-                    target={stat.target}
-                    suffix={stat.suffix}
-                    inView={inView}
-                  />
-                </div>
-
-                <h3 className="font-sans font-bold text-sm sm:text-base text-ink leading-snug">
-                  {stat.label}
-                </h3>
-                <p className="mt-1.5 text-xs text-caption leading-relaxed">
-                  {stat.sublabel}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
+ return (
+ <section ref={containerRef} aria-label="College statistics" data-nav="light" className="bg-white py-12 sm:py-16">
+ <div className="section-grid">
+ <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+ {STATS.map((stat, i) => {
+ const Icon = stat.icon;
+ return (
+          <Reveal key={stat.id} delay={i * 90}>
+ <div className="rounded-none border border-line bg-white p-6">
+ <span className="flex h-11 w-11 items-center justify-center rounded-none bg-[#f7f7f7] text-primary">
+ <Icon className="h-5 w-5" />
+ </span>
+ <div className="mt-4">
+ <AnimatedNumber target={stat.target} suffix={stat.suffix} inView={inView} />
+ </div>
+ <h3 className="mt-2 text-sm font-semibold text-ink">{stat.label}</h3>
+ </div>
+ </Reveal>
+ );
+ })}
+ </div>
+ </div>
+ </section>
+ );
 }
-

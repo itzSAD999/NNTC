@@ -15,6 +15,8 @@ import {
   matchesSearch,
 } from "@/lib/admin/list-filters";
 import { CmsStatusBadge } from "@/components/admin/cms-status-badge";
+import { ListThumb } from "@/components/admin/list-thumb";
+import { getStoragePublicUrl } from "@/lib/utils/format";
 import {
   AdminListFilterBar,
   useAdminListFilters,
@@ -119,6 +121,7 @@ function NewsListContent({ posts }: { posts: Post[] }) {
           table={
             <AdminTable minWidth="720px">
               <AdminTableHead>
+                <AdminTableTh>Cover</AdminTableTh>
                 <AdminTableTh>Title</AdminTableTh>
                 <AdminTableTh>Category</AdminTableTh>
                 <AdminTableTh>Status</AdminTableTh>
@@ -132,6 +135,12 @@ function NewsListContent({ posts }: { posts: Post[] }) {
                     key={post.id}
                     className="border-b border-line last:border-0"
                   >
+                    <td className="px-4 py-3">
+                      <ListThumb
+                        src={getStoragePublicUrl(post.cover_image_url)}
+                        alt={post.title}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <Link
                         href={`/dashboard/admin/news/${post.id}`}

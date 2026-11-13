@@ -61,6 +61,7 @@ export type AdmissionsContent = {
 export type DocumentRequired = {
   id: string;
   label: string;
+  details?: string | null;
   sort_order: number;
   created_at: string;
   updated_at: string;

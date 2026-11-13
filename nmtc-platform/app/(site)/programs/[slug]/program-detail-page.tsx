@@ -6,33 +6,33 @@ import { getProgramBySlug } from "@/lib/data/programs";
 import { getSettings } from "@/lib/data/settings";
 
 interface ProgramDetailPageProps {
-  params: Promise<{ slug: string }>;
+ params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({
-  params,
+ params,
 }: ProgramDetailPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const program = await getProgramBySlug(slug);
-  const settings = await getSettings();
+ const { slug } = await params;
+ const program = await getProgramBySlug(slug);
+ const settings = await getSettings();
 
-  if (!program) {
-    return { title: `Programme not found — ${settings.college_name}` };
-  }
+ if (!program) {
+ return { title: `Programme not found — ${settings.college_name}` };
+ }
 
-  return {
-    title: `${program.name} — ${settings.college_name}`,
-    description: `${program.qualification} in ${program.name}. Duration: ${program.duration}.`,
-  };
+ return {
+ title: `${program.name} — ${settings.college_name}`,
+ description: `${program.qualification} in ${program.name}. Duration: ${program.duration}.`,
+ };
 }
 
 export default async function ProgramDetailPage({ params }: ProgramDetailPageProps) {
-  const { slug } = await params;
-  const program = await getProgramBySlug(slug);
+ const { slug } = await params;
+ const program = await getProgramBySlug(slug);
 
-  if (!program) {
-    notFound();
-  }
+ if (!program) {
+ notFound();
+ }
 
-  return <ProgramDetailView program={program} />;
+ return <ProgramDetailView program={program} />;
 }

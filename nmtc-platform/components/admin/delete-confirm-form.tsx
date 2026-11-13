@@ -1,23 +1,9 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
+import { useTransition } from "react";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-
-function DeleteSubmit({ label }: { label: string }) {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      type="submit"
-      variant="destructive"
-      size="sm"
-      disabled={pending}
-    >
-      {pending ? "Deleting…" : label}
-    </Button>
-  );
-}
 
 type DeleteConfirmFormProps = {
   action: (formData: FormData) => void | Promise<void>;
@@ -29,33 +15,44 @@ type DeleteConfirmFormProps = {
   children?: ReactNode;
 };
 
+function buildFormData(hiddenFields: Record<string, string>) {
+  const formData = new FormData();
+  Object.entries(hiddenFields).forEach(([name, value]) => {
+    formData.append(name, value);
+  });
+  return formData;
+}
+
+/** Standalone delete control — never renders a nested <form>. */
 export function DeleteConfirmForm({
   action,
   confirmMessage,
   buttonLabel,
-  confirmButtonLabel = "Yes, delete",
   hiddenFields,
   className,
 }: DeleteConfirmFormProps) {
+  const [pending, startTransition] = useTransition();
+
   return (
-    <form
-      action={action}
+    <Button
+      type="button"
+      variant="destructive"
+      size="sm"
       className={className}
-      onSubmit={(e) => {
-        if (!window.confirm(confirmMessage)) {
-          e.preventDefault();
-        }
+      disabled={pending}
+      onClick={() => {
+        if (!window.confirm(confirmMessage)) return;
+        startTransition(async () => {
+          await action(buildFormData(hiddenFields));
+        });
       }}
     >
-      {Object.entries(hiddenFields).map(([name, value]) => (
-        <input key={name} type="hidden" name={name} value={value} />
-      ))}
-      <DeleteSubmit label={buttonLabel} />
-    </form>
+      {pending ? "Deleting…" : buttonLabel}
+    </Button>
   );
 }
 
-/** Two-step delete: click once to arm, click again to confirm. */
+/** Same as DeleteConfirmForm; safe to place inside another form. */
 export function DeleteConfirmButton({
   action,
   confirmMessage,
@@ -66,22 +63,23 @@ export function DeleteConfirmButton({
 }: DeleteConfirmFormProps & {
   variant?: "outline" | "destructive" | "ghost";
 }) {
+  const [pending, startTransition] = useTransition();
+
   return (
-    <form
-      action={action}
-      className={className}
-      onSubmit={(e) => {
-        if (!window.confirm(confirmMessage)) {
-          e.preventDefault();
-        }
+    <Button
+      type="button"
+      variant={variant}
+      size="sm"
+      className={className ?? "text-danger"}
+      disabled={pending}
+      onClick={() => {
+        if (!window.confirm(confirmMessage)) return;
+        startTransition(async () => {
+          await action(buildFormData(hiddenFields));
+        });
       }}
     >
-      {Object.entries(hiddenFields).map(([name, value]) => (
-        <input key={name} type="hidden" name={name} value={value} />
-      ))}
-      <Button type="submit" variant={variant} size="sm" className="text-danger">
-        {buttonLabel}
-      </Button>
-    </form>
+      {pending ? "Deleting…" : buttonLabel}
+    </Button>
   );
 }

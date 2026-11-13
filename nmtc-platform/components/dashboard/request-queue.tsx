@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search, Filter, X, ArrowUpDown, ChevronRight } from "lucide-react";
+import { Search, X, ArrowUpDown, ChevronRight } from "lucide-react";
 
 import type { RequestWithDocType } from "@/lib/data/dashboard-requests";
 import { formatShortDate } from "@/lib/utils/format";
@@ -11,14 +11,21 @@ import { StatusPill } from "@/components/ui/status-pill";
 import { EmptyState } from "@/components/ui/empty-state";
 import { STATUS_LABELS } from "@/lib/requests/status-labels";
 import type { RequestStatus } from "@/lib/constants";
+import { PreviewBanner } from "@/components/admin/preview-banner";
+import { isPreviewId } from "@/lib/data/admin-preview";
 import { Input } from "@/components/ui/input";
 
 interface RequestQueueProps {
   requests: RequestWithDocType[];
   emptyMessage: string;
+  stage?: "pending" | "processed" | "signed";
 }
 
-export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
+export function RequestQueue({
+  requests,
+  emptyMessage,
+  stage,
+}: RequestQueueProps) {
   const [search, setSearch] = useState("");
   const [docFilter, setDocFilter] = useState("all");
   const [deliveryFilter, setDeliveryFilter] = useState("all");
@@ -94,8 +101,8 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
 
   return (
     <div className="space-y-4">
-      {/* Search and Filters Bar */}
-      <div className="rounded-xl border border-line bg-surface p-3.5 shadow-sm space-y-3">
+      {requests.some((req) => isPreviewId(req.id)) ? <PreviewBanner /> : null}
+      <div className="border border-line bg-white p-3.5 space-y-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {/* Real-time search input */}
           <div className="relative min-w-0 flex-1">
@@ -124,7 +131,7 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
               <select
                 value={docFilter}
                 onChange={(e) => setDocFilter(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-line bg-surface px-3 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
+                className="flex h-9 w-full border border-line bg-white px-3 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
               >
                 <option value="all">All Document Types</option>
                 {docTypeOptions.map((doc) => (
@@ -141,12 +148,11 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
             <select
               value={deliveryFilter}
               onChange={(e) => setDeliveryFilter(e.target.value)}
-              className="flex h-9 w-full rounded-md border border-line bg-surface px-3 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
+              className="flex h-9 w-full border border-line bg-white px-3 py-1.5 text-xs text-ink focus:border-primary focus:outline-none"
             >
-              <option value="all">All Delivery Modes</option>
-              <option value="pickup">Physical Pickup</option>
-              <option value="email">Electronic (PDF Email)</option>
-              <option value="courier">Courier Dispatch</option>
+              <option value="all">All delivery modes</option>
+              <option value="collection">Collection at college</option>
+              <option value="email">Email delivery</option>
             </select>
           </div>
 
@@ -154,7 +160,7 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
           <button
             type="button"
             onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-            className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-2 text-xs font-medium text-caption hover:text-ink transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 border border-line bg-white px-3 py-2 text-xs font-medium text-caption hover:text-ink shrink-0"
             title="Toggle sort order"
           >
             <ArrowUpDown className="h-3.5 w-3.5" />
@@ -168,7 +174,8 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
         <div className="flex items-center justify-between text-xs text-caption pt-1 border-t border-line/50">
           <p>
             Showing <strong className="text-ink">{filteredRequests.length}</strong> of{" "}
-            <strong>{requests.length}</strong> pending requests
+            <strong>{requests.length}</strong>{" "}
+            {stage ?? "queued"} requests
           </p>
 
           {hasActiveFilters && (
@@ -186,22 +193,22 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
 
       {/* Requests Table */}
       {filteredRequests.length === 0 ? (
-        <div className="rounded-xl border border-line bg-surface p-8 text-center space-y-3">
+        <div className="border border-line bg-white p-8 text-center space-y-3">
           <p className="text-sm font-medium text-ink">No requests match your filters.</p>
           <p className="text-xs text-caption">Try adjusting your search terms or clearing filters.</p>
           <button
             type="button"
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+            className="inline-flex items-center gap-1 bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-deep"
           >
             Clear all filters
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-sm">
+        <div className="overflow-x-auto border border-line bg-white">
           <table className="w-full min-w-[700px] text-left text-sm">
             <thead>
-              <tr className="border-b border-line bg-bg/50 text-[0.7rem] uppercase tracking-wider text-caption font-semibold">
+              <tr className="border-b border-line bg-[#f7f7f7] text-[0.7rem] uppercase tracking-wider text-caption font-semibold">
                 <th className="px-4 py-3">Reference</th>
                 <th className="px-4 py-3">Student</th>
                 <th className="px-4 py-3">Document</th>
@@ -264,7 +271,7 @@ export function RequestQueue({ requests, emptyMessage }: RequestQueueProps) {
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/dashboard/requests/${req.id}`}
-                        className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary hover:text-white"
+                        className="inline-flex items-center gap-1 bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-deep"
                       >
                         <span>Review</span>
                         <ChevronRight className="h-3.5 w-3.5" />

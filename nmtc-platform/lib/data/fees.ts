@@ -20,10 +20,29 @@ export type FinancialAidPageData = {
   content: FinancialAidContent;
 };
 
+function withFeeDetails(fees: FeeWithProgram[]): FeeWithProgram[] {
+  return fees.map((fee, index) => {
+    if (fee.components && fee.components.length > 0) return fee;
+    const match =
+      PREVIEW_FEES.find(
+        (preview) =>
+          preview.year_label === fee.year_label &&
+          (preview.program?.slug === fee.program?.slug ||
+            preview.fee_type === fee.fee_type)
+      ) ??
+      PREVIEW_FEES.find((preview) => preview.year_label === fee.year_label) ??
+      PREVIEW_FEES[index] ??
+      PREVIEW_FEES[0];
+    return match?.components?.length
+      ? { ...fee, components: match.components }
+      : fee;
+  });
+}
+
 export async function getFinancialAidPageData(): Promise<FinancialAidPageData> {
   if (!isSupabaseConfigured()) {
     return {
-      fees: PREVIEW_FEES,
+      fees: withFeeDetails(PREVIEW_FEES),
       paymentMethods: PREVIEW_PAYMENT_METHODS,
       scholarships: PREVIEW_SCHOLARSHIPS,
       content: PREVIEW_FINANCIAL_AID,
@@ -71,17 +90,12 @@ export async function getFinancialAidPageData(): Promise<FinancialAidPageData> {
     );
 
     const dbScholarships = (scholarshipsRes.data ?? []) as Scholarship[];
-    const hasHub = dbScholarships.some(
-      (s) =>
-        s.name.toLowerCase().includes("scholarship hub") ||
-        s.name.toLowerCase().includes("secretariat")
-    );
     const scholarships = dbScholarships.length
-      ? (hasHub ? dbScholarships : [PREVIEW_SCHOLARSHIPS[0], ...dbScholarships])
+      ? dbScholarships
       : PREVIEW_SCHOLARSHIPS;
 
     return {
-      fees: fees.length ? fees : PREVIEW_FEES,
+      fees: withFeeDetails(fees.length ? fees : PREVIEW_FEES),
       paymentMethods: methodsRes.data?.length
         ? (methodsRes.data as PaymentMethod[])
         : PREVIEW_PAYMENT_METHODS,
@@ -91,7 +105,7 @@ export async function getFinancialAidPageData(): Promise<FinancialAidPageData> {
     };
   } catch {
     return {
-      fees: PREVIEW_FEES,
+      fees: withFeeDetails(PREVIEW_FEES),
       paymentMethods: PREVIEW_PAYMENT_METHODS,
       scholarships: PREVIEW_SCHOLARSHIPS,
       content: PREVIEW_FINANCIAL_AID,

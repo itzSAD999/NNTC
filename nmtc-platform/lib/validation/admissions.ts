@@ -11,6 +11,7 @@ export const admissionsContentSchema = z.object({
 
 export const documentRequiredSchema = z.object({
   label: z.string().min(1),
+  details: z.string().optional(),
   sort_order: z.coerce.number().int().min(0),
 });
 

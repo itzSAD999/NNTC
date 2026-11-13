@@ -79,6 +79,9 @@ export function FeesEditor({
   const [dirty, setDirty] = useState(false);
   const [feeSearch, setFeeSearch] = useState("");
   const [feeProgramFilter, setFeeProgramFilter] = useState("all");
+  const [addingFee, setAddingFee] = useState(false);
+  const [addingMethod, setAddingMethod] = useState(false);
+  const [addingScholarship, setAddingScholarship] = useState(false);
 
   const filteredFees = useMemo(() => {
     const q = feeSearch.trim().toLowerCase();
@@ -257,12 +260,25 @@ export function FeesEditor({
             )}
           </div>
 
-          {/* Add New Fee Schedule */}
-          <div className="rounded-none border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
-              Create New Fee Schedule
-            </p>
-            <FeeRow programs={programs} />
+          <div className="mt-6">
+            {addingFee ? (
+              <div className="border border-dashed border-line bg-[#f7f7f7] p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-caption">
+                    New fee schedule
+                  </p>
+                  <button type="button" className="text-xs text-caption hover:text-ink" onClick={() => setAddingFee(false)}>
+                    Cancel
+                  </button>
+                </div>
+                <FeeRow programs={programs} />
+              </div>
+            ) : (
+              <Button type="button" onClick={() => setAddingFee(true)}>
+                <Plus className="mr-1.5 h-4 w-4" />
+                Add fee
+              </Button>
+            )}
           </div>
         </section>
       )}
@@ -296,12 +312,24 @@ export function FeesEditor({
               )}
             </div>
 
-            <div className="rounded-none border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
-                Register New Payment Channel
-              </p>
-              <PaymentMethodRow />
-            </div>
+            {addingMethod ? (
+              <div className="mt-6 border border-dashed border-line bg-[#f7f7f7] p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-caption">
+                    New payment channel
+                  </p>
+                  <button type="button" className="text-xs text-caption hover:text-ink" onClick={() => setAddingMethod(false)}>
+                    Cancel
+                  </button>
+                </div>
+                <PaymentMethodRow />
+              </div>
+            ) : (
+              <Button type="button" className="mt-6" onClick={() => setAddingMethod(true)}>
+                <Plus className="mr-1.5 h-4 w-4" />
+                Add payment method
+              </Button>
+            )}
           </div>
         </section>
       )}
@@ -335,12 +363,24 @@ export function FeesEditor({
               )}
             </div>
 
-            <div className="rounded-none border border-dashed border-line/80 bg-bg/50 p-5 mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-caption mb-3">
-                Add Scholarship or Grant Program
-              </p>
-              <ScholarshipRow />
-            </div>
+            {addingScholarship ? (
+              <div className="mt-6 border border-dashed border-line bg-[#f7f7f7] p-5">
+                <div className="mb-3 flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-caption">
+                    New bursary / scholarship
+                  </p>
+                  <button type="button" className="text-xs text-caption hover:text-ink" onClick={() => setAddingScholarship(false)}>
+                    Cancel
+                  </button>
+                </div>
+                <ScholarshipRow />
+              </div>
+            ) : (
+              <Button type="button" className="mt-6" onClick={() => setAddingScholarship(true)}>
+                <Plus className="mr-1.5 h-4 w-4" />
+                Add bursary
+              </Button>
+            )}
           </div>
         </section>
       )}

@@ -1,94 +1,143 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Calendar, Pin } from "lucide-react";
+import { Pin } from "lucide-react";
 
+import { MEDIA } from "@/lib/media";
 import { formatShortDate, getStoragePublicUrl } from "@/lib/utils/format";
+import { cn } from "@/lib/utils";
 import type { Post } from "@/types/database";
 
 interface NewsCardProps {
   post: Post;
   featured?: boolean;
+  compact?: boolean;
 }
 
-// Category fallback photography
+const LOCAL_FALLBACK = "/images/campus-hero.jpg";
+
 const CATEGORY_IMAGES: Record<string, string> = {
-  academics: "/images/lecture-hall.jpg",
-  clinical: "/images/clinical-care.jpg",
-  admissions: "/images/graduation.jpg",
-  general: "/images/healthcare-team.jpg",
+  academics: MEDIA.lecture,
+  academic: MEDIA.lecture,
+  clinical: MEDIA.clinical,
+  admissions: MEDIA.graduation,
+  general: MEDIA.team,
+  news: MEDIA.campus,
 };
 
-export function NewsCard({ post, featured = false }: NewsCardProps) {
-  const catKey = post.category ? post.category.toLowerCase() : "general";
-  const defaultPhoto = CATEGORY_IMAGES[catKey] || "/images/healthcare-team.jpg";
-  const coverUrl = getStoragePublicUrl(post.cover_image_url) ?? defaultPhoto;
+function coverFor(post: Post) {
+  return (
+    getStoragePublicUrl(post.cover_image_url) ??
+    CATEGORY_IMAGES[post.category?.toLowerCase() ?? ""] ??
+    LOCAL_FALLBACK
+  );
+}
+
+function Meta({ post, date }: { post: Post; date: string | null }) {
+  return (
+    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-primary">
+      <span>{post.category || "News"}</span>
+      {date ? (
+        <>
+          <span className="text-caption" aria-hidden>
+            ·
+          </span>
+          <span className="font-medium tracking-normal text-caption normal-case">
+            {date}
+          </span>
+        </>
+      ) : null}
+      {post.is_pinned ? (
+        <span className="inline-flex items-center gap-1 font-medium normal-case tracking-normal text-caption">
+          <Pin className="h-3 w-3" />
+          Pinned
+        </span>
+      ) : null}
+    </p>
+  );
+}
+
+export function NewsCard({
+  post,
+  featured = false,
+  compact = false,
+}: NewsCardProps) {
+  const coverUrl = coverFor(post);
   const date = post.published_at ? formatShortDate(post.published_at) : null;
+
+  if (compact) {
+    return (
+      <article className="flex h-full flex-col border border-line bg-white p-6">
+        <Meta post={post} date={date} />
+        <h3 className="mt-3 font-serif text-xl leading-snug text-ink">
+          <Link href={`/news/${post.slug}`} className="hover:text-primary">
+            {post.title}
+          </Link>
+        </h3>
+        {post.excerpt ? (
+          <p className="mt-2 flex-1 text-sm leading-relaxed text-caption">
+            {post.excerpt}
+          </p>
+        ) : null}
+        <Link
+          href={`/news/${post.slug}`}
+          className="mt-5 text-sm font-semibold text-primary hover:underline"
+        >
+          Read more
+        </Link>
+      </article>
+    );
+  }
 
   return (
     <article
-      className={`group flex flex-col overflow-hidden rounded-none border border-line bg-surface shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md ${
-        featured ? "md:col-span-2 md:grid md:grid-cols-2" : ""
-      }`}
+      className={cn(
+        "group flex overflow-hidden rounded-none border border-line bg-white",
+        featured
+          ? "flex-col md:min-h-[22rem] md:flex-row"
+          : "flex-col"
+      )}
     >
       <Link
         href={`/news/${post.slug}`}
-        className={`relative block overflow-hidden bg-bg ${
-          featured ? "min-h-[260px] md:h-full" : "aspect-[16/10]"
-        }`}
+        className={cn(
+          "relative block shrink-0 overflow-hidden bg-[#f3f3f3]",
+          featured ? "min-h-[16rem] md:w-[46%] md:min-h-full" : "aspect-[16/10]"
+        )}
         tabIndex={-1}
         aria-hidden
       >
         <Image
           src={coverUrl}
-          alt={post.title}
+          alt=""
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover object-center"
           sizes={featured ? "50vw" : "33vw"}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-
-        {post.is_pinned ? (
-          <span className="absolute top-3.5 left-3.5 inline-flex items-center gap-1.5 rounded-none bg-accent px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-wider text-white shadow-md">
-            <Pin className="h-3 w-3" />
-            <span>Pinned Bulletin</span>
-          </span>
-        ) : null}
       </Link>
 
-      <div className="flex flex-1 flex-col p-6 sm:p-7">
-        <div className="flex flex-wrap items-center gap-2.5 text-xs text-caption">
-          <span className="rounded-none bg-primary/10 px-2.5 py-0.5 text-[0.68rem] font-bold uppercase tracking-wider text-primary border border-primary/20">
-            {post.category || "Bulletin"}
-          </span>
-          {date ? <span className="text-line">•</span> : null}
-          {date ? (
-            <time dateTime={post.published_at!} className="flex items-center gap-1 text-caption font-medium">
-              <Calendar className="h-3.5 w-3.5 text-primary" />
-              <span>{date}</span>
-            </time>
-          ) : null}
-        </div>
-
-        <h3 className="mt-3.5 font-serif text-xl sm:text-2xl font-medium leading-snug tracking-tight text-ink transition-colors group-hover:text-primary">
-          <Link href={`/news/${post.slug}`}>{post.title}</Link>
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
+        <Meta post={post} date={date} />
+        <h3
+          className={cn(
+            "mt-3 font-serif leading-snug text-ink",
+            featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
+          )}
+        >
+          <Link href={`/news/${post.slug}`} className="hover:text-primary">
+            {post.title}
+          </Link>
         </h3>
-
         {post.excerpt ? (
-          <p className="mt-2.5 line-clamp-3 flex-1 text-sm leading-relaxed text-caption font-light">
+          <p className="mt-3 flex-1 text-sm leading-relaxed text-caption sm:text-base">
             {post.excerpt}
           </p>
         ) : null}
-
-        <div className="mt-6 pt-4 border-t border-line/60 flex items-center justify-between">
-          <span className="text-xs text-caption font-medium">The NMTC Gazette</span>
-          <Link
-            href={`/news/${post.slug}`}
-            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary group-hover:text-primary-deep"
-          >
-            <span>Read full article</span>
-            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
-          </Link>
-        </div>
+        <Link
+          href={`/news/${post.slug}`}
+          className="mt-6 text-sm font-semibold text-primary hover:underline"
+        >
+          Read more
+        </Link>
       </div>
     </article>
   );

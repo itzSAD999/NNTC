@@ -1,3 +1,4 @@
+import { PREVIEW_STAFF, previewPublishedStaff } from "@/lib/data/preview-expansion";
 import { createClient } from "@/lib/supabase/server";
 import type {
   Department,
@@ -22,24 +23,33 @@ function mapStaffRows(
 }
 
 export async function listAllStaff(): Promise<StaffProfileWithDepartment[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("staff_profiles")
-    .select("*, department:departments(name, slug)")
-    .order("sort_order");
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("staff_profiles")
+      .select("*, department:departments(name, slug)")
+      .order("sort_order");
 
-  if (error || !data) return [];
-  return mapStaffRows(data as Array<Record<string, unknown>>);
+    if (error || !data || data.length === 0) return previewPublishedStaff();
+    return mapStaffRows(data as Array<Record<string, unknown>>);
+  } catch {
+    return previewPublishedStaff();
+  }
 }
 
 export async function getStaffForEdit(id: string): Promise<StaffProfile | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("staff_profiles")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const preview = PREVIEW_STAFF.find((row) => row.id === id) ?? null;
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("staff_profiles")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  if (error || !data) return null;
-  return data as StaffProfile;
+    if (error || !data) return preview;
+    return data as StaffProfile;
+  } catch {
+    return preview;
+  }
 }

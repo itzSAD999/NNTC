@@ -1,462 +1,223 @@
 import Link from "next/link";
 import {
-  FileCheck2,
-  Receipt,
-  Award,
-  CheckCircle2,
-  Clock,
   ArrowRight,
-  ShieldCheck,
-  Smartphone,
-  ExternalLink,
-  GraduationCap,
-  Newspaper,
+  Award,
   CalendarDays,
+  CheckCircle2,
+  ExternalLink,
+  FileCheck2,
+  GraduationCap,
   Inbox,
-  Users,
+  Newspaper,
   QrCode,
-  AlertCircle,
-  FileText,
+  Receipt,
+  Users,
 } from "lucide-react";
 
-import { getAdminOverviewMetrics } from "@/lib/data/admin-overview";
-import { formatShortDate } from "@/lib/utils/format";
-import { StatusPill } from "@/components/ui/status-pill";
-import { STATUS_LABELS } from "@/lib/requests/status-labels";
-import type { RequestStatus } from "@/lib/constants";
+import { PreviewBanner } from "@/components/admin/preview-banner";
 import { ReferenceDisplay } from "@/components/requests/reference-display";
+import { StatusPill } from "@/components/ui/status-pill";
+import type { RequestStatus } from "@/lib/constants";
+import { getAdminOverviewMetrics } from "@/lib/data/admin-overview";
+import { STATUS_LABELS } from "@/lib/requests/status-labels";
 
 export default async function AdminOverviewPage() {
   const metrics = await getAdminOverviewMetrics();
-  const { requests, content, recentRequests } = metrics;
+  const { requests, content, recentRequests, isPreview } = metrics;
+
+  const queues = [
+    {
+      href: "/dashboard/academic",
+      icon: FileCheck2,
+      label: "Academic",
+      count: requests.submitted,
+      hint: "Need review",
+    },
+    {
+      href: "/dashboard/accounts",
+      icon: Receipt,
+      label: "Accounts",
+      count: requests.academicApproved,
+      hint: "Payment check",
+    },
+    {
+      href: "/dashboard/principal",
+      icon: Award,
+      label: "Principal",
+      count: requests.paymentConfirmed,
+      hint: "Ready to sign",
+    },
+    {
+      href: "/dashboard/academic",
+      icon: CheckCircle2,
+      label: "Issued",
+      count: requests.approved,
+      hint: "Completed",
+    },
+  ];
+
+  const contentLinks = [
+    { href: "/dashboard/admin/programs", icon: GraduationCap, label: "Programmes", count: content.programsCount },
+    { href: "/dashboard/admin/news", icon: Newspaper, label: "News", count: content.postsCount },
+    { href: "/dashboard/admin/events", icon: CalendarDays, label: "Events", count: content.eventsCount },
+    { href: "/dashboard/admin/inbox", icon: Inbox, label: "Inbox", count: content.messagesCount },
+    { href: "/dashboard/admin/staff", icon: Users, label: "Faculty", count: content.staffCount },
+  ];
 
   return (
     <div className="space-y-8">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-xl border border-line bg-gradient-to-br from-surface via-surface to-bg p-6 sm:p-8">
-        <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-center">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-                <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                MiStarStudio Nursing EMS
-              </span>
-              <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
-                Command Center
-              </span>
-            </div>
-            <h1 className="mt-3 font-serif text-display-lg text-ink">
-              Institutional Executive Desk
-            </h1>
-            <p className="mt-1 max-w-2xl text-sm text-caption">
-              Flagship campus operations, document processing pipeline, academic governance, and public portal management.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
-            <Link
-              href="/"
-              target="_blank"
-              className="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-bg hover:text-primary shadow-sm"
-            >
-              <ExternalLink className="h-4 w-4" />
-              View Public Site
-            </Link>
-            <Link
-              href="/verify"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-95 shadow-sm"
-            >
-              <QrCode className="h-4 w-4" />
-              QR Verifier
-            </Link>
-          </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-serif text-display-md text-ink">Dashboard</h1>
+          <p className="mt-1 text-sm text-caption">
+            {requests.total} document requests · {content.messagesCount} inbox items
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href="/"
+            target="_blank"
+            className="inline-flex items-center gap-2 border border-line bg-white px-3 py-2 text-sm font-medium text-ink hover:border-primary hover:text-primary"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Public site
+          </Link>
+          <Link
+            href="/verify"
+            className="inline-flex items-center gap-2 bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary-deep"
+          >
+            <QrCode className="h-4 w-4" />
+            Verify
+          </Link>
         </div>
       </div>
 
-      {/* Document Pipeline Metrics */}
-      <div>
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-ink">
-              Document Processing Pipeline
-            </h2>
-            <p className="text-xs text-caption">
-              Three-tier verification workflow for transcripts, attestations and certificates
-            </p>
-          </div>
-          <span className="text-xs font-medium text-caption">
-            Total Requests Tracked: <strong className="text-ink">{requests.total}</strong>
-          </span>
-        </div>
+      {isPreview ? <PreviewBanner /> : null}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* 1. Academic Office Queue */}
-          <Link
-            href="/dashboard/academic"
-            className="group relative flex flex-col justify-between rounded-xl border border-line bg-surface p-5 transition-all hover:border-primary/40 hover:shadow-md"
-          >
-            <div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {queues.map((q) => {
+          const Icon = q.icon;
+          return (
+            <Link
+              key={q.label}
+              href={q.href}
+              className="group border border-line bg-white p-5 transition hover:border-primary"
+            >
               <div className="flex items-center justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <FileCheck2 className="h-5 w-5" />
-                </span>
-                {requests.submitted > 0 ? (
-                  <span className="inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
-                    Action Needed
+                <Icon className="h-5 w-5 text-primary" />
+                {q.count > 0 && q.label !== "Issued" ? (
+                  <span className="bg-accent/10 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-accent">
+                    Action
                   </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
-                    Clear
-                  </span>
-                )}
+                ) : null}
               </div>
-              <p className="mt-4 text-xs font-medium uppercase tracking-wider text-caption">
-                Stage 1 · Academic Desk
-              </p>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-3xl font-serif font-bold text-ink">
-                  {requests.submitted}
-                </span>
-                <span className="text-xs text-caption">pending review</span>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-medium text-primary group-hover:underline">
-              <span>Open Academic Queue</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </Link>
-
-          {/* 2. Accounts / Bursary Queue */}
-          <Link
-            href="/dashboard/accounts"
-            className="group relative flex flex-col justify-between rounded-xl border border-line bg-surface p-5 transition-all hover:border-primary/40 hover:shadow-md"
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
-                  <Receipt className="h-5 w-5" />
-                </span>
-                {requests.academicApproved > 0 ? (
-                  <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800">
-                    Awaiting Verification
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
-                    Clear
-                  </span>
-                )}
-              </div>
-              <p className="mt-4 text-xs font-medium uppercase tracking-wider text-caption">
-                Stage 2 · Bursary & Finance
-              </p>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-3xl font-serif font-bold text-ink">
-                  {requests.academicApproved}
-                </span>
-                <span className="text-xs text-caption">pending payment check</span>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-medium text-primary group-hover:underline">
-              <span>Open Accounts Queue</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </Link>
-
-          {/* 3. Principal Desk */}
-          <Link
-            href="/dashboard/principal"
-            className="group relative flex flex-col justify-between rounded-xl border border-line bg-surface p-5 transition-all hover:border-primary/40 hover:shadow-md"
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 text-purple-700">
-                  <Award className="h-5 w-5" />
-                </span>
-                {requests.paymentConfirmed > 0 ? (
-                  <span className="inline-flex items-center rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800">
-                    Ready to Sign
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
-                    Clear
-                  </span>
-                )}
-              </div>
-              <p className="mt-4 text-xs font-medium uppercase tracking-wider text-caption">
-                Stage 3 · Principal Desk
-              </p>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-3xl font-serif font-bold text-ink">
-                  {requests.paymentConfirmed}
-                </span>
-                <span className="text-xs text-caption">awaiting signature</span>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center gap-1 text-xs font-medium text-primary group-hover:underline">
-              <span>Open Principal Desk</span>
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </Link>
-
-          {/* 4. Issued & Completed */}
-          <div className="relative flex flex-col justify-between rounded-xl border border-line bg-surface p-5">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
-                  <CheckCircle2 className="h-5 w-5" />
-                </span>
-                <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
-                  Verified
-                </span>
-              </div>
-              <p className="mt-4 text-xs font-medium uppercase tracking-wider text-caption">
-                Completed & Issued
-              </p>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="text-3xl font-serif font-bold text-ink">
-                  {requests.approved}
-                </span>
-                <span className="text-xs text-caption">documents issued</span>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-caption">
-              Includes transcripts, attestations & proficiency letters
-            </p>
-          </div>
-        </div>
+              <p className="mt-6 font-serif text-3xl font-bold text-ink">{q.count}</p>
+              <p className="mt-1 text-sm font-medium text-ink">{q.label}</p>
+              <p className="text-xs text-caption">{q.hint}</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                Open
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          );
+        })}
       </div>
 
-      {/* Two Column Grid: Recent Activity & Quick Workspaces */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Left Column: Recent Requests Table (2 cols) */}
-        <div className="space-y-4 lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-ink">
-                Recent Document Requests
-              </h2>
-              <p className="text-xs text-caption">
-                Latest student requests submitted via the portal
-              </p>
-            </div>
-            <Link
-              href="/dashboard/academic"
-              className="text-xs font-medium text-primary hover:underline"
-            >
-              View Full Queue →
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-ink">Recent requests</h2>
+            <Link href="/dashboard/academic" className="text-xs font-medium text-primary hover:underline">
+              Queue
             </Link>
           </div>
-
-          <div className="overflow-hidden rounded-xl border border-line bg-surface shadow-sm">
-            {recentRequests.length === 0 ? (
-              <div className="p-8 text-center text-sm text-caption">
-                No document requests found in the database.
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-line bg-bg/50 text-[0.7rem] uppercase tracking-wider text-caption">
-                      <th className="px-4 py-3 font-semibold">Reference</th>
-                      <th className="px-4 py-3 font-semibold">Student</th>
-                      <th className="px-4 py-3 font-semibold">Document</th>
-                      <th className="px-4 py-3 font-semibold">Status</th>
-                      <th className="px-4 py-3 font-semibold text-right">Action</th>
+          <div className="overflow-hidden border border-line bg-white">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line bg-[#f7f7f7] text-[0.7rem] uppercase tracking-wider text-caption">
+                    <th className="px-4 py-3 font-semibold">Reference</th>
+                    <th className="px-4 py-3 font-semibold">Student</th>
+                    <th className="px-4 py-3 font-semibold">Document</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold text-right"> </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-line">
+                  {recentRequests.map((req) => (
+                    <tr key={req.id} className="hover:bg-[#fafafa]">
+                      <td className="px-4 py-3">
+                        <ReferenceDisplay referenceNo={req.reference_no} size="md" />
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-ink">{req.student_name}</p>
+                        <p className="text-xs text-caption">{req.student_id}</p>
+                      </td>
+                      <td className="px-4 py-3 text-caption">{req.docName}</td>
+                      <td className="px-4 py-3">
+                        <StatusPill
+                          status={req.status as RequestStatus}
+                          label={STATUS_LABELS[req.status as RequestStatus]}
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          href={`/dashboard/requests/${req.id}`}
+                          className="text-xs font-medium text-primary hover:underline"
+                        >
+                          Open
+                        </Link>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-line">
-                    {recentRequests.map((req) => (
-                      <tr
-                        key={req.id}
-                        className="transition-colors hover:bg-bg/40"
-                      >
-                        <td className="px-4 py-3">
-                          <ReferenceDisplay referenceNo={req.reference_no} size="md" />
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="font-medium text-ink">{req.student_name}</p>
-                          <p className="text-xs text-caption">{req.student_id}</p>
-                        </td>
-                        <td className="px-4 py-3 text-caption">{req.docName}</td>
-                        <td className="px-4 py-3">
-                          <StatusPill
-                            status={req.status as RequestStatus}
-                            label={STATUS_LABELS[req.status as RequestStatus]}
-                          />
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <Link
-                            href={`/dashboard/requests/${req.id}`}
-                            className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                          >
-                            <span>Open</span>
-                            <ArrowRight className="h-3 w-3" />
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* Platform Gateways & Security Status */}
-          <div className="rounded-xl border border-line bg-surface p-5">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-caption">
-              Infrastructure & Gateway Status
-            </h3>
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-3 rounded-lg border border-line/60 bg-bg/60 p-3">
-                <Smartphone className="h-5 w-5 text-emerald-600 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-ink truncate">Paystack MoMo</p>
-                  <p className="text-[0.7rem] text-emerald-600 font-medium">MTN / Telecel / AT Ready</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border border-line/60 bg-bg/60 p-3">
-                <FileText className="h-5 w-5 text-emerald-600 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-ink truncate">Arkesel Ghana SMS</p>
-                  <p className="text-[0.7rem] text-emerald-600 font-medium">Gateway Active</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border border-line/60 bg-bg/60 p-3">
-                <QrCode className="h-5 w-5 text-emerald-600 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-ink truncate">QR Public Verifier</p>
-                  <p className="text-[0.7rem] text-emerald-600 font-medium">Anti-Fraud Online</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border border-line/60 bg-bg/60 p-3">
-                <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-ink truncate">Supabase SSR RLS</p>
-                  <p className="text-[0.7rem] text-emerald-600 font-medium">Role Policies Active</p>
-                </div>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Portal Content & Academic Overview (1 col) */}
-        <div className="space-y-6">
-          {/* Institutional Content Metrics */}
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-ink">
-              Portal Content & Records
-            </h3>
-            <p className="mt-0.5 text-xs text-caption">
-              Published information managed across the platform
-            </p>
-
-            <div className="mt-4 divide-y divide-line">
-              <Link
-                href="/dashboard/admin/programs"
-                className="flex items-center justify-between py-3 transition-colors hover:text-primary"
-              >
-                <div className="flex items-center gap-2.5">
-                  <GraduationCap className="h-4 w-4 text-caption" />
-                  <span className="text-sm font-medium">Academic Programmes</span>
-                </div>
-                <span className="rounded bg-bg px-2 py-0.5 text-xs font-semibold text-ink">
-                  {content.programsCount}
-                </span>
-              </Link>
-
-              <Link
-                href="/dashboard/admin/news"
-                className="flex items-center justify-between py-3 transition-colors hover:text-primary"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Newspaper className="h-4 w-4 text-caption" />
-                  <span className="text-sm font-medium">News & Bulletins</span>
-                </div>
-                <span className="rounded bg-bg px-2 py-0.5 text-xs font-semibold text-ink">
-                  {content.postsCount}
-                </span>
-              </Link>
-
-              <Link
-                href="/dashboard/admin/events"
-                className="flex items-center justify-between py-3 transition-colors hover:text-primary"
-              >
-                <div className="flex items-center gap-2.5">
-                  <CalendarDays className="h-4 w-4 text-caption" />
-                  <span className="text-sm font-medium">Calendar Events</span>
-                </div>
-                <span className="rounded bg-bg px-2 py-0.5 text-xs font-semibold text-ink">
-                  {content.eventsCount}
-                </span>
-              </Link>
-
-              <Link
-                href="/dashboard/admin/inbox"
-                className="flex items-center justify-between py-3 transition-colors hover:text-primary"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Inbox className="h-4 w-4 text-caption" />
-                  <span className="text-sm font-medium">Contact Inquiries</span>
-                </div>
-                <span className="rounded bg-bg px-2 py-0.5 text-xs font-semibold text-ink">
-                  {content.messagesCount}
-                </span>
-              </Link>
-
-              <Link
-                href="/dashboard/admin/staff"
-                className="flex items-center justify-between py-3 transition-colors hover:text-primary"
-              >
-                <div className="flex items-center gap-2.5">
-                  <Users className="h-4 w-4 text-caption" />
-                  <span className="text-sm font-medium">Faculty Profiles</span>
-                </div>
-                <span className="rounded bg-bg px-2 py-0.5 text-xs font-semibold text-ink">
-                  {content.staffCount}
-                </span>
-              </Link>
-            </div>
+        <div>
+          <h2 className="mb-3 text-sm font-semibold text-ink">Content</h2>
+          <div className="border border-line bg-white divide-y divide-line">
+            {contentLinks.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center justify-between px-4 py-3 text-sm hover:bg-[#fafafa]"
+                >
+                  <span className="flex items-center gap-2.5 font-medium text-ink">
+                    <Icon className="h-4 w-4 text-caption" />
+                    {item.label}
+                  </span>
+                  <span className="text-xs font-semibold text-caption">{item.count}</span>
+                </Link>
+              );
+            })}
           </div>
-
-          {/* Quick Administration Actions */}
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-sm">
-            <h3 className="text-sm font-semibold text-ink">
-              System Administration
-            </h3>
-            <p className="mt-0.5 text-xs text-caption">
-              Configuration, governance & access controls
-            </p>
-
-            <div className="mt-4 space-y-2">
-              <Link
-                href="/dashboard/admin/users"
-                className="flex items-center justify-between rounded-lg border border-line p-3 text-xs font-medium text-ink transition-colors hover:border-primary hover:bg-bg"
-              >
-                <span>Manage Staff Accounts & Roles</span>
-                <ArrowRight className="h-3.5 w-3.5 text-caption" />
-              </Link>
-              <Link
-                href="/dashboard/admin/settings"
-                className="flex items-center justify-between rounded-lg border border-line p-3 text-xs font-medium text-ink transition-colors hover:border-primary hover:bg-bg"
-              >
-                <span>Institution Identity & Contacts</span>
-                <ArrowRight className="h-3.5 w-3.5 text-caption" />
-              </Link>
-              <Link
-                href="/dashboard/admin/audit"
-                className="flex items-center justify-between rounded-lg border border-line p-3 text-xs font-medium text-ink transition-colors hover:border-primary hover:bg-bg"
-              >
-                <span>Review Audit & Security Trail</span>
-                <ArrowRight className="h-3.5 w-3.5 text-caption" />
-              </Link>
-              <Link
-                href="/dashboard/admin/fees"
-                className="flex items-center justify-between rounded-lg border border-line p-3 text-xs font-medium text-ink transition-colors hover:border-primary hover:bg-bg"
-              >
-                <span>Fee Schedules & Bank Details</span>
-                <ArrowRight className="h-3.5 w-3.5 text-caption" />
-              </Link>
-            </div>
+          <div className="mt-4 space-y-2">
+            <Link
+              href="/dashboard/admin/users"
+              className="flex items-center justify-between border border-line bg-white px-4 py-3 text-xs font-medium text-ink hover:border-primary"
+            >
+              Staff accounts
+              <ArrowRight className="h-3.5 w-3.5 text-caption" />
+            </Link>
+            <Link
+              href="/dashboard/admin/settings"
+              className="flex items-center justify-between border border-line bg-white px-4 py-3 text-xs font-medium text-ink hover:border-primary"
+            >
+              College settings
+              <ArrowRight className="h-3.5 w-3.5 text-caption" />
+            </Link>
+            <Link
+              href="/dashboard/admin/audit"
+              className="flex items-center justify-between border border-line bg-white px-4 py-3 text-xs font-medium text-ink hover:border-primary"
+            >
+              Audit log
+              <ArrowRight className="h-3.5 w-3.5 text-caption" />
+            </Link>
           </div>
         </div>
       </div>

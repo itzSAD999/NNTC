@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { ListThumb } from "@/components/admin/list-thumb";
+import { NewAlbumForm } from "@/components/admin/gallery-album-editor";
 import type { GalleryAlbumWithMedia } from "@/lib/types/expansion";
 import { matchesSearch } from "@/lib/admin/list-filters";
 import { AdminListFilterBar } from "@/components/admin/admin-list-filters";
@@ -21,6 +23,7 @@ import { Button } from "@/components/ui/button";
 
 export function GalleryList({ albums }: { albums: GalleryAlbumWithMedia[] }) {
   const [search, setSearch] = useState("");
+  const [adding, setAdding] = useState(false);
 
   const filtered = useMemo(() => {
     return albums.filter((album) =>
@@ -39,6 +42,20 @@ export function GalleryList({ albums }: { albums: GalleryAlbumWithMedia[] }) {
 
   return (
     <div className="space-y-4">
+      {adding ? (
+        <div>
+          <div className="mb-3 flex justify-end">
+            <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>
+              Cancel
+            </Button>
+          </div>
+          <NewAlbumForm />
+        </div>
+      ) : (
+        <Button type="button" onClick={() => setAdding(true)}>
+          New album
+        </Button>
+      )}
       <AdminListFilterBar
         search={search}
         onSearchChange={setSearch}
@@ -55,6 +72,7 @@ export function GalleryList({ albums }: { albums: GalleryAlbumWithMedia[] }) {
           table={
             <AdminTable minWidth="640px">
               <AdminTableHead>
+                <AdminTableTh>Preview</AdminTableTh>
                 <AdminTableTh>Album</AdminTableTh>
                 <AdminTableTh>Media</AdminTableTh>
                 <AdminTableTh>Order</AdminTableTh>
@@ -66,6 +84,12 @@ export function GalleryList({ albums }: { albums: GalleryAlbumWithMedia[] }) {
                     key={album.id}
                     className="border-b border-line last:border-0"
                   >
+                    <td className="px-4 py-3">
+                      <ListThumb
+                        src={album.media.find((m) => m.type === "image")?.url}
+                        alt={album.title}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <p className="font-medium text-ink">{album.title}</p>
                       <PublicLinkPreview

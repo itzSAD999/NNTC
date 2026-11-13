@@ -51,7 +51,7 @@ export const WORKFLOW_TRANSITIONS: Transition[] = [
   {
     from: ["approved"],
     to: "collected",
-    roles: ["academic", "accounts", "principal"],
+    roles: ["academic"],
     action: "collected",
   },
 ];
@@ -66,7 +66,7 @@ export function findTransition(
       (t) =>
         t.from.includes(currentStatus) &&
         t.to === newStatus &&
-        (role === "super_admin" || t.roles.includes(role))
+        t.roles.includes(role)
     ) ?? null
   );
 }
@@ -90,16 +90,16 @@ const UI_BY_ACTION: Record<
     requiresNote: false,
     toStatus: "academic_approved",
   },
-    sent_back: {
+  sent_back: {
     id: "send_back",
-    label: "Send back",
+    label: "Return to student",
     variant: "outline",
     requiresNote: true,
     toStatus: "returned",
   },
   payment_confirmed: {
     id: "confirm_payment",
-    label: "Confirm payment",
+    label: "Payment verified",
     variant: "default",
     requiresNote: false,
     toStatus: "payment_confirmed",
@@ -113,7 +113,7 @@ const UI_BY_ACTION: Record<
   },
   principal_approved: {
     id: "principal_approve",
-    label: "Approve",
+    label: "Sign / Approve",
     variant: "default",
     requiresNote: false,
     toStatus: "approved",
@@ -137,7 +137,7 @@ export function getWorkflowUiActions(
 
   for (const t of WORKFLOW_TRANSITIONS) {
     if (!t.from.includes(currentStatus)) continue;
-    if (role !== "super_admin" && !t.roles.includes(role)) continue;
+    if (!t.roles.includes(role)) continue;
 
     const ui = UI_BY_ACTION[t.action];
     if (!ui || seen.has(ui.id)) continue;

@@ -29,7 +29,8 @@ export const requestFormSchema = z.object({
     ),
   program: z.string().min(1, "Please select a programme"),
   year_completed: z.string().min(1, "Year completed is required"),
-  document_type_id: z.string().uuid("Please select a document type"),
+  document_type_id: z.string().uuid().optional(),
+  document_type_ids: z.array(z.string().uuid()).optional(),
   purpose: z.string().min(10, "Purpose must be at least 10 characters"),
   delivery_method: z.enum(DELIVERY_METHODS, {
     required_error: "Please choose a delivery method",

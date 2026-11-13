@@ -19,10 +19,10 @@ export const DEFAULT_SETTINGS: Settings = {
   google_maps_url:
     "https://maps.google.com/maps?q=Nandom,+Upper+West+Region,+Ghana&output=embed",
   office_hours: "Monday – Friday, 8:00 AM – 4:00 PM",
-  facebook_url: null,
-  instagram_url: null,
+  facebook_url: "https://www.facebook.com/",
+  instagram_url: "https://www.instagram.com/",
   x_url: null,
-  whatsapp: null,
+  whatsapp: "+233 37 202 1234",
   domain: "nmtc.edu.gh",
   default_language: "en",
   notification_email_template: null,

@@ -437,15 +437,24 @@ function DocumentRow({ doc }: { doc?: DocumentRequired }) {
 
   return (
     <div className="p-3.5 hover:bg-bg/30 transition-colors">
-      <form action={action} className="flex flex-wrap items-center gap-3">
+      <form action={action} className="flex flex-wrap items-start gap-3">
         {doc ? <input type="hidden" name="id" value={doc.id} /> : null}
+        <div className="min-w-[220px] flex-1 space-y-2">
         <Input
           name="label"
           defaultValue={doc?.label}
           placeholder="e.g. Original WASSCE Certificate / Result Slip"
-          className="min-w-[220px] flex-1 text-sm font-medium"
+          className="text-sm font-medium"
           required
         />
+        <Textarea
+          name="details"
+          defaultValue={doc?.details ?? ""}
+          rows={2}
+          placeholder="Short expansion shown when the applicant opens this item"
+          className="text-xs"
+        />
+        </div>
         <div className="flex items-center gap-2">
           <span className="text-[11px] text-caption shrink-0">Sort:</span>
           <Input

@@ -1,30 +1,11 @@
-import Link from "next/link";
 import {
-  Facebook,
-  Instagram,
-  Mail,
-  MapPin,
-  Phone,
-} from "lucide-react";
-
+  FacebookMark,
+  InstagramMark,
+  WhatsAppMark,
+  XMark,
+} from "@/components/layout/social-icons";
+import { FooterColumns } from "@/components/layout/footer-columns";
 import type { Settings } from "@/types/database";
-
-const FOOTER_LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/programs", label: "Programmes" },
-  { href: "/admissions", label: "Admissions" },
-  { href: "/faculty", label: "Staff" },
-  { href: "/campus-life", label: "Campus life" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/events", label: "Events" },
-  { href: "/resources", label: "Resources" },
-  { href: "/financial-aid", label: "Fees & Aid" },
-  { href: "/news", label: "News" },
-  { href: "/contact", label: "Contact" },
-  { href: "/request/track", label: "Track Request" },
-  { href: "/verify", label: "Verify Document" },
-  { href: "/login", label: "Staff Login" },
-] as const;
 
 interface SiteFooterProps {
   settings: Settings;
@@ -34,123 +15,92 @@ export function SiteFooter({ settings }: SiteFooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-line bg-primary-deep text-white">
-      <div className="section-grid py-12">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr]">
+    <footer data-nav="dark" className="mt-auto bg-primary text-ink">
+      <div className="section-grid py-14 md:py-16">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_1.6fr] lg:items-start">
           <div>
-            <p className="font-serif text-display-sm text-white">
+            <p className="font-serif text-3xl font-medium tracking-tight text-ink sm:text-4xl">
+              Stay in the know
+            </p>
+            <p className="mt-3 max-w-xs text-sm text-ink/75">
               {settings.college_name}
+              {settings.motto ? ` — ${settings.motto}` : null}
             </p>
-            {settings.motto ? (
-              <p className="mt-3 max-w-md text-sm text-white/75">
-                {settings.motto}
-              </p>
-            ) : null}
+            <div className="mt-6 flex flex-wrap gap-4">
+              {settings.facebook_url ? (
+                <a
+                  href={settings.facebook_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="text-ink/80 hover:text-ink"
+                >
+                  <FacebookMark />
+                </a>
+              ) : null}
+              {settings.instagram_url ? (
+                <a
+                  href={settings.instagram_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="text-ink/80 hover:text-ink"
+                >
+                  <InstagramMark />
+                </a>
+              ) : null}
+              {settings.whatsapp ? (
+                <a
+                  href={`https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp"
+                  className="text-ink/80 hover:text-ink"
+                >
+                  <WhatsAppMark />
+                </a>
+              ) : null}
+              {settings.x_url ? (
+                <a
+                  href={settings.x_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="X (Twitter)"
+                  className="text-ink/80 hover:text-ink"
+                >
+                  <XMark />
+                </a>
+              ) : null}
+            </div>
           </div>
 
-          <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-white/60">
-              Contact
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-white/75">
-              {settings.address ? (
-                <li className="flex gap-2">
-                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-white/50" aria-hidden />
-                  <span>{settings.address}</span>
-                </li>
-              ) : null}
-              {settings.phone_main ? (
-                <li className="flex gap-2">
-                  <Phone className="h-4 w-4 shrink-0 text-white/50" aria-hidden />
-                  <a
-                    href={`tel:${settings.phone_main}`}
-                    className="hover:text-white"
-                  >
-                    {settings.phone_main}
-                  </a>
-                </li>
-              ) : null}
-              {settings.email_main ? (
-                <li className="flex gap-2">
-                  <Mail className="h-4 w-4 shrink-0 text-white/50" aria-hidden />
-                  <a
-                    href={`mailto:${settings.email_main}`}
-                    className="hover:text-white"
-                  >
-                    {settings.email_main}
-                  </a>
-                </li>
-              ) : null}
-              {settings.office_hours ? (
-                <li className="pt-1 text-xs">{settings.office_hours}</li>
-              ) : null}
-            </ul>
-          </div>
-
-          <nav aria-label="Footer navigation">
-            <p className="text-xs font-medium uppercase tracking-widest text-white/60">
-              Quick links
-            </p>
-            <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2">
-              {FOOTER_LINKS.map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-sm text-white/75 transition-colors hover:text-white"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <nav aria-label="Footer">
+            <FooterColumns />
           </nav>
         </div>
 
-        {(settings.facebook_url ||
-          settings.instagram_url ||
-          settings.x_url) && (
-          <div className="mt-8 flex gap-4">
-            {settings.facebook_url ? (
-              <a
-                href={settings.facebook_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="text-white/75 hover:text-white"
-              >
-                <Facebook className="h-5 w-5" />
-              </a>
-            ) : null}
-            {settings.instagram_url ? (
-              <a
-                href={settings.instagram_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="text-white/75 hover:text-white"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-            ) : null}
-            {settings.x_url ? (
-              <a
-                href={settings.x_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="X (Twitter)"
-                className="text-white/75 hover:text-white"
-              >
-                <span className="text-sm font-semibold">𝕏</span>
-              </a>
-            ) : null}
-          </div>
-        )}
-
-        <div className="mt-10 border-t border-white/15 pt-6">
-          <p className="text-xs text-white/60">
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <p className="text-xs text-ink/70">
             © {year} {settings.college_name}. All rights reserved.
           </p>
+          <p className="text-xs text-ink/70">
+            Built by{" "}
+            <a
+              href="https://mistarstudio.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-ink"
+            >
+              Mistar Studio
+            </a>
+          </p>
         </div>
+      </div>
+
+      <div className="overflow-hidden px-4 pb-4 sm:px-6 lg:px-8">
+        <p className="select-none font-serif text-[clamp(2.8rem,14vw,11rem)] font-bold leading-[0.85] tracking-tight text-ink">
+          NANDOM NMTC
+        </p>
       </div>
     </footer>
   );

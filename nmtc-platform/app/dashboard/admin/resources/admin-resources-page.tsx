@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ResourcesList } from "@/components/admin/resources-list";
 import { AdminListShell } from "@/components/admin/admin-layout";
 import { requireContentStaff } from "@/lib/auth/permissions";
+import { listLooksPreviewed } from "@/lib/data/admin-preview";
 import { listAllResources } from "@/lib/data/admin-resources";
 import { Button } from "@/components/ui/button";
 
@@ -13,6 +14,7 @@ export default async function AdminResourcesPage() {
   return (
     <AdminListShell
       section="resources"
+      preview={listLooksPreviewed(resources)}
       action={
         <Button asChild>
           <Link href="/dashboard/admin/resources/new">New resource</Link>

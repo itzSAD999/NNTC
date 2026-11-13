@@ -1,117 +1,100 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, FileText, GraduationCap, ShieldCheck } from "lucide-react";
-import { getStoragePublicUrl } from "@/lib/utils/format";
+import { ArrowRight, ChevronRight } from "lucide-react";
+
+import { Reveal } from "@/components/motion/reveal";
 import type { Settings } from "@/types/database";
 
 interface HeroSectionProps {
   settings: Settings;
 }
 
+const ACTIONS = [
+  { href: "/request", kicker: "Request", label: "Request a document" },
+  { href: "/admissions", kicker: "Apply", label: "Apply online" },
+  { href: "/verify", kicker: "Verify", label: "Verify a document" },
+] as const;
+
 export function HeroSection({ settings }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[75vh] md:min-h-[82vh] flex items-center justify-center overflow-hidden bg-ink text-white">
-      {/* Full-bleed Cinematic Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/campus-hero.jpg"
-          alt="Nandom Nursing and Midwifery Training College campus"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center filter brightness-[0.80] contrast-[1.08]"
-        />
-        {/* Harvard-style Deep Cinematic Gradient & Vignette Overlay */}
-        <div
-          className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/65"
-          aria-hidden
-        />
-        {/* Subtle Radial Vignette for Pure Text Contrast */}
-        <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/30 to-black/75"
-          aria-hidden
-        />
-      </div>
-
-      {/* Hero Content — Clean, Reduced Text that Speaks Directly to the User */}
-      <div className="section-grid relative z-10 py-16 sm:py-20 md:py-28 flex flex-col items-center text-center">
-        {/* Direct, Inspiring Headline */}
-        <h1 className="max-w-3xl font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal leading-[1.12] tracking-tight text-white drop-shadow-md">
-          Your Calling in Healthcare Starts Here
-        </h1>
-
-        {/* Short, Punchy 1-Sentence Narrative */}
-        <p className="mt-5 max-w-xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/90 drop-shadow">
-          Join an accredited training college dedicated to clinical discipline, compassionate healing, and saving lives across Ghana.
-        </p>
-
-        {/* Harvard-Style Circular Arrow CTA */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/programs"
-            className="group inline-flex items-center gap-3.5 text-base sm:text-lg font-medium text-white transition-all hover:text-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
-          >
-            {/* White Circle with Right Arrow */}
-            <span className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white text-ink shadow-2xl transition-transform duration-200 group-hover:scale-105 group-hover:bg-primary group-hover:text-white">
-              <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
-            </span>
-            <span className="underline decoration-white/40 underline-offset-4 group-hover:decoration-white">
-              Explore programmes &amp; admissions
-            </span>
-          </Link>
+    <>
+      <section
+        data-nav="hero"
+        className="relative flex min-h-[72vh] items-center justify-center overflow-hidden bg-ink text-white md:min-h-[82vh]"
+      >
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/campus-hero.jpg"
+            alt={`${settings.college_name} campus`}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center brightness-[0.80] contrast-[1.08]"
+          />
+          <div className="absolute inset-0 bg-black/55" aria-hidden />
         </div>
 
-        {/* Square-Shape Institutional Quick Badges (Clean, Sharp Edges) */}
-        <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl w-full border-t border-white/15 pt-6 text-left">
-          <Link
-            href="/request"
-            className="group rounded-none border border-white/15 bg-black/40 p-3.5 backdrop-blur-sm transition-all hover:border-white/40 hover:bg-black/60"
-          >
-            <div className="flex items-center gap-2 text-white/70">
-              <FileText className="h-4 w-4" />
-              <p className="text-[0.65rem] font-bold uppercase tracking-wider">
-                Student Services
-              </p>
-            </div>
-            <p className="mt-1 text-xs sm:text-sm font-semibold text-white group-hover:text-primary-foreground flex items-center justify-between">
-              <span>Request Documents</span>
-              <ChevronRight className="h-3.5 w-3.5 opacity-70 group-hover:translate-x-1 transition-transform" />
-            </p>
-          </Link>
+        <div className="section-grid relative z-10 flex flex-col items-center pb-16 pt-28 text-center sm:pb-20 sm:pt-32">
+          <Reveal variant="fade">
+            <h1 className="max-w-3xl font-serif text-3xl font-normal leading-[1.12] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              Your Calling in Healthcare Starts Here
+            </h1>
+          </Reveal>
 
-          <Link
-            href="/admissions"
-            className="group rounded-none border border-white/15 bg-black/40 p-3.5 backdrop-blur-sm transition-all hover:border-white/40 hover:bg-black/60"
-          >
-            <div className="flex items-center gap-2 text-white/70">
-              <GraduationCap className="h-4 w-4" />
-              <p className="text-[0.65rem] font-bold uppercase tracking-wider">
-                Admissions 2026/27
-              </p>
-            </div>
-            <p className="mt-1 text-xs sm:text-sm font-semibold text-white group-hover:text-primary-foreground flex items-center justify-between">
-              <span>Apply Online</span>
-              <ChevronRight className="h-3.5 w-3.5 opacity-70 group-hover:translate-x-1 transition-transform" />
+          <Reveal variant="up" delay={90}>
+            <p className="mt-5 max-w-xl text-base font-light leading-relaxed text-white/90 sm:text-lg md:text-xl">
+              Join an accredited training college dedicated to clinical
+              discipline, compassionate healing, and saving lives across Ghana.
             </p>
-          </Link>
+          </Reveal>
 
-          <Link
-            href="/verify"
-            className="group rounded-none border border-white/15 bg-black/40 p-3.5 backdrop-blur-sm transition-all hover:border-white/40 hover:bg-black/60"
-          >
-            <div className="flex items-center gap-2 text-white/70">
-              <ShieldCheck className="h-4 w-4" />
-              <p className="text-[0.65rem] font-bold uppercase tracking-wider">
-                Instant Verification
-              </p>
+          <Reveal variant="up" delay={180}>
+            <div className="mt-8">
+              <Link
+                href="/programs"
+                className="group inline-flex items-center gap-3.5 text-base font-medium text-white sm:text-lg"
+              >
+                <span className="flex h-11 w-11 items-center justify-center bg-white text-ink transition group-hover:bg-primary group-hover:text-white sm:h-12 sm:w-12">
+                  <ArrowRight className="h-5 w-5" />
+                </span>
+                <span className="underline decoration-white/40 underline-offset-4 group-hover:decoration-white">
+                  Explore programmes &amp; admissions
+                </span>
+              </Link>
             </div>
-            <p className="mt-1 text-xs sm:text-sm font-semibold text-white group-hover:text-primary-foreground flex items-center justify-between">
-              <span>Verify QR Code</span>
-              <ChevronRight className="h-3.5 w-3.5 opacity-70 group-hover:translate-x-1 transition-transform" />
-            </p>
-          </Link>
+          </Reveal>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <nav
+        aria-label="Quick actions"
+        data-nav="dark"
+        className="border-y border-white/10 bg-[#111] text-white"
+      >
+        <Reveal>
+          <div className="section-grid grid md:grid-cols-3">
+            {ACTIONS.map((item, i) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center justify-between gap-4 py-5 transition hover:bg-white/[0.04] md:px-6 ${
+                  i > 0 ? "border-t border-white/10 md:border-t-0 md:border-l" : ""
+                }`}
+              >
+                <span>
+                  <span className="block text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/50">
+                    {item.kicker}
+                  </span>
+                  <span className="mt-1 block text-sm font-medium text-white sm:text-base">
+                    {item.label}
+                  </span>
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-white/45" />
+              </Link>
+            ))}
+          </div>
+        </Reveal>
+      </nav>
+    </>
   );
 }

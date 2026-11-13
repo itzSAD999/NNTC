@@ -5,11 +5,8 @@ import { Suspense, useMemo } from "react";
 
 import { toggleStaffPublishedForm } from "@/lib/actions/staff";
 import type { StaffProfileWithDepartment } from "@/lib/types/expansion";
-import {
-  matchesPublishFilter,
-  matchesSearch,
-  uniqueSorted,
-} from "@/lib/admin/list-filters";
+import { matchesSearch } from "@/lib/admin/list-filters";
+import { ListThumb } from "@/components/admin/list-thumb";
 import { CmsStatusBadge } from "@/components/admin/cms-status-badge";
 import {
   AdminListFilterBar,
@@ -56,38 +53,17 @@ function StaffListContent({
   staff: StaffProfileWithDepartment[];
 }) {
   const filters = useAdminListFilters();
-  const departments = useMemo(
-    () =>
-      uniqueSorted(
-        staff.map((s) => s.department?.name).filter(Boolean) as string[]
-      ),
-    [staff]
-  );
 
   const filtered = useMemo(() => {
-    return staff.filter((s) => {
-      if (
-        !matchesSearch(filters.search, [
-          s.full_name,
-          s.slug,
-          s.job_title,
-          s.department?.name,
-        ])
-      ) {
-        return false;
-      }
-      if (!matchesPublishFilter(filters.status, s.is_published)) {
-        return false;
-      }
-      if (
-        filters.category !== "all" &&
-        s.department?.name !== filters.category
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }, [staff, filters.search, filters.status, filters.category]);
+    return staff.filter((s) =>
+      matchesSearch(filters.search, [
+        s.full_name,
+        s.slug,
+        s.job_title,
+        s.department?.name,
+      ])
+    );
+  }, [staff, filters.search]);
 
   if (staff.length === 0) {
     return <EmptyState message="No staff profiles yet." />;
@@ -98,12 +74,7 @@ function StaffListContent({
       <AdminListFilterBar
         search={filters.search}
         onSearchChange={filters.setSearch}
-        status={filters.status}
-        onStatusChange={filters.setStatus}
-        category={filters.category}
-        onCategoryChange={filters.setCategory}
-        categoryLabel="Department"
-        categoryOptions={departments.map((d) => ({ value: d, label: d }))}
+        showStatus={false}
         searchPlaceholder="Search staff…"
         total={staff.length}
         filtered={filtered.length}
@@ -116,6 +87,7 @@ function StaffListContent({
           table={
             <AdminTable minWidth="720px">
               <AdminTableHead>
+                <AdminTableTh>Photo</AdminTableTh>
                 <AdminTableTh>Name</AdminTableTh>
                 <AdminTableTh>Department</AdminTableTh>
                 <AdminTableTh>Order</AdminTableTh>
@@ -128,6 +100,9 @@ function StaffListContent({
                     key={s.id}
                     className="border-b border-line last:border-0"
                   >
+                    <td className="px-4 py-3">
+                      <ListThumb src={s.photo_url} alt={s.full_name} />
+                    </td>
                     <td className="px-4 py-3">
                       <Link
                         href={`/dashboard/admin/staff/${s.id}`}
@@ -157,7 +132,8 @@ function StaffListContent({
           cards={filtered.map((s) => (
             <AdminMobileCard key={s.id}>
               <div className="space-y-3">
-                <div>
+                <div className="flex items-center gap-3">
+                  <ListThumb src={s.photo_url} alt={s.full_name} />
                   <Link
                     href={`/dashboard/admin/staff/${s.id}`}
                     className="font-medium text-primary hover:underline"
