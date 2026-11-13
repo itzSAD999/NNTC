@@ -23,14 +23,10 @@ export default async function HomePage() {
  getUpcomingEvents(6),
  ]);
 
- const highlights =
- about.core_values.length >= 3
- ? about.core_values.slice(0, 3)
- : [
- "Accredited nursing & midwifery training",
- "Serving the Upper West Region",
- "Clinical excellence & compassion",
- ];
+  const highlights =
+    about.core_values.length >= 3
+      ? about.core_values.slice(0, 3)
+      : ["Integrity", "Excellence", "Compassion"];
 
  return (
  <>

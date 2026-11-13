@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Compass, Eye, Shield, Sparkles } from "lucide-react";
+import { Compass, Eye, Shield, Sparkles, ShieldCheck, Award, Heart, UserCheck } from "lucide-react";
 
 import { MEDIA } from "@/lib/media";
 
@@ -84,7 +84,7 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
  <Reveal>
  <section aria-labelledby="values-heading">
  <div className="border-b border-line pb-4">
- <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">
+ <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">
  Institutional Pillars
  </p>
  <h2
@@ -93,22 +93,95 @@ export function AboutSections({ about, accreditations, orgTree = [] }: AboutSect
  >
  Our Core Values
  </h2>
+ <div className="mt-3.5 mb-2 h-[3px] w-20 bg-primary" />
+ <p className="mt-2 text-sm text-caption max-w-xl">
+ The ethical and clinical tenets shaping healthcare education, student character, and dedicated clinical practice at Nandom NMTC.
+ </p>
  </div>
- <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
- {about.core_values.map((value, idx) => (
- <Reveal as="li" key={value} delay={idx * 80} className="group rounded-none border border-line bg-surface p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg ">
- <div className="flex items-center justify-between">
- <span className="font-mono text-xs font-bold text-primary tracking-widest uppercase">
+
+ <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+ {about.core_values.map((value, idx) => {
+ const key = value.toLowerCase();
+ let meta = {
+ subtitle: "Core Pillar",
+ description: "A foundational institutional standard guiding healthcare training and community health service.",
+ icon: Sparkles,
+ };
+
+ if (key.includes("integrity")) {
+ meta = {
+ subtitle: "Honesty & Ethics",
+ description: "Upholding unyielding moral principles, honesty in academic study, and transparent accountability.",
+ icon: ShieldCheck,
+ };
+ } else if (key.includes("excellence")) {
+ meta = {
+ subtitle: "Clinical Mastery",
+ description: "Pursuing the highest benchmarks in patient care, rigorous training, and continuous professional growth.",
+ icon: Award,
+ };
+ } else if (key.includes("compassion")) {
+ meta = {
+ subtitle: "Empathy & Dignity",
+ description: "Treating every patient, mother, and child with genuine warmth, profound empathy, and dedicated care.",
+ icon: Heart,
+ };
+ } else if (key.includes("professionalism")) {
+ meta = {
+ subtitle: "Discipline & Duty",
+ description: "Exemplifying clinical discipline, respectful communication, and adherence to the Nursing & Midwifery Council code.",
+ icon: UserCheck,
+ };
+ }
+
+ const Icon = meta.icon;
+
+ return (
+ <Reveal as="div" key={value} delay={idx * 80}>
+ <article className="group relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-line bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary hover:bg-primary/[0.015] hover:shadow-xl">
+ {/* Top Green Accent Bar */}
+ <div className="absolute top-0 left-0 h-1 w-full bg-primary/40 transition-colors duration-300 group-hover:bg-primary" />
+
+ <div>
+ {/* Top Row: Icon + Numeral */}
+ <div className="flex items-center justify-between mb-5">
+ <div className="flex h-11 w-11 items-center justify-center border border-primary/20 bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white">
+ <Icon className="h-5 w-5" />
+ </div>
+ <span className="font-mono text-xs font-bold tracking-widest text-caption uppercase">
  0{idx + 1}
  </span>
- <Sparkles className="h-4 w-4 text-primary/40 group-hover:text-primary transition-colors" />
  </div>
- <h3 className="mt-4 font-serif text-xl font-medium text-ink">
+
+ {/* Value Title */}
+ <h3 className="font-serif text-2xl font-bold tracking-tight text-ink transition-colors duration-200 group-hover:text-primary">
  {value}
  </h3>
+
+ {/* Subtitle */}
+ <p className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+ {meta.subtitle}
+ </p>
+
+ {/* Underline */}
+ <div className="mt-3 mb-4 h-[2px] w-10 bg-primary/30 transition-all duration-300 group-hover:w-16 group-hover:bg-primary" />
+
+ {/* Description */}
+ <p className="text-sm leading-relaxed text-caption">
+ {meta.description}
+ </p>
+ </div>
+
+ {/* Bottom Footer Accent */}
+ <div className="mt-6 pt-3.5 border-t border-line/60 flex items-center justify-between text-xs text-caption">
+ <span className="font-medium text-ink/70">NNTC Pillar</span>
+ <span className="font-mono text-[11px] text-primary font-semibold">0{idx + 1}</span>
+ </div>
+ </article>
  </Reveal>
- ))}
- </ul>
+ );
+ })}
+ </div>
  </section>
  </Reveal>
  ) : null}

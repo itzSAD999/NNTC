@@ -34,7 +34,7 @@ export const DEFAULT_ABOUT: AboutContent = {
   vision: "To be a centre of excellence in nursing and midwifery education in Ghana.",
   mission:
     "To train competent, compassionate nurses and midwives who serve with integrity.",
-  core_values: ["Excellence", "Integrity", "Compassion", "Professionalism"],
+  core_values: ["Integrity", "Excellence", "Compassion", "Professionalism"],
   principal_name: "Dr. [Principal Name]",
   principal_title: "Principal",
   principal_message: `<p>Welcome to Nandom Nursing and Midwifery Training College. Our institution is committed to producing healthcare professionals who combine clinical excellence with a deep sense of service to community.</p>
