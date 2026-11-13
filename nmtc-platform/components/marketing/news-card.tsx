@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Pin } from "lucide-react";
+import { ArrowRight, Pin } from "lucide-react";
 
 import { MEDIA } from "@/lib/media";
 import { formatShortDate, getStoragePublicUrl } from "@/lib/utils/format";
@@ -66,9 +66,9 @@ export function NewsCard({
 
   if (compact) {
     return (
-      <article className="flex h-full flex-col border border-line bg-white p-6">
+      <article className="group flex h-full flex-col border border-line bg-white p-6 transition-all duration-300 hover:border-primary hover:bg-primary/[0.02] hover:shadow-md">
         <Meta post={post} date={date} />
-        <h3 className="mt-3 font-serif text-xl leading-snug text-ink">
+        <h3 className="mt-3 font-serif text-xl leading-snug text-ink transition-colors duration-200 group-hover:text-primary">
           <Link href={`/news/${post.slug}`} className="hover:text-primary">
             {post.title}
           </Link>
@@ -80,9 +80,10 @@ export function NewsCard({
         ) : null}
         <Link
           href={`/news/${post.slug}`}
-          className="mt-5 text-sm font-semibold text-primary hover:underline"
+          className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:underline"
         >
-          Read more
+          <span>Read more</span>
+          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
       </article>
     );
@@ -91,7 +92,7 @@ export function NewsCard({
   return (
     <article
       className={cn(
-        "group flex overflow-hidden rounded-none border border-line bg-white",
+        "group flex overflow-hidden rounded-none border border-line bg-white transition-all duration-300 hover:border-primary hover:bg-primary/[0.015] hover:shadow-lg",
         featured
           ? "flex-col md:min-h-[22rem] md:flex-row"
           : "flex-col"
@@ -110,16 +111,18 @@ export function NewsCard({
           src={coverUrl}
           alt=""
           fill
-          className="object-cover object-center"
+          className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
           sizes={featured ? "50vw" : "33vw"}
         />
+        {/* Subtle green vignette overlay on card hover */}
+        <div className="absolute inset-0 bg-primary/0 transition-colors duration-300 group-hover:bg-primary/[0.06]" />
       </Link>
 
       <div className="flex flex-1 flex-col p-6 sm:p-8">
         <Meta post={post} date={date} />
         <h3
           className={cn(
-            "mt-3 font-serif leading-snug text-ink",
+            "mt-3 font-serif leading-snug text-ink transition-colors duration-200 group-hover:text-primary",
             featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
           )}
         >
@@ -134,9 +137,10 @@ export function NewsCard({
         ) : null}
         <Link
           href={`/news/${post.slug}`}
-          className="mt-6 text-sm font-semibold text-primary hover:underline"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:underline"
         >
-          Read more
+          <span>Read more</span>
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
       </div>
     </article>

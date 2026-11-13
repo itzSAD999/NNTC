@@ -76,21 +76,21 @@ export function AdmissionsSections({
  <section className="grid gap-10 lg:grid-cols-12 items-start">
  {/* Required Documents Checklist (7 Cols) */}
  <div className="lg:col-span-7 space-y-6">
- <div className="border-b border-line pb-4">
- <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">
- Documentation Checklist
- </p>
- <h2 className="mt-2 font-serif text-2xl sm:text-3xl font-medium tracking-tight text-ink">
- Required Application Documents
- </h2>
- </div>
+          <div className="border-b border-line pb-4">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">
+              Documentation Checklist
+            </p>
+            <h2 id="documents-heading" className="mt-2 font-serif text-2xl sm:text-3xl font-medium tracking-tight text-ink">
+              Required Application Documents
+            </h2>
+          </div>
 
- <RequiredDocuments documents={documents} />
- </div>
+          <RequiredDocuments documents={documents} />
+        </div>
 
- {/* Application Fee & Voucher Purchase Card (5 Cols) */}
- <div className="lg:col-span-5 space-y-6">
-          <div className="relative overflow-hidden rounded-none border border-primary/20 bg-surface p-8 shadow-lg">
+        {/* Application Fee & Voucher Purchase Card (5 Cols) */}
+        <div className="lg:col-span-5 space-y-6">
+          <div id="voucher-card" className="relative overflow-hidden rounded-none border border-primary/20 bg-surface p-8 shadow-lg">
  <div className="absolute top-0 left-0 h-2 w-full bg-primary" />
  <div className="flex items-center gap-3 text-primary mb-4">
  <Banknote className="h-6 w-6" />

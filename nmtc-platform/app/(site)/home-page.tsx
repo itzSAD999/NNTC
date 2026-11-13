@@ -7,6 +7,7 @@ import { ImpactStatsStrip } from "@/components/marketing/impact-stats-strip";
 import { HomeCtaBand } from "@/components/marketing/home-cta-band";
 import { EventsHomeStrip } from "@/components/marketing/events-home-strip";
 import { NewsCard } from "@/components/marketing/news-card";
+import { NewsMobileCarousel } from "@/components/marketing/news-mobile-carousel";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { getAboutContent } from "@/lib/data/about";
@@ -58,22 +59,28 @@ export default async function HomePage() {
  </div>
  </Reveal>
 
- {posts.length > 0 ? (
- <div className="mt-8 grid items-stretch gap-6 lg:grid-cols-12">
- <Reveal className="lg:col-span-8" variant="up">
- <NewsCard post={posts[0]} featured />
- </Reveal>
- {posts.length > 1 ? (
- <div className="flex flex-col gap-6 lg:col-span-4">
- {posts.slice(1, 3).map((post, i) => (
- <Reveal key={post.id} variant="up" delay={90 + i * 90} className="flex-1">
- <NewsCard post={post} compact />
- </Reveal>
- ))}
- </div>
- ) : null}
- </div>
- ) : (
+        {posts.length > 0 ? (
+          <>
+            {/* Mobile swipeable carousel (< lg) */}
+            <NewsMobileCarousel posts={posts} />
+
+            {/* Desktop editorial grid (>= lg) */}
+            <div className="mt-8 hidden items-stretch gap-6 lg:grid lg:grid-cols-12">
+              <Reveal className="lg:col-span-8" variant="up">
+                <NewsCard post={posts[0]} featured />
+              </Reveal>
+              {posts.length > 1 ? (
+                <div className="flex flex-col gap-6 lg:col-span-4">
+                  {posts.slice(1, 3).map((post, i) => (
+                    <Reveal key={post.id} variant="up" delay={90 + i * 90} className="flex-1">
+                      <NewsCard post={post} compact />
+                    </Reveal>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </>
+        ) : (
  <p className="mt-8 rounded-none border border-line bg-surface p-8 text-center text-caption">
  News will appear here soon.
  </p>

@@ -213,7 +213,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  const pathname = usePathname();
  const theme = useNavTheme();
  const onDark = theme !== "light";
- const logoUrl = getStoragePublicUrl(settings.logo_url) ?? "/images/nmtc-crest.svg";
+  const logoUrl = getStoragePublicUrl(settings.logo_url) ?? "/images/nmtc-crest.png";
 
  // Check URL params on client mount (e.g. ?menu=open or ?cat=campus)
  useEffect(() => {

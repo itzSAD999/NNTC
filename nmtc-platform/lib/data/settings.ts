@@ -6,7 +6,7 @@ export const DEFAULT_SETTINGS: Settings = {
   id: 1,
   college_name: "Nandom Nursing and Midwifery Training College",
   motto: "Excellence in Nursing and Midwifery Education",
-  logo_url: null,
+  logo_url: "/images/nmtc-crest.png",
   primary_color: "#1A5E3A",
   accent_color: "#9A1B2F",
   phone_main: "+233 37 202 1234",
