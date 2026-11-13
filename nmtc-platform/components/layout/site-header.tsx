@@ -21,95 +21,154 @@ interface SiteHeaderProps {
 }
 
 interface MenuCategory {
- id: string;
- label: string;
- title: string;
- href: string;
- description: string;
- sublinks: { label: string; href: string; hasArrow?: boolean }[];
+  id: string;
+  label: string;
+  title: string;
+  href: string;
+  description: string;
+  sublinks: { label: string; href: string; hasArrow?: boolean }[];
+  featuredImage: {
+    src: string;
+    alt: string;
+    kicker: string;
+    headline: string;
+    caption: string;
+    cta: string;
+    href: string;
+  };
 }
 
 const HARVARD_MENU_CATEGORIES: MenuCategory[] = [
- {
- id: "academics",
- label: "Academics",
- title: "Academics",
- href: "/programs",
- description:
- "Learning at Nandom NMTC combines rigorous clinical discipline, modern skills simulation, and compassionate healthcare education for Ghana's next generation.",
- sublinks: [
- { label: "Degree & Diploma Programs", href: "/programs", hasArrow: true },
- {
- label: "Diploma in Registered General Nursing (RGN)",
- href: "/programs/diploma-in-registered-general-nursing",
- },
- {
- label: "Registered Midwifery (Post-Nurse)",
- href: "/programs/registered-midwifery-post-nurse",
- },
- { label: "Academic Calendar & Schedules", href: "/resources" },
- { label: "Clinical Practicum & Hospital Postings", href: "/campus-life" },
- ],
- },
- {
- id: "campus",
- label: "Campus",
- title: "Campus Life",
- href: "/campus-life",
- description:
- "A vibrant, disciplined academic and residential community situated in the historic Nandom district of the Upper West Region.",
- sublinks: [
- { label: "Campus Life & Hostels", href: "/campus-life", hasArrow: true },
- { label: "Faculty & Staff Directory", href: "/faculty" },
- { label: "Media & Event Gallery", href: "/gallery" },
- { label: "College Events & Ceremonies", href: "/events" },
- { label: "Student Handbook & Downloads", href: "/resources" },
- ],
- },
- {
- id: "in-focus",
- label: "In Focus",
- title: "In Focus",
- href: "/news",
- description:
- "The latest bulletins, healthcare achievements, clinical milestones, and community outreach published by the NMTC Gazette.",
- sublinks: [
- { label: "The NMTC Gazette", href: "/news", hasArrow: true },
- { label: "Upcoming Events & Ceremonies", href: "/events" },
- { label: "Community Health Outreach", href: "/news" },
- { label: "Principal's Termly Address", href: "/about" },
- ],
- },
- {
- id: "admissions",
- label: "Admissions",
- title: "Admissions & Aid",
- href: "/admissions",
- description:
- "Everything prospective students need to know — entry requirements, Ministry of Health guidelines, deadlines, and financial aid.",
- sublinks: [
- { label: "2026/2027 Admissions Guide", href: "/admissions", hasArrow: true },
- { label: "WASSCE & SSCCE Entry Requirements", href: "/admissions" },
- { label: "Tuition & Fee Schedules", href: "/financial-aid" },
- { label: "Scholarships & Financial Aid", href: "/financial-aid" },
- { label: "Admissions FAQs", href: "/admissions" },
- ],
- },
- {
- id: "services",
- label: "Services",
- title: "Document Services",
- href: "/request",
- description:
- "Direct digital services for current students, alumni, and partner healthcare institutions — certified transcripts, letters, and QR verification.",
- sublinks: [
- { label: "Request an Academic Document", href: "/request", hasArrow: true },
- { label: "Track Submitted Request", href: "/request/track" },
- { label: "Verify Credential via QR", href: "/verify" },
- { label: "Student Resources Library", href: "/resources" },
- { label: "Staff & Administration Portal", href: "/login" },
- ],
- },
+  {
+    id: "academics",
+    label: "Academics",
+    title: "Academics",
+    href: "/programs",
+    description:
+      "Learning at Nandom NMTC combines rigorous clinical discipline, modern skills simulation, and compassionate healthcare education for Ghana's next generation.",
+    sublinks: [
+      { label: "Degree & Diploma Programs", href: "/programs", hasArrow: true },
+      {
+        label: "Diploma in Registered General Nursing (RGN)",
+        href: "/programs/diploma-in-registered-general-nursing",
+      },
+      {
+        label: "Registered Midwifery (Post-Nurse)",
+        href: "/programs/registered-midwifery-post-nurse",
+      },
+      { label: "Academic Calendar & Schedules", href: "/resources" },
+      { label: "Clinical Practicum & Hospital Postings", href: "/campus-life" },
+    ],
+    featuredImage: {
+      src: "/images/lecture-hall.jpg",
+      alt: "Nursing and Midwifery Students in Lecture Hall",
+      kicker: "ACADEMIC EXCELLENCE",
+      headline: "Clinical Discipline & Licensure",
+      caption:
+        "Rigorous coursework, modern skills simulation, and supervised hospital ward postings across the region.",
+      cta: "Explore Programmes",
+      href: "/programs",
+    },
+  },
+  {
+    id: "campus",
+    label: "Campus",
+    title: "Campus Life",
+    href: "/campus-life",
+    description:
+      "A vibrant, disciplined academic and residential community situated in the historic Nandom district of the Upper West Region.",
+    sublinks: [
+      { label: "Campus Life & Hostels", href: "/campus-life", hasArrow: true },
+      { label: "Faculty & Staff Directory", href: "/faculty" },
+      { label: "Media & Event Gallery", href: "/gallery" },
+      { label: "College Events & Ceremonies", href: "/events" },
+      { label: "Student Handbook & Downloads", href: "/resources" },
+    ],
+    featuredImage: {
+      src: "/images/campus-hero.jpg",
+      alt: "Nandom NMTC Campus Grounds and Student Life",
+      kicker: "CAMPUS EXPERIENCE",
+      headline: "Life at Nandom NMTC",
+      caption:
+        "Modern residential hostels, simulation skills laboratories, student associations, and sports in Nandom.",
+      cta: "Explore Campus Life",
+      href: "/campus-life",
+    },
+  },
+  {
+    id: "in-focus",
+    label: "In Focus",
+    title: "In Focus",
+    href: "/news",
+    description:
+      "The latest bulletins, healthcare achievements, clinical milestones, and community outreach published by the NMTC Gazette.",
+    sublinks: [
+      { label: "The NMTC Gazette", href: "/news", hasArrow: true },
+      { label: "Upcoming Events & Ceremonies", href: "/events" },
+      { label: "Community Health Outreach", href: "/news" },
+      { label: "Principal's Termly Address", href: "/about" },
+    ],
+    featuredImage: {
+      src: "/images/healthcare-team.jpg",
+      alt: "NMTC Healthcare Team and Clinical Practitioners",
+      kicker: "COMMUNITY IMPACT",
+      headline: "The NMTC Gazette",
+      caption:
+        "Clinical breakthroughs, maternal health outreach, student achievements, and regional healthcare updates.",
+      cta: "Read News & Stories",
+      href: "/news",
+    },
+  },
+  {
+    id: "admissions",
+    label: "Admissions",
+    title: "Admissions & Aid",
+    href: "/admissions",
+    description:
+      "Everything prospective students need to know — entry requirements, Ministry of Health guidelines, deadlines, and financial aid.",
+    sublinks: [
+      { label: "2026/2027 Admissions Guide", href: "/admissions", hasArrow: true },
+      { label: "WASSCE & SSCCE Entry Requirements", href: "/admissions" },
+      { label: "Tuition & Fee Schedules", href: "/financial-aid" },
+      { label: "Scholarships & Financial Aid", href: "/financial-aid" },
+      { label: "Admissions FAQs", href: "/admissions" },
+    ],
+    featuredImage: {
+      src: "/images/graduation.jpg",
+      alt: "Proud Graduate Nurse from Nandom NMTC",
+      kicker: "APPLICATION GUIDE",
+      headline: "2026/2027 Admissions Open",
+      caption:
+        "A complete step-by-step guide for prospective students: Ministry of Health vouchers, interviews, and enrollment.",
+      cta: "Start Your Application",
+      href: "/admissions",
+    },
+  },
+  {
+    id: "services",
+    label: "Services",
+    title: "Document Services",
+    href: "/request",
+    description:
+      "Direct digital services for current students, alumni, and partner healthcare institutions — certified transcripts, letters, and QR verification.",
+    sublinks: [
+      { label: "Request an Academic Document", href: "/request", hasArrow: true },
+      { label: "Track Submitted Request", href: "/request/track" },
+      { label: "Verify Credential via QR", href: "/verify" },
+      { label: "Student Resources Library", href: "/resources" },
+      { label: "Staff & Administration Portal", href: "/login" },
+    ],
+    featuredImage: {
+      src: "/images/clinical-care.jpg",
+      alt: "Official Student Document Services and Ward Practical Records",
+      kicker: "STUDENT & ALUMNI DESK",
+      headline: "Official Credential Portal",
+      caption:
+        "Certified transcripts, introductory letters, English proficiency attestations, and instant QR verification.",
+      cta: "Request Documents",
+      href: "/request",
+    },
+  },
 ];
 
 const QUICK_LINKS = [
@@ -367,11 +426,11 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  </button>
  </div>
 
- {/* Middle Body Area: Split Panel Menu (Harvard Style) */}
- <div className="section-grid flex-1 py-10 sm:py-16">
- <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 min-h-[380px]">
+ {/* Middle Body Area: 3-Column Split Menu (Harvard Editorial + Featured Image) */}
+ <div className="section-grid flex-1 py-8 sm:py-12 lg:py-14">
+ <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 min-h-[420px] items-center">
  {/* Left Column: Massive Editorial Serif Category Links */}
- <div className="md:col-span-5 flex flex-col justify-center space-y-4 sm:space-y-6 md:border-r md:border-white/15 md:pr-10">
+ <div className="md:col-span-4 lg:col-span-3 flex flex-col justify-center space-y-3 sm:space-y-5 md:border-r md:border-white/15 md:pr-6 lg:pr-8">
  {HARVARD_MENU_CATEGORIES.map((category) => {
  const isSelected = activeCategoryId === category.id;
  return (
@@ -381,9 +440,9 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  onClick={() => setActiveCategoryId(category.id)}
  onMouseEnter={() => setActiveCategoryId(category.id)}
  className={cn(
- "block text-left font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight transition-all duration-150 focus-visible:outline-none",
+ "block text-left font-serif text-3xl sm:text-4xl md:text-3xl lg:text-4xl xl:text-5xl tracking-tight transition-all duration-150 focus-visible:outline-none",
  isSelected
- ? "text-white underline decoration-white decoration-2 underline-offset-8"
+ ? "text-white underline decoration-white decoration-2 underline-offset-8 font-semibold"
  : "text-white/50 hover:text-white"
  )}
  >
@@ -392,7 +451,7 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
 
  {/* Mobile Accordion Submenu (visible only on small screens) */}
  {isSelected ? (
- <div className="mt-4 pl-2 space-y-2.5 md:hidden border-l border-white/20">
+ <div className="mt-4 pl-2 space-y-3 md:hidden border-l border-white/20">
  <p className="text-xs text-white/70 leading-relaxed">
  {category.description}
  </p>
@@ -410,6 +469,35 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  </li>
  ))}
  </ul>
+
+ {/* Mobile Featured Image Card */}
+ <div className="pt-3">
+ <Link
+ href={category.featuredImage.href}
+ onClick={() => setMenuOpen(false)}
+ className="block overflow-hidden border border-white/20 bg-black/40 p-3 text-left"
+ >
+ <div className="relative h-36 w-full overflow-hidden">
+ <Image
+ src={category.featuredImage.src}
+ alt={category.featuredImage.alt}
+ fill
+ sizes="100vw"
+ className="object-cover"
+ />
+ </div>
+ <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-white/80">
+ {category.featuredImage.kicker}
+ </p>
+ <div className="h-0.5 w-8 bg-accent my-1.5" />
+ <p className="font-serif text-sm font-bold text-white">
+ {category.featuredImage.headline}
+ </p>
+ <p className="mt-1 text-xs text-white/70 line-clamp-2">
+ {category.featuredImage.caption}
+ </p>
+ </Link>
+ </div>
  </div>
  ) : null}
  </div>
@@ -417,8 +505,8 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  })}
  </div>
 
- {/* Right Column: Submenu Details (Desktop only) */}
- <div className="hidden md:col-span-7 md:flex flex-col justify-center pl-6 lg:pl-12 space-y-6 animate-in fade-in duration-150">
+ {/* Middle Column: Submenu Details (4 cols) */}
+ <div className="hidden md:col-span-4 lg:col-span-4 md:flex flex-col justify-center px-4 lg:px-6 space-y-5 animate-in fade-in duration-150">
  <div>
  <Link
  href={activeCategory.href}
@@ -428,19 +516,19 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  <span>{activeCategory.title}</span>
  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
  </Link>
- <p className="mt-2.5 max-w-lg text-sm sm:text-base font-light leading-relaxed text-white/75">
+ <p className="mt-2 max-w-sm text-xs lg:text-sm font-light leading-relaxed text-white/75">
  {activeCategory.description}
  </p>
  </div>
 
- <div className="pt-4 border-t border-white/10">
- <ul className="space-y-3.5">
+ <div className="pt-3 border-t border-white/10">
+ <ul className="space-y-3">
  {activeCategory.sublinks.map((sub) => (
  <li key={sub.href + sub.label}>
  <Link
  href={sub.href}
  onClick={() => setMenuOpen(false)}
- className="group inline-flex items-center gap-2 text-base lg:text-lg font-medium text-white hover:text-white/80 transition-colors"
+ className="group inline-flex items-center gap-2 text-sm lg:text-base font-medium text-white hover:text-white/80 transition-colors"
  >
  <span className="group-hover:underline underline-offset-4">
  {sub.label}
@@ -453,6 +541,48 @@ export function SiteHeader({ settings }: SiteHeaderProps) {
  ))}
  </ul>
  </div>
+ </div>
+
+ {/* Far Right Column: Featured Image Card (Matching User Screenshot) (4-5 cols) */}
+ <div className="hidden md:col-span-4 lg:col-span-5 md:flex flex-col justify-center pl-4 lg:pl-8 md:border-l md:border-white/15 animate-in fade-in duration-200">
+ <Link
+ href={activeCategory.featuredImage.href}
+ onClick={() => setMenuOpen(false)}
+ className="group relative block overflow-hidden border border-white/20 bg-black/40 transition-all hover:border-white/50 shadow-2xl rounded-none"
+ >
+ {/* Featured Visual Image */}
+ <div className="relative h-48 lg:h-56 w-full overflow-hidden bg-black/60">
+ <Image
+ src={activeCategory.featuredImage.src}
+ alt={activeCategory.featuredImage.alt}
+ fill
+ sizes="(max-width: 1024px) 33vw, 30vw"
+ className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+ />
+ <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+ </div>
+
+ {/* Card Body with Accent Line (Matching ALU reference image) */}
+ <div className="p-4 sm:p-5">
+ <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/80">
+ {activeCategory.featuredImage.kicker}
+ </p>
+ {/* Accent Line Underneath */}
+ <div className="h-0.5 w-10 bg-accent my-2 transition-all group-hover:w-16" />
+ <h4 className="font-serif text-base lg:text-lg font-bold text-white group-hover:underline underline-offset-2 leading-snug">
+ {activeCategory.featuredImage.headline}
+ </h4>
+ <p className="mt-1.5 text-xs text-white/70 leading-relaxed line-clamp-2">
+ {activeCategory.featuredImage.caption}
+ </p>
+ <div className="mt-3.5 flex items-center gap-1.5 text-xs font-semibold text-white group-hover:text-white/90">
+ <span className="underline decoration-white/40 underline-offset-4 group-hover:decoration-white">
+ {activeCategory.featuredImage.cta}
+ </span>
+ <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+ </div>
+ </div>
+ </Link>
  </div>
  </div>
  </div>
